@@ -154,15 +154,24 @@ class RoomMicListener:
         print("[ROOM-MIC] Instant Voice Interruption / Barge-in: ENABLED", flush=True)
         print("[ROOM-MIC] ========================================================\n", flush=True)
 
+        self.barge_in_streak = 0
+
         def audio_callback(indata, frames, time_info, status):
             try:
                 audio_chunk = indata[:, 0].copy()
                 rms = float(np.sqrt(np.mean(audio_chunk.astype(np.float32) ** 2)))
                 threshold = load_threshold()
 
+                # Deliberate speech detection
                 if rms > threshold:
-                    if is_ai_speaking():
-                        request_stop_ai_playback()
+                    # Robust Barge-In: only interrupt if voice is sustained and intentional (RMS > 350 for 3 chunks)
+                    if is_ai_speaking() and rms > max(threshold * 1.6, 350.0):
+                        self.barge_in_streak += 1
+                        if self.barge_in_streak >= 3:
+                            request_stop_ai_playback()
+                            self.barge_in_streak = 0
+                    else:
+                        self.barge_in_streak = 0
 
                     if not self.is_recording:
                         self.is_recording = True
@@ -173,6 +182,7 @@ class RoomMicListener:
                     self.audio_frames.append(audio_chunk)
                     self.silence_start = None
                 else:
+                    self.barge_in_streak = 0
                     if not self.is_recording:
                         self.pre_buffer.append(audio_chunk)
                     else:
