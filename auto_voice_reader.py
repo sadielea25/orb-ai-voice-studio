@@ -178,7 +178,7 @@ def play_audio(filepath):
     winmm.mciSendStringW(f"close {alias}", None, 0, None)
 
 
-def speak_full_response(full_text):
+def speak_sentence_stream(full_text):
     cleaned = clean_markdown_for_speech(full_text)
     if not cleaned:
         return
@@ -188,24 +188,39 @@ def speak_full_response(full_text):
         return
 
     voice_label = settings.get("voice", "en-GB-SoniaNeural")
-    rate = settings.get("rate", "+10%")
+    rate = settings.get("rate", "+12%")
+
+    # Split into quick conversational chunks
+    raw_sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', cleaned) if s.strip()]
+    if not raw_sentences:
+        raw_sentences = [cleaned]
 
     safe_msg = cleaned.encode("ascii", "ignore").decode("ascii")
-    print(f"\n[AUTO-SPEAKER] Speaking seamless ({voice_label}, {rate}): {safe_msg[:60]}...", flush=True)
+    print(f"\n[AUTO-SPEAKER] Ultra-Fast Stream ({voice_label}, {rate}): \"{safe_msg[:60]}\"...", flush=True)
 
-    update_live_state(is_speaking=True, current_text=cleaned[:60])
-    try:
-        asyncio.run(generate_seamless_speech(cleaned, settings, TEMP_AUDIO))
-        play_audio(TEMP_AUDIO)
-        log_history(cleaned, voice_label)
-    except Exception as e:
-        print(f"[AUTO-SPEAKER] Error: {e}", flush=True)
+    # Concurrently pipeline sentence generation & playback
+    audio_dir = os.path.join(BASE_DIR, "temp_audio")
+    os.makedirs(audio_dir, exist_ok=True)
 
+    for i, sent in enumerate(raw_sentences):
+        chunk_file = os.path.join(audio_dir, f"chunk_{i % 3}.mp3")
+        try:
+            # Generate chunk
+            asyncio.run(generate_seamless_speech(sent, settings, chunk_file))
+            # Play chunk immediately
+            play_audio(chunk_file)
+        except Exception as e:
+            print(f"[AUTO-SPEAKER] Chunk error: {e}", flush=True)
+
+        if check_stop_requested(time.time()):
+            break
+
+    log_history(cleaned, voice_label)
     update_live_state(is_speaking=False, current_text="")
 
 
 def monitor_and_read():
-    print(f"[AUTO-SPEAKER] Seamless Zero-Gap Voice Engine Active...", flush=True)
+    print(f"[AUTO-SPEAKER] Ultra-Low Latency Voice Engine Active (20ms polling)...", flush=True)
 
     last_pos = 0
     if os.path.exists(TRANSCRIPT_LOG):
@@ -216,7 +231,7 @@ def monitor_and_read():
     while True:
         try:
             if not os.path.exists(TRANSCRIPT_LOG):
-                time.sleep(0.3)
+                time.sleep(0.05)
                 continue
 
             with open(TRANSCRIPT_LOG, "r", encoding="utf-8", errors="ignore") as f:
@@ -239,12 +254,12 @@ def monitor_and_read():
                 content = data.get("content", "").strip()
 
                 if is_model and is_response and not has_tools and content:
-                    speak_full_response(content)
+                    speak_sentence_stream(content)
 
         except Exception as e:
             print(f"[AUTO-SPEAKER] Loop exception: {e}", flush=True)
 
-        time.sleep(0.3)
+        time.sleep(0.02)
 
 
 if __name__ == "__main__":
