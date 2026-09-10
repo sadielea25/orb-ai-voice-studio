@@ -11,6 +11,7 @@ import json
 import re
 import asyncio
 import ctypes
+import collections
 
 if sys.platform == "win32":
     try:
@@ -198,19 +199,29 @@ def speak_full_response(full_text):
 
 
 def monitor_and_read():
-    print(f"[AUTO-SPEAKER] Ultra-Low Latency Voice Engine Active (20ms polling)...", flush=True)
+    print(f"[AUTO-SPEAKER] Ultra-Low Latency Voice Engine Active (Auto-Recovery Enabled)...", flush=True)
 
     last_pos = 0
     if os.path.exists(TRANSCRIPT_LOG):
-        with open(TRANSCRIPT_LOG, "r", encoding="utf-8", errors="ignore") as f:
-            f.seek(0, os.SEEK_END)
-            last_pos = f.tell()
+        try:
+            with open(TRANSCRIPT_LOG, "r", encoding="utf-8", errors="ignore") as f:
+                f.seek(0, os.SEEK_END)
+                last_pos = f.tell()
+        except Exception:
+            last_pos = 0
+
+    seen_hashes = collections.deque(maxlen=100)
 
     while True:
         try:
             if not os.path.exists(TRANSCRIPT_LOG):
                 time.sleep(0.05)
                 continue
+
+            current_size = os.path.getsize(TRANSCRIPT_LOG)
+            # Auto-recovery: if log was truncated or checkpointed, reset seek pointer
+            if current_size < last_pos:
+                last_pos = 0
 
             with open(TRANSCRIPT_LOG, "r", encoding="utf-8", errors="ignore") as f:
                 f.seek(last_pos)
@@ -232,7 +243,10 @@ def monitor_and_read():
                 content = data.get("content", "").strip()
 
                 if is_model and is_response and not has_tools and content:
-                    speak_full_response(content)
+                    msg_hash = hash(content[:150])
+                    if msg_hash not in seen_hashes:
+                        seen_hashes.append(msg_hash)
+                        speak_full_response(content)
 
         except Exception as e:
             print(f"[AUTO-SPEAKER] Loop exception: {e}", flush=True)
