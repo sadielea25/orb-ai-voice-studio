@@ -106,9 +106,25 @@ class RoomMicListener:
     def transcribe_and_send(self, frames):
         try:
             print(f"[ROOM-MIC] Transcribing {len(frames)*CHUNK_DURATION:.1f}s speech...", flush=True)
-            raw_pcm = np.concatenate(frames).tobytes()
-            audio_data = sr.AudioData(raw_pcm, SAMPLE_RATE, 2)
-            raw_text = self.recognizer.recognize_google(audio_data, language="en-GB")
+            raw_pcm = np.concatenate(frames)
+            
+            # Dynamic peak normalization for crystal-clear room speech
+            peak = np.max(np.abs(raw_pcm))
+            if peak > 30:
+                gain = min(28000.0 / float(peak), 14.0)
+                raw_pcm = np.clip(raw_pcm.astype(np.float32) * gain, -32768, 32767).astype(np.int16)
+
+            audio_data = sr.AudioData(raw_pcm.tobytes(), SAMPLE_RATE, 2)
+            
+            raw_text = ""
+            try:
+                raw_text = self.recognizer.recognize_google(audio_data, language="en-GB")
+            except sr.UnknownValueError:
+                try:
+                    raw_text = self.recognizer.recognize_google(audio_data, language="en-US")
+                except Exception:
+                    raw_text = ""
+
             cleaned = raw_text.strip()
             if cleaned:
                 safe_text = cleaned.encode("ascii", "ignore").decode("ascii")
@@ -128,8 +144,6 @@ class RoomMicListener:
             else:
                 print("[ROOM-MIC] No words recognized.", flush=True)
 
-        except sr.UnknownValueError:
-            print("[ROOM-MIC] (Audio unclear - speak slightly louder)", flush=True)
         except Exception as e:
             print(f"[ROOM-MIC STT Error]: {e}", flush=True)
 
