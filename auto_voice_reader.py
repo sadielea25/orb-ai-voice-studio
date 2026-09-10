@@ -1,7 +1,7 @@
 """
 auto_voice_reader.py
-Ultra-fluid, zero-gap natural conversational voice reader.
-Synthesizes full responses in a single seamless audio pass with natural prosody.
+Ultra-fluid, direct hardware conversational voice reader.
+Uses miniaudio + sounddevice for instantaneous auto-switching between Headphones (budi 50) and Laptop Speakers (Realtek).
 """
 
 import os
@@ -10,9 +10,12 @@ import time
 import json
 import re
 import asyncio
-import ctypes
 import collections
 import threading
+import edge_tts
+import miniaudio
+import numpy as np
+import sounddevice as sd
 
 if sys.platform == "win32":
     try:
@@ -20,20 +23,18 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-winmm = ctypes.windll.winmm
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TRANSCRIPT_LOG = r"C:\Users\corem\.gemini\antigravity\brain\de5a4648-5c35-4b63-a84f-33cf8597b3ff\.system_generated\logs\transcript.jsonl"
 SETTINGS_FILE = os.path.join(BASE_DIR, "voice_settings.json")
 HISTORY_FILE = os.path.join(BASE_DIR, "speech_history.json")
 STATE_FILE = os.path.join(BASE_DIR, "speech_live_state.json")
-TEMP_AUDIO = os.path.join(BASE_DIR, "speech_seamless.mp3")
 
 
 def load_settings():
     default = {
         "engine": "edge",
         "voice": "en-GB-SoniaNeural",
-        "rate": "+8%",  # Fluid natural UK conversational pace
+        "rate": "+10%",
         "pitch": "+0Hz",
         "volume": "+0%",
         "enabled": True,
@@ -78,6 +79,117 @@ def check_stop_requested(playback_start_time):
     return False
 
 
+def get_active_output_device():
+    """
+    Dynamically finds the best physical output device:
+    1. budi 50 / Bluetooth Headphones if connected
+    2. Physical Realtek Speakers (laptop speakers)
+    3. System default output
+    """
+    try:
+        devices = sd.query_devices()
+        budi_idx = None
+        realtek_idx = None
+        default_out = sd.default.device[1]
+
+        for i, d in enumerate(devices):
+            if d.get("max_output_channels", 0) > 0:
+                name = d.get("name", "").lower()
+                if "budi" in name:
+                    budi_idx = i
+                    break
+
+        if budi_idx is not None:
+            return budi_idx, devices[budi_idx]["name"]
+        return None, "System Default"
+    except Exception:
+        return None, "System Default"
+
+
+def clean_markdown_for_speech(text):
+    if not text:
+        return ""
+    text = re.sub(r"[\U00010000-\U0010ffff]", "", text)
+    text = re.sub(r"```[\s\S]*?```", " ", text)
+    text = re.sub(r"`([^`]+)`", r"\1", text)
+    text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"^[#>*\-]+\s*", "", text, flags=re.MULTILINE)
+    text = re.sub(r"[*_~]+", "", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+async def synthesize_speech_pcm(text, settings):
+    voice = settings.get("voice", "en-GB-SoniaNeural")
+    rate = settings.get("rate", "+10%")
+    pitch = settings.get("pitch", "+0Hz")
+    volume = settings.get("volume", "+0%")
+
+    communicate = edge_tts.Communicate(
+        text=text,
+        voice=voice,
+        rate=rate,
+        pitch=pitch,
+        volume=volume
+    )
+
+    audio_bytes = b""
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_bytes += chunk["data"]
+
+    if not audio_bytes:
+        return None
+
+    decoded = miniaudio.decode(
+        audio_bytes,
+        nchannels=2,
+        sample_rate=44100,
+        output_format=miniaudio.SampleFormat.SIGNED16
+    )
+    pcm = np.frombuffer(decoded.samples, dtype=np.int16).reshape(-1, 2)
+    return pcm
+
+
+def play_audio_pcm(pcm_data):
+    if pcm_data is None or len(pcm_data) == 0:
+        return
+
+    dev_idx, dev_name = get_active_output_device()
+    start_time = time.time()
+    update_live_state(is_speaking=True, current_text="Speaking...", stop_requested=False)
+
+    try:
+        if dev_idx is not None:
+            try:
+                sd.play(pcm_data, samplerate=44100, device=dev_idx)
+            except Exception:
+                sd.play(pcm_data, samplerate=44100)
+        else:
+            sd.play(pcm_data, samplerate=44100)
+
+        duration = len(pcm_data) / 44100.0
+        elapsed = 0.0
+
+        while elapsed < duration:
+            if check_stop_requested(start_time):
+                sd.stop()
+                update_live_state(is_speaking=False, current_text="", stop_requested=False)
+                print("\n[AUTO-SPEAKER] 🛑 Audio interrupted by user voice!", flush=True)
+                return
+            time.sleep(0.04)
+            elapsed = time.time() - start_time
+
+        sd.wait()
+        time.sleep(0.35)
+    except Exception as e:
+        print(f"[AUTO-SPEAKER] Playback error: {e}", flush=True)
+
+    update_live_state(is_speaking=False, current_text="")
+
+
 def log_history(text, voice_label):
     history = []
     if os.path.exists(HISTORY_FILE):
@@ -99,81 +211,6 @@ def log_history(text, voice_label):
         pass
 
 
-def clean_markdown_for_speech(text):
-    if not text:
-        return ""
-    # Remove emoji & symbol ranges
-    text = re.sub(r"[\U00010000-\U0010ffff]", "", text)
-    # Remove code blocks
-    text = re.sub(r"```[\s\S]*?```", " ", text)
-    # Remove inline code
-    text = re.sub(r"`([^`]+)`", r"\1", text)
-    # Convert markdown links [text](url) -> text
-    text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)
-    # Remove raw URLs
-    text = re.sub(r"https?://\S+", "", text)
-    # Remove markdown headers and list bullets
-    text = re.sub(r"^[#>*\-]+\s*", "", text, flags=re.MULTILINE)
-    # Remove markdown bold/italic asterisks
-    text = re.sub(r"[*_~]+", "", text)
-    # Remove XML/HTML tags
-    text = re.sub(r"<[^>]+>", "", text)
-    # Collapse whitespace into single space
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
-
-
-async def generate_seamless_speech(text, settings, output_file):
-    import edge_tts
-    voice = settings.get("voice", "en-GB-SoniaNeural")
-    rate = settings.get("rate", "+8%")
-    pitch = settings.get("pitch", "+0Hz")
-    volume = settings.get("volume", "+0%")
-    
-    communicate = edge_tts.Communicate(
-        text=text,
-        voice=voice,
-        rate=rate,
-        pitch=pitch,
-        volume=volume
-    )
-    await communicate.save(output_file)
-
-
-def play_audio(filepath):
-    abs_path = os.path.abspath(filepath)
-    alias = f"track_{int(time.time() * 1000) % 10000}"
-    winmm.mciSendStringW(f"close {alias}", None, 0, None)
-    ret = winmm.mciSendStringW(f'open "{abs_path}" type mpegvideo alias {alias}', None, 0, None)
-    if ret != 0:
-        return
-
-    start_time = time.time()
-    update_live_state(is_speaking=True, current_text="Speaking...", stop_requested=False)
-
-    is_playing = threading.Event()
-    is_playing.set()
-
-    def worker():
-        winmm.mciSendStringW(f"play {alias} wait", None, 0, None)
-        is_playing.clear()
-
-    t = threading.Thread(target=worker, daemon=True)
-    t.start()
-
-    while is_playing.is_set():
-        if check_stop_requested(start_time):
-            winmm.mciSendStringW(f"stop {alias}", None, 0, None)
-            winmm.mciSendStringW(f"close {alias}", None, 0, None)
-            update_live_state(is_speaking=False, current_text="", stop_requested=False)
-            print("\n[AUTO-SPEAKER] 🛑 Audio interrupted by user voice!", flush=True)
-            return
-        time.sleep(0.03)
-
-    time.sleep(0.2)
-    winmm.mciSendStringW(f"close {alias}", None, 0, None)
-
-
 def speak_full_response(full_text):
     cleaned = clean_markdown_for_speech(full_text)
     if not cleaned:
@@ -184,23 +221,24 @@ def speak_full_response(full_text):
         return
 
     voice_label = settings.get("voice", "en-GB-SoniaNeural")
-    rate = settings.get("rate", "+10%")
-
+    dev_idx, dev_name = get_active_output_device()
     safe_msg = cleaned.encode("ascii", "ignore").decode("ascii")
-    print(f"\n[AUTO-SPEAKER] Speaking complete response ({voice_label}, {rate}): \"{safe_msg[:60]}\"...", flush=True)
+    print(f"\n[AUTO-SPEAKER] Output -> {dev_name} | {voice_label}: \"{safe_msg[:60]}\"...", flush=True)
+
+    update_live_state(is_speaking=True, current_text=cleaned, stop_requested=False)
+    log_history(cleaned, voice_label)
 
     try:
-        asyncio.run(generate_seamless_speech(cleaned, settings, TEMP_AUDIO))
-        play_audio(TEMP_AUDIO)
-        log_history(cleaned, voice_label)
+        pcm = asyncio.run(synthesize_speech_pcm(cleaned, settings))
+        play_audio_pcm(pcm)
     except Exception as e:
-        print(f"[AUTO-SPEAKER] Error: {e}", flush=True)
+        print(f"[AUTO-SPEAKER] Synthesis/Playback Error: {e}", flush=True)
 
     update_live_state(is_speaking=False, current_text="")
 
 
 def monitor_and_read():
-    print(f"[AUTO-SPEAKER] Ultra-Low Latency Voice Engine Active (Auto-Recovery Enabled)...", flush=True)
+    print(f"[AUTO-SPEAKER] Direct Hardware Voice Engine Active (Sounddevice + Miniaudio)...", flush=True)
 
     last_pos = 0
     if os.path.exists(TRANSCRIPT_LOG):
@@ -220,7 +258,6 @@ def monitor_and_read():
                 continue
 
             current_size = os.path.getsize(TRANSCRIPT_LOG)
-            # Auto-recovery: if log was truncated or checkpointed, reset seek pointer
             if current_size < last_pos:
                 last_pos = 0
 

@@ -84,6 +84,93 @@ def update_live_state(is_speaking=False, current_text=""):
         pass
 
 
+def strip_ai_echo(text):
+    if not text:
+        return ""
+    cleaned = text.strip()
+    words_in = re.sub(r"[^a-z0-9\s]", " ", cleaned.lower()).split()
+    if not words_in:
+        return ""
+
+    stopwords = {
+        'a', 'an', 'the', 'and', 'or', 'in', 'on', 'at', 'to', 'for', 'of', 'it', 'is', 'be',
+        'you', 'your', 'my', 'i', 'will', 'now', 'so', 'that', 'this', 'there', 'with', 'as', 'by',
+        'are', 'was', 'were', 'have', 'has', 'had', 'do', 'does', 'did', 'all', 'any'
+    }
+
+    candidates = []
+    state = load_live_state()
+    curr = state.get("current_text", "").strip()
+    is_speaking = state.get("is_speaking", False)
+    state_time = state.get("timestamp", 0)
+
+    if curr and len(curr) >= 8:
+        candidates.append(curr)
+    if os.path.exists(HISTORY_FILE):
+        try:
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                hist = json.load(f)
+            for item in hist[:8]:
+                t = item.get("text", "").strip()
+                if t and len(t) >= 8 and t not in candidates:
+                    candidates.append(t)
+        except Exception:
+            pass
+
+    set_in = set(words_in)
+    sig_in = set_in - stopwords
+
+    # If AI was speaking recently (< 3 seconds ago) or is currently speaking
+    speaking_recent = is_speaking or (time.time() - state_time < 3.0)
+
+    for cand in candidates:
+        words_cand = re.sub(r"[^a-z0-9\s]", " ", cand.lower()).split()
+        if len(words_cand) < 3:
+            continue
+
+        set_cand = set(words_cand)
+        sig_cand = set_cand - stopwords
+
+        common_all = set_in & set_cand
+        common_sig = sig_in & sig_cand
+
+        overlap_all = len(common_all) / max(len(set_in), 1)
+        overlap_sig = len(common_sig) / max(len(sig_in), 1) if sig_in else 0
+
+        # Discard if significant word overlap or high general overlap
+        if overlap_all >= 0.50 or (len(common_sig) >= 3 and overlap_sig >= 0.40):
+            print(f"[ECHO-SHIELD] Discarded echo: '{cleaned}' (overlap_all={overlap_all:.2f}, common_sig={common_sig})", flush=True)
+            return ""
+
+        if speaking_recent and len(common_sig) >= 2 and overlap_sig >= 0.30:
+            print(f"[ECHO-SHIELD] Discarded during recent playback: '{cleaned}'", flush=True)
+            return ""
+
+        # Check if the sentence ends with a sequence of words from cand
+        cand_str = " ".join(words_cand)
+        in_str = " ".join(words_in)
+        for seq_len in range(min(len(words_cand), 8), 3, -1):
+            seq = " ".join(words_cand[:seq_len])
+            if seq in in_str:
+                idx = in_str.find(seq)
+                words_before = in_str[:idx].strip().split()
+                orig_words = cleaned.split()
+                if len(words_before) > 0:
+                    return " ".join(orig_words[:len(words_before)]).strip()
+                return ""
+
+    return cleaned
+
+
+def is_echo_of_ai(text):
+    if not text:
+        return True
+    cleaned = strip_ai_echo(text)
+    if not cleaned or len(re.sub(r"[^a-z0-9]", "", cleaned.lower())) < 3:
+        return True
+    return False
+
+
 def get_conversation_history(limit=30):
     messages = []
     if os.path.exists(TRANSCRIPT_LOG):
@@ -162,42 +249,7 @@ def append_to_live_conversation(role, text):
         pass
 
 
-def generate_conversational_reply(user_text):
-    text_lower = user_text.lower().strip()
-
-    # Browser tab commands
-    if "open" in text_lower and ("google" in text_lower or "tab" in text_lower or "search" in text_lower):
-        os.system('start https://www.google.com')
-        return "I've opened a new Google tab on your screen for you right now."
-    if "open" in text_lower and "youtube" in text_lower:
-        os.system('start https://www.youtube.com')
-        return "Opening YouTube for you now."
-    if "open" in text_lower and ("companies house" in text_lower or "filing" in text_lower or "webfiling" in text_lower):
-        os.system('start https://ewf.companieshouse.gov.uk')
-        return "I've opened the Companies House WebFiling page on your screen."
-
-    # Company & Accounts questions
-    if any(k in text_lower for k in ["company", "account", "dormant", "aa02", "filing", "hmrc", "status"]):
-        return "For COREMARKET GOODS LTD, Company Number 15980373, Form AA02 dormant company accounts for the year ending 30 September 2025 are completely pre-filled and verified. All that is needed is clicking Validate and Continue on your open WebFiling tab."
-
-    # Voice / App controls
-    if "voice" in text_lower or "accent" in text_lower:
-        return "You can switch between British Sonia, Ryan, Libby, Thomas, or US voices anytime in the app dropdown below."
-    if "speed" in text_lower or "faster" in text_lower or "slower" in text_lower:
-        return "You can slide the speed control in the app to adjust my talking pace from 0.8x up to 1.8x."
-
-    # Casual conversation
-    if any(k in text_lower for k in ["hello", "hi", "hey", "good morning", "good afternoon"]):
-        return "Hello Sadie! I'm here and listening through your headphones. How can I help you right now?"
-    if "how are you" in text_lower:
-        return "I'm doing brilliantly, thank you! Ready to assist you with your accounts or anything else you need."
-    if "can you hear me" in text_lower or "are you listening" in text_lower or "test" in text_lower:
-        return "Yes, I can hear you loud and clear through your headphones! You can talk to me freely as you walk around."
-    if "thank" in text_lower:
-        return "You're very welcome, Sadie! Always happy to help."
-
-    # Default contextual response
-    return f"I heard you say: '{user_text}'. I'm tracking our conversation live so you don't need to touch your laptop or paste anything."
+# All voice input goes 100% directly to Antigravity Agent (zero secondary AI bots)
 
 
 async def generate_speech(text, settings, output_path):
@@ -316,23 +368,38 @@ class PWAHandler(BaseHTTPRequestHandler):
 
         elif self.path == "/api/speech_input":
             text = data.get("text", "").strip()
-            auto_send = data.get("auto_send", True)
+            source = data.get("source", "app")
             if text:
+                stripped_text = strip_ai_echo(text)
+                if not stripped_text:
+                    safe_raw = text.encode("ascii", "ignore").decode("ascii")
+                    print(f"[VOICE-RELAY] [ECHO-SHIELD] Discarded 100% echo ({source}): '{safe_raw}'", flush=True)
+                    self._set_headers(200)
+                    self.wfile.write(b'{"status": "echo_ignored"}')
+                    return
+
+                text = stripped_text
                 safe_text = text.encode("ascii", "ignore").decode("ascii")
-                print(f"[VOICE-RELAY] Spoken input from Sadie: '{safe_text}'", flush=True)
+                print(f"[VOICE-RELAY] Speech input ({source}): '{safe_text}'", flush=True)
                 append_to_live_conversation("user", text)
-                try:
-                    import desktop_injector
-                    desktop_injector.type_text_into_antigravity(text)
-                except Exception as e:
-                    print(f"[VOICE-RELAY-ERR]: {e}", flush=True)
+
+                # If speech originated from the Web App / PWA, inject directly into Antigravity chat
+                if source != "room_mic":
+                    try:
+                        import desktop_injector
+                        desktop_injector.type_text_into_antigravity(text)
+                    except Exception as e:
+                        print(f"[VOICE-RELAY-ERR]: {e}", flush=True)
 
             self._set_headers(200)
             self.wfile.write(b'{"status": "received"}')
 
         elif self.path == "/api/stop":
-            winmm.mciSendStringW("stop all", None, 0, None)
-            winmm.mciSendStringW("close all", None, 0, None)
+            try:
+                import sounddevice as sd
+                sd.stop()
+            except Exception:
+                pass
             update_live_state(is_speaking=False)
             self._set_headers(200)
             self.wfile.write(b'{"status": "stopped"}')

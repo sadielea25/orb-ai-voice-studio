@@ -110,6 +110,9 @@
     <header>
       <h1>🎙️ Orb AI Live Voice Studio</h1>
       <p class="subtitle">Two-way conversational room assistant & real-time voice customizer</p>
+      <div id="connectionBadge" style="margin: 6px auto; font-size: 11px; font-weight: 700; display: inline-block; padding: 4px 12px; border-radius: 12px; background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">
+        🟢 Direct Desktop Relay Connected
+      </div>
       <div style="margin-top: 8px;">
         <button id="btnInstallApp" style="display: none; margin: 0 auto; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 2px 10px rgba(59,130,246,0.4);" onclick="installPWA()">📲 Install App to Home Screen</button>
       </div>
@@ -380,6 +383,14 @@
       };
 
       recognition.onresult = (event) => {
+        const inAcousticShield = isAISpeaking || (Date.now() - lastAISpeechEndTime < 3000);
+        if (inAcousticShield) {
+          interimText = '';
+          currentDraft = '';
+          if (silenceTimer) clearTimeout(silenceTimer);
+          return;
+        }
+
         interimText = '';
         document.getElementById('orbEl').className = 'orb hearing';
         document.getElementById('statusTitle').innerText = 'Hearing Speech...';
@@ -431,7 +442,7 @@
     }
 
     function processUtterance(text) {
-      if (!text) return;
+      if (!text || isAISpeaking) return;
 
       const cleanLower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
       const words = cleanLower.split(' ');
@@ -519,24 +530,45 @@
         return;
       }
 
-      showToast('🚀 Sending message...');
+      showToast('🚀 Sending message to chat...');
       currentDraft = "";
       interimText = "";
       renderDraftDisplay();
-      document.getElementById('draftStatus').innerText = '✅ Sent!';
+      document.getElementById('draftStatus').innerText = '⏳ Relaying...';
       document.getElementById('orbEl').className = 'orb';
 
-      fetch('/api/speech_input', {
+      const payload = JSON.stringify({ text: fullText, auto_send: true, source: 'app' });
+      const headers = { 'Content-Type': 'application/json' };
+
+      // Dispatch to local relay server (127.0.0.1:8766) which triggers Windows keystroke injection
+      fetch('http://127.0.0.1:8766/api/speech_input', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: fullText, auto_send: true })
-      }).then(() => {
+        headers: headers,
+        body: payload,
+        mode: 'cors'
+      }).then(res => {
+        if (!res.ok) throw new Error('Status ' + res.status);
+        showToast('✅ Sent directly into Antigravity chat!');
+        document.getElementById('draftStatus').innerText = '✅ Relayed to Chat!';
+      }).catch((err) => {
+        // Fallback to relative URL
+        return fetch('/api/speech_input', {
+          method: 'POST',
+          headers: headers,
+          body: payload
+        }).then(res => {
+          if (!res.ok) throw new Error('Status ' + res.status);
+          showToast('✅ Sent directly into Antigravity chat!');
+          document.getElementById('draftStatus').innerText = '✅ Relayed to Chat!';
+        }).catch(finalErr => {
+          showToast('❌ Relay error: Unable to connect to local server on port 8766');
+          document.getElementById('draftStatus').innerText = '❌ Failed to connect';
+        });
+      }).finally(() => {
         setTimeout(() => {
           document.getElementById('draftStatus').innerText = 'Continuous Listening';
         }, 2500);
         pollConversation();
-      }).catch(() => {
-        alert('Error sending message');
       });
     }
 
@@ -572,6 +604,43 @@
       }).catch(() => {
         orb.className = isConnected ? 'orb' : 'orb paused';
       });
+    }
+
+    let isAISpeaking = false;
+    let lastAISpeechEndTime = 0;
+
+    async function pollLiveState() {
+      try {
+        // Always hit local relay server for live state — relative URL won't work from Vercel
+        const url = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+          ? '/api/status'
+          : 'http://127.0.0.1:8766/api/status';
+        const res = await fetch(url);
+        const state = await res.json();
+        const wasSpeaking = isAISpeaking;
+        isAISpeaking = !!state.is_speaking;
+        if (wasSpeaking && !isAISpeaking) {
+          lastAISpeechEndTime = Date.now();
+        }
+        if (isAISpeaking) {
+          lastAISpeechEndTime = Date.now() + 1000;
+        }
+
+        const orb = document.getElementById('orbEl');
+
+        if (isAISpeaking) {
+          orb.className = 'orb speaking';
+          document.getElementById('statusTitle').innerText = 'AI Speaking...';
+          document.getElementById('statusSub').innerText = state.current_text || 'Answering your question';
+          if (silenceTimer) clearTimeout(silenceTimer);
+        } else if (isConnected) {
+          if (orb.className.includes('speaking')) {
+            orb.className = 'orb';
+            document.getElementById('statusTitle').innerText = 'Listening for Voice...';
+            document.getElementById('statusSub').innerText = 'Talk naturally anywhere in the room';
+          }
+        }
+      } catch (e) { isAISpeaking = false; }
     }
 
     async function pollConversation() {
@@ -637,9 +706,27 @@
     }
 
     window.onload = () => {
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const badge = document.getElementById('connectionBadge');
+      if (badge) {
+        if (isLocal) {
+          badge.innerHTML = '🟢 Direct Desktop Relay Connected (Auto-Typing Active)';
+          badge.style.background = 'rgba(16,185,129,0.15)';
+          badge.style.color = '#34d399';
+          badge.style.borderColor = 'rgba(16,185,129,0.3)';
+        } else {
+          badge.innerHTML = '⚠️ Cloud Mode: <a href="http://localhost:8766" style="color:#60a5fa;text-decoration:underline;font-weight:bold;">Switch to Local Mode (http://localhost:8766)</a> to auto-type into chat';
+          badge.style.background = 'rgba(234,179,8,0.15)';
+          badge.style.color = '#facc15';
+          badge.style.borderColor = 'rgba(234,179,8,0.3)';
+        }
+      }
+
       loadSettings();
       pollConversation();
+      pollLiveState();
       setInterval(pollConversation, 1500);
+      setInterval(pollLiveState, 200);
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
