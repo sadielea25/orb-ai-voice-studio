@@ -159,7 +159,7 @@ def play_audio(filepath):
 
     while True:
         elapsed_ms = (time.time() - start_time) * 1000
-        if elapsed_ms >= total_ms + 100:
+        if elapsed_ms >= total_ms + 200:
             break
 
         if check_stop_requested(start_time):
@@ -167,18 +167,22 @@ def play_audio(filepath):
             winmm.mciSendStringW(f"close {alias}", None, 0, None)
             update_live_state(is_speaking=False, current_text="", stop_requested=False)
             print("\n[AUTO-SPEAKER] 🛑 Audio interrupted by user voice!", flush=True)
-            break
+            return
 
         winmm.mciSendStringW(f"status {alias} mode", buf, 128, None)
-        if buf.value in ("stopped", "") and elapsed_ms > 300:
+        if buf.value in ("stopped", "") and elapsed_ms > 400:
+            # Graceful tail decay padding so no words are ever clipped
+            time.sleep(0.25)
             break
 
-        time.sleep(0.03)
+        time.sleep(0.02)
 
+    # 150ms buffer before closing alias
+    time.sleep(0.15)
     winmm.mciSendStringW(f"close {alias}", None, 0, None)
 
 
-def speak_sentence_stream(full_text):
+def speak_full_response(full_text):
     cleaned = clean_markdown_for_speech(full_text)
     if not cleaned:
         return
@@ -188,34 +192,18 @@ def speak_sentence_stream(full_text):
         return
 
     voice_label = settings.get("voice", "en-GB-SoniaNeural")
-    rate = settings.get("rate", "+12%")
-
-    # Split into quick conversational chunks
-    raw_sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', cleaned) if s.strip()]
-    if not raw_sentences:
-        raw_sentences = [cleaned]
+    rate = settings.get("rate", "+10%")
 
     safe_msg = cleaned.encode("ascii", "ignore").decode("ascii")
-    print(f"\n[AUTO-SPEAKER] Ultra-Fast Stream ({voice_label}, {rate}): \"{safe_msg[:60]}\"...", flush=True)
+    print(f"\n[AUTO-SPEAKER] Speaking complete response ({voice_label}, {rate}): \"{safe_msg[:60]}\"...", flush=True)
 
-    # Concurrently pipeline sentence generation & playback
-    audio_dir = os.path.join(BASE_DIR, "temp_audio")
-    os.makedirs(audio_dir, exist_ok=True)
+    try:
+        asyncio.run(generate_seamless_speech(cleaned, settings, TEMP_AUDIO))
+        play_audio(TEMP_AUDIO)
+        log_history(cleaned, voice_label)
+    except Exception as e:
+        print(f"[AUTO-SPEAKER] Error: {e}", flush=True)
 
-    for i, sent in enumerate(raw_sentences):
-        chunk_file = os.path.join(audio_dir, f"chunk_{i % 3}.mp3")
-        try:
-            # Generate chunk
-            asyncio.run(generate_seamless_speech(sent, settings, chunk_file))
-            # Play chunk immediately
-            play_audio(chunk_file)
-        except Exception as e:
-            print(f"[AUTO-SPEAKER] Chunk error: {e}", flush=True)
-
-        if check_stop_requested(time.time()):
-            break
-
-    log_history(cleaned, voice_label)
     update_live_state(is_speaking=False, current_text="")
 
 
@@ -254,7 +242,7 @@ def monitor_and_read():
                 content = data.get("content", "").strip()
 
                 if is_model and is_response and not has_tools and content:
-                    speak_sentence_stream(content)
+                    speak_full_response(content)
 
         except Exception as e:
             print(f"[AUTO-SPEAKER] Loop exception: {e}", flush=True)
