@@ -12,6 +12,7 @@ import re
 import asyncio
 import ctypes
 import collections
+import threading
 
 if sys.platform == "win32":
     try:
