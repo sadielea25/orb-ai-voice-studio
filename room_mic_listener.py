@@ -164,10 +164,10 @@ class RoomMicListener:
 
                 # Deliberate speech detection
                 if rms > threshold:
-                    # Robust Barge-In: only interrupt if voice is sustained and intentional (RMS > 350 for 3 chunks)
-                    if is_ai_speaking() and rms > max(threshold * 1.6, 350.0):
+                    # Robust Barge-In: only interrupt if voice is continuous loud intentional speech (RMS > 1200 for 6 chunks / 300ms)
+                    if is_ai_speaking() and rms > 1200.0:
                         self.barge_in_streak += 1
-                        if self.barge_in_streak >= 3:
+                        if self.barge_in_streak >= 6:
                             request_stop_ai_playback()
                             self.barge_in_streak = 0
                     else:
