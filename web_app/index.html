@@ -110,6 +110,9 @@
     <header>
       <h1>🎙️ Orb AI Live Voice Studio</h1>
       <p class="subtitle">Two-way conversational room assistant & real-time voice customizer</p>
+      <div style="margin-top: 8px;">
+        <button id="btnInstallApp" style="display: none; margin: 0 auto; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 2px 10px rgba(59,130,246,0.4);" onclick="installPWA()">📲 Install App to Home Screen</button>
+      </div>
     </header>
 
     <!-- Connect Banner -->
@@ -612,10 +615,35 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('btnInstallApp');
+      if (btn) btn.style.display = 'inline-flex';
+    });
+
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showToast('App installed successfully!');
+            document.getElementById('btnInstallApp').style.display = 'none';
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
+
     window.onload = () => {
       loadSettings();
       pollConversation();
       setInterval(pollConversation, 1500);
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      }
     };
   </script>
 </body>
