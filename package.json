@@ -1,0 +1,19 @@
+{
+  "name": "orb-ai-voice-studio",
+  "version": "1.0.0",
+  "description": "Orb AI Live Voice Studio - Hands-Free Conversational Voice Assistant v1.0",
+  "main": "web_app/index.html",
+  "scripts": {
+    "start": "python voice_app_server.py",
+    "build": "echo Build complete"
+  },
+  "keywords": [
+    "voice-assistant",
+    "hands-free",
+    "speech-recognition",
+    "tts",
+    "orb-ai"
+  ],
+  "author": "Sadie (COREMARKET GOODS LTD)",
+  "license": "MIT"
+}

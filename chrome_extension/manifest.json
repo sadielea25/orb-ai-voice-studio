@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "AI Assistant Direct Bridge",
+  "version": "1.0",
+  "description": "Direct bridge connecting this AI chat to your active browser tabs to autofill forms automatically.",
+  "permissions": [
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://localhost/*",
+    "https://*.companieshouse.gov.uk/*",
+    "https://*.gov.uk/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

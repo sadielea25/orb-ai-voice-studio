@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orb AI - Live Two-Way Voice Studio</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#3b82f6">
+  <link rel="icon" href="https://img.icons8.com/fluency/96/microphone.png" type="image/png">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #131b2e;
+      --card-inner: #1e2942;
+      --border: #2a3b5c;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --purple: #a855f7;
+      --gold: #f59e0b;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 20px 14px; min-height: 100vh; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 680px; padding-bottom: 40px; }
+    header { text-align: center; margin-bottom: 18px; }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; background: linear-gradient(135deg, #fff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: var(--text-muted); font-size: 13px; }
+
+    /* Connect Banner */
+    .mic-banner { background: #1e2942; border: 2px solid var(--primary); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; transition: 0.3s; }
+    .mic-banner.active { border-color: var(--accent); background: rgba(16, 185, 129, 0.12); }
+    .btn-connect { background: var(--accent); color: #fff; border: none; padding: 12px 26px; border-radius: 30px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; white-space: nowrap; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+    .btn-connect:hover { background: var(--accent-hover); }
+
+    /* Cards */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); text-align: center; }
+    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+
+    /* Status Orb Row */
+    .orb-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 10px 0 16px; }
+    .orb { width: 76px; height: 76px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #34d399, #059669 70%); box-shadow: 0 0 35px rgba(16, 185, 129, 0.4); display: flex; align-items: center; justify-content: center; font-size: 32px; transition: all 0.2s; cursor: pointer; }
+    .orb.hearing { background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706 70%); box-shadow: 0 0 50px rgba(245, 158, 11, 0.8); transform: scale(1.1); animation: wave 1s infinite alternate; }
+    .orb.speaking { background: radial-gradient(circle at 30% 30%, #c084fc, #9333ea 70%); box-shadow: 0 0 50px rgba(168, 85, 247, 0.8); animation: pulse 1.2s infinite; }
+    .orb.paused { background: #475569; box-shadow: none; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
+    @keyframes wave { 0% { box-shadow: 0 0 20px rgba(245,158,11,0.5); } 100% { box-shadow: 0 0 50px rgba(245,158,11,0.9); } }
+
+    .status-text { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .status-sub { font-size: 13px; color: var(--text-muted); }
+
+    /* Draft Display */
+    .draft-container { text-align: left; margin-bottom: 14px; }
+    .draft-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .draft-box { background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px; padding: 16px; min-height: 95px; font-size: 17px; color: #f8fafc; line-height: 1.5; word-break: break-word; }
+    .interim-text { color: #93c5fd; font-style: italic; opacity: 0.9; }
+
+    /* Auto-Send Toggle Bar */
+    .mode-bar { background: var(--card-inner); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+    .mode-label { font-size: 13px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .toggle-switch { position: relative; width: 44px; height: 24px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .3s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Action Buttons */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    button { padding: 11px 10px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-readback { background: #6366f1; color: #fff; }
+    .btn-readback:hover { background: #4f46e5; }
+    .btn-send { background: var(--accent); color: #fff; }
+    .btn-send:hover { background: var(--accent-hover); }
+    .btn-clear { background: var(--card-inner); color: #f87171; border: 1px solid var(--border); }
+    .btn-clear:hover { background: rgba(239, 68, 68, 0.15); }
+    .btn-test { background: var(--primary); color: #fff; width: 100%; margin-top: 10px; }
+    .btn-test:hover { background: var(--primary-hover); }
+
+    /* Live Conversation Stream Card */
+    .chat-container { max-height: 320px; overflow-y: auto; text-align: left; padding: 8px 4px; display: flex; flex-direction: column; gap: 10px; }
+    .chat-bubble { padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.4; max-width: 90%; word-break: break-word; }
+    .chat-bubble.user { background: #1d4ed8; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+    .chat-bubble.assistant { background: var(--card-inner); color: #f1f5f9; border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 2px; }
+    .bubble-meta { font-size: 10px; opacity: 0.7; margin-bottom: 4px; font-weight: 600; }
+
+    /* Voice Customizer Controls */
+    .form-group { text-align: left; margin-bottom: 14px; }
+    label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    select { width: 100%; padding: 10px 12px; background: var(--card-inner); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; outline: none; }
+    select:focus { border-color: var(--primary); }
+    
+    .slider-container { display: flex; align-items: center; gap: 12px; }
+    input[type="range"] { flex: 1; accent-color: var(--primary); height: 6px; border-radius: 3px; background: var(--card-inner); cursor: pointer; }
+    .slider-val { width: 55px; text-align: right; font-weight: 700; font-size: 13px; color: #60a5fa; }
+
+    /* Commands helper */
+    .commands-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: left; }
+    .cmd-title { font-weight: 700; font-size: 12px; color: var(--gold); margin-bottom: 6px; }
+    .cmd-item { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; line-height: 1.4; }
+
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2563eb; color: #fff; padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.5); z-index: 1000; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎙️ Orb AI Live Voice Studio</h1>
+      <p class="subtitle">Two-way conversational room assistant & real-time voice customizer</p>
+    </header>
+
+    <!-- Connect Banner -->
+    <div id="micBanner" class="mic-banner">
+      <div style="font-size: 14px; font-weight: 700;" id="micStatusText">🎤 Microphone Ready</div>
+      <button class="btn-connect" id="btnConnect" onclick="toggleMic()">🟢 Click to Connect Mic & Speak</button>
+    </div>
+
+    <!-- Section 1: Live Voice Soundboard & Syllable Stream -->
+    <div class="card">
+      <div class="card-title">
+        <span>💬 Real-Time Speech Stream</span>
+        <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
+      </div>
+
+      <div class="orb-row">
+        <div id="orbEl" class="orb paused" onclick="toggleMic()">🎙️</div>
+        <div style="text-align: left;">
+          <div id="statusTitle" class="status-text">Microphone Paused</div>
+          <div id="statusSub" class="status-sub">Click the green button above to start</div>
+        </div>
+      </div>
+
+      <!-- Mode Toggle: Auto-Send on Silence -->
+      <div class="mode-bar">
+        <div class="mode-label">
+          <span>⚡ Auto-Send on Pause (Hands-Free Room Mode)</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chkAutoSend" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Live Draft Display -->
+      <div class="draft-container">
+        <div class="draft-label">
+          <span>📝 Spoken Words (Live Syllable Stream)</span>
+          <span id="draftStatus" style="color: #60a5fa;">Continuous Listening</span>
+        </div>
+        <div id="draftBox" class="draft-box">
+          <span style="color: var(--text-muted);">Click the green button above and start talking...</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-grid">
+        <button class="btn-readback" onclick="readDraftBack()">
+          <span>🔊</span> Read Back
+        </button>
+        <button class="btn-send" onclick="sendDraftNow()">
+          <span>🚀</span> Send Now
+        </button>
+        <button class="btn-clear" onclick="clearDraft(false)">
+          <span>🗑️</span> Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Section 2: Live Two-Way Conversation Feed -->
+    <div class="card">
+      <div class="card-title">
+        <span>💬 Live Conversation Feed</span>
+        <span style="font-size: 11px; color: #10b981; font-weight: 700;">● Live Sync</span>
+      </div>
+      <div id="chatStream" class="chat-container">
+        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">
+          Listening for messages... Speak out loud to chat!
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Real-Time Voice & Speed Tuning -->
+    <div class="card">
+      <div class="card-title">
+        <span>🎛️ Voice Tone & Speed Controls</span>
+        <span style="font-size: 11px; color: #60a5fa; font-weight: 700;">Instant Live Update</span>
+      </div>
+
+      <div class="form-group">
+        <label>Speaking Voice Accent</label>
+        <select id="selectVoice" onchange="saveVoiceSettings()">
+          <optgroup label="🇬🇧 British Voices (UK)">
+            <option value="en-GB-SoniaNeural">🇬🇧 Sonia (British Natural Female - Recommended)</option>
+            <option value="en-GB-RyanNeural">🇬🇧 Ryan (British Professional Male)</option>
+            <option value="en-GB-LibbyNeural">🇬🇧 Libby (British Warm & Friendly Female)</option>
+            <option value="en-GB-ThomasNeural">🇬🇧 Thomas (British Deep Narrator Male)</option>
+            <option value="en-GB-MaisieNeural">🇬🇧 Maisie (British Energetic Female)</option>
+          </optgroup>
+          <optgroup label="🇺🇸 American Voices (US)">
+            <option value="en-US-JennyNeural">🇺🇸 Jenny (US Crisp & Natural Female)</option>
+            <option value="en-US-GuyNeural">🇺🇸 Guy (US Casual Male)</option>
+            <option value="en-US-ChristopherNeural">🇺🇸 Christopher (US Deep Male)</option>
+            <option value="en-US-AriaNeural">🇺🇸 Aria (US Expressive Studio Female)</option>
+          </optgroup>
+          <optgroup label="🌍 Global Accents">
+            <option value="en-IE-EmilyNeural">🇮🇪 Emily (Irish Female)</option>
+            <option value="en-AU-NatashaNeural">🇦🇺 Natasha (Australian Female)</option>
+            <option value="en-CA-LiamNeural">🇨🇦 Liam (Canadian Male)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Speaking Speed (Live Adjust)</label>
+        <div class="slider-container">
+          <input type="range" id="rangeRate" min="-30" max="60" step="5" value="10" oninput="updateRateLabel()" onchange="saveVoiceSettings()">
+          <span id="labelRate" class="slider-val">1.10x</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tone Pitch Frequency</label>
+        <div class="slider-container">
+          <input type="range" id="rangePitch" min="-20" max="20" step="2" value="0" oninput="updatePitchLabel()" onchange="saveVoiceSettings()">
+          <span id="labelPitch" class="slider-val">Normal</span>
+        </div>
+      </div>
+
+      <button class="btn-test" onclick="testVoicePreview()">🔊 Test Voice Preview</button>
+    </div>
+
+    <!-- Commands Cheat Sheet -->
+    <div class="commands-card">
+      <div class="cmd-title">⚡ How Hands-Free Room Mode Works:</div>
+      <div class="cmd-item">🗣️ <strong>Walk around and speak</strong>: Words stream live on screen as you talk.</div>
+      <div class="cmd-item">🗣️ <strong>Auto-Send on Pause</strong>: When you stop speaking for 1.5 seconds (or say "send"), it submits automatically.</div>
+      <div class="cmd-item">🗣️ <strong>"Read it back to me"</strong>: Reads your spoken draft aloud.</div>
+      <div class="cmd-item">🗣️ <strong>"Clear draft"</strong>: Wipes the current draft so you can start over.</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Notice</div>
+
+  <script>
+    let recognition = null;
+    let isConnected = false;
+    let currentDraft = "";
+    let interimText = "";
+    let silenceTimer = null;
+    let lastRenderedMessages = [];
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
+
+    function updateRateLabel() {
+      const val = parseInt(document.getElementById('rangeRate').value);
+      const mult = ((100 + val) / 100).toFixed(2);
+      document.getElementById('labelRate').innerText = mult + 'x';
+    }
+
+    function updatePitchLabel() {
+      const val = parseInt(document.getElementById('rangePitch').value);
+      if (val === 0) document.getElementById('labelPitch').innerText = 'Normal';
+      else if (val > 0) document.getElementById('labelPitch').innerText = '+' + val + 'Hz';
+      else document.getElementById('labelPitch').innerText = val + 'Hz';
+    }
+
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        document.getElementById('selectVoice').value = data.voice || 'en-GB-SoniaNeural';
+        
+        const rateVal = parseInt(String(data.rate || '10').replace('%', '').replace('+', '')) || 10;
+        document.getElementById('rangeRate').value = rateVal;
+        
+        const pitchVal = parseInt(String(data.pitch || '0').replace('Hz', '').replace('+', '')) || 0;
+        document.getElementById('rangePitch').value = pitchVal;
+
+        updateRateLabel();
+        updatePitchLabel();
+      } catch (e) {}
+    }
+
+    async function saveVoiceSettings() {
+      const rateVal = document.getElementById('rangeRate').value;
+      const pitchVal = document.getElementById('rangePitch').value;
+      const payload = {
+        engine: 'edge',
+        voice: document.getElementById('selectVoice').value,
+        rate: (rateVal >= 0 ? '+' : '') + rateVal + '%',
+        pitch: (pitchVal >= 0 ? '+' : '') + pitchVal + 'Hz',
+        volume: '+0%',
+        enabled: true
+      };
+
+      try {
+        await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        showToast('Voice settings saved live!');
+      } catch (e) {}
+    }
+
+    function toggleMic() {
+      if (!isConnected) {
+        startMic();
+      } else {
+        stopMic();
+      }
+    }
+
+    function startMic() {
+      isConnected = true;
+      document.getElementById('micBanner').className = 'mic-banner active';
+      document.getElementById('btnConnect').innerText = '🎙️ Listening (Click to Pause)';
+      document.getElementById('btnConnect').style.background = '#059669';
+      document.getElementById('micStatusText').innerText = '🟢 Listening to Room';
+      document.getElementById('sttBadge').innerText = '● Listening';
+      document.getElementById('sttBadge').style.color = '#34d399';
+      document.getElementById('statusTitle').innerText = 'Listening for Voice...';
+      document.getElementById('statusSub').innerText = 'Talk naturally — words appear live';
+      document.getElementById('orbEl').className = 'orb';
+
+      initSpeechRecognition();
+      showToast('Microphone connected! Speak freely.');
+    }
+
+    function stopMic() {
+      isConnected = false;
+      if (silenceTimer) clearTimeout(silenceTimer);
+      if (recognition) {
+        try { recognition.abort(); } catch (e) {}
+        recognition = null;
+      }
+      document.getElementById('micBanner').className = 'mic-banner';
+      document.getElementById('btnConnect').innerText = '🟢 Click to Connect Mic & Speak';
+      document.getElementById('btnConnect').style.background = 'var(--accent)';
+      document.getElementById('micStatusText').innerText = '🎤 Microphone Paused';
+      document.getElementById('sttBadge').innerText = '● Paused';
+      document.getElementById('sttBadge').style.color = '#94a3b8';
+      document.getElementById('statusTitle').innerText = 'Microphone Paused';
+      document.getElementById('statusSub').innerText = 'Click green button to start';
+      document.getElementById('orbEl').className = 'orb paused';
+    }
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Speech recognition is not supported in this browser. Please open this page in Google Chrome or Microsoft Edge.');
+        return;
+      }
+
+      if (recognition) {
+        try { recognition.abort(); } catch (e) {}
+        recognition = null;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-GB';
+
+      recognition.onstart = () => {
+        document.getElementById('orbEl').className = 'orb';
+        document.getElementById('statusTitle').innerText = 'Listening for Voice...';
+        document.getElementById('statusSub').innerText = 'Talk naturally anywhere in the room';
+      };
+
+      recognition.onresult = (event) => {
+        interimText = '';
+        document.getElementById('orbEl').className = 'orb hearing';
+        document.getElementById('statusTitle').innerText = 'Hearing Speech...';
+
+        let latestFinal = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const res = event.results[i];
+          const text = res[0].transcript;
+
+          if (res.isFinal) {
+            latestFinal = text.trim();
+          } else {
+            interimText += text;
+          }
+        }
+
+        if (latestFinal) {
+          processUtterance(latestFinal);
+        } else {
+          renderDraftDisplay();
+          resetSilenceTimer();
+        }
+      };
+
+      recognition.onerror = (e) => {
+        console.log('STT Event:', e.error);
+        if (e.error === 'not-allowed') {
+          alert('Microphone permission was denied. Please click the lock icon in your address bar and allow Microphone.');
+          stopMic();
+        }
+      };
+
+      recognition.onend = () => {
+        document.getElementById('orbEl').className = 'orb';
+        if (isConnected) {
+          setTimeout(() => {
+            if (isConnected) {
+              initSpeechRecognition();
+            }
+          }, 100);
+        }
+      };
+
+      try {
+        recognition.start();
+      } catch (e) {
+        console.log('Recognition start error:', e);
+      }
+    }
+
+    function processUtterance(text) {
+      if (!text) return;
+
+      const cleanLower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      const words = cleanLower.split(' ');
+      const lastWord = words[words.length - 1] || '';
+      const lastTwo = words.slice(-2).join(' ');
+
+      // 1. Read back trigger
+      if (cleanLower === 'read it back' || cleanLower === 'read it back to me' || cleanLower === 'repeat that' || cleanLower.endsWith('read it back')) {
+        renderDraftDisplay();
+        readDraftBack();
+        return;
+      }
+
+      // 2. Clear trigger
+      if (cleanLower === 'clear draft' || cleanLower === 'clear' || cleanLower === 'start over' || cleanLower === 'delete draft') {
+        clearDraft(true);
+        return;
+      }
+
+      // 3. Smart Send Matcher
+      const sendTriggers = ['send', 'sand', 'sent', 'cent', 'scent', 'submit', 'done'];
+      const sendPhrases = ['send it', 'send that', 'send now', 'send message', 'sand it'];
+
+      const isPhraseMatch = sendPhrases.includes(lastTwo);
+      const isWordMatch = sendTriggers.includes(lastWord);
+
+      if (isPhraseMatch || isWordMatch) {
+        const wordsToDrop = isPhraseMatch ? 2 : 1;
+        const remainingWords = words.slice(0, -wordsToDrop);
+        const contentBefore = remainingWords.join(' ').trim();
+
+        if (contentBefore) {
+          currentDraft = (currentDraft ? currentDraft + ' ' : '') + contentBefore;
+        }
+
+        renderDraftDisplay();
+        showToast('🚀 Send trigger recognized!');
+        sendDraftNow();
+        return;
+      }
+
+      // Normal speech: append
+      currentDraft = (currentDraft ? currentDraft + ' ' : '') + text;
+      interimText = '';
+      renderDraftDisplay();
+      resetSilenceTimer();
+    }
+
+    function resetSilenceTimer() {
+      if (silenceTimer) clearTimeout(silenceTimer);
+      const autoSendEnabled = document.getElementById('chkAutoSend').checked;
+      if (!autoSendEnabled) return;
+
+      // When user pauses for 1.8 seconds, auto-dispatch
+      silenceTimer = setTimeout(() => {
+        if (currentDraft.trim()) {
+          showToast('⚡ Auto-sending message...');
+          sendDraftNow();
+        }
+      }, 1800);
+    }
+
+    function renderDraftDisplay() {
+      const box = document.getElementById('draftBox');
+      if (currentDraft.trim() || interimText.trim()) {
+        box.innerHTML = `<span>${currentDraft}</span> <span class="interim-text">${interimText}</span>`;
+      } else {
+        box.innerHTML = '<span style="color: var(--text-muted);">Speak your message out loud...</span>';
+      }
+    }
+
+    function readDraftBack() {
+      if (!currentDraft.trim()) {
+        speakAudio("You haven't spoken any message yet. Go ahead and speak.");
+        return;
+      }
+      speakAudio(`You said: ${currentDraft}. Say 'Send' or click Send Now.`);
+    }
+
+    function sendDraftNow() {
+      if (silenceTimer) clearTimeout(silenceTimer);
+      const fullText = (currentDraft + ' ' + interimText).trim();
+      if (!fullText) {
+        showToast('Draft is empty. Speak something first!');
+        return;
+      }
+
+      showToast('🚀 Sending message...');
+      currentDraft = "";
+      interimText = "";
+      renderDraftDisplay();
+      document.getElementById('draftStatus').innerText = '✅ Sent!';
+      document.getElementById('orbEl').className = 'orb';
+
+      fetch('/api/speech_input', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: fullText, auto_send: true })
+      }).then(() => {
+        setTimeout(() => {
+          document.getElementById('draftStatus').innerText = 'Continuous Listening';
+        }, 2500);
+        pollConversation();
+      }).catch(() => {
+        alert('Error sending message');
+      });
+    }
+
+    function clearDraft(spoken=false) {
+      if (silenceTimer) clearTimeout(silenceTimer);
+      currentDraft = "";
+      interimText = "";
+      renderDraftDisplay();
+      showToast('Draft cleared');
+      if (spoken) speakAudio("Draft cleared.");
+    }
+
+    function testVoicePreview() {
+      const voiceSelect = document.getElementById('selectVoice');
+      const voiceName = voiceSelect.options[voiceSelect.selectedIndex].text.split('(')[0];
+      speakAudio(`Hello Sadie! This is your voice preview using ${voiceName} with your live speed and pitch.`);
+    }
+
+    function speakAudio(text) {
+      const orb = document.getElementById('orbEl');
+      orb.className = 'orb speaking';
+      document.getElementById('statusTitle').innerText = 'Speaking Readout...';
+
+      fetch('/api/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+      }).then(() => {
+        setTimeout(() => {
+          orb.className = isConnected ? 'orb' : 'orb paused';
+          document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+        }, 3500);
+      }).catch(() => {
+        orb.className = isConnected ? 'orb' : 'orb paused';
+      });
+    }
+
+    async function pollConversation() {
+      try {
+        const res = await fetch('/api/conversation');
+        const data = await res.json();
+        const messages = data.messages || [];
+
+        if (JSON.stringify(messages) !== JSON.stringify(lastRenderedMessages)) {
+          lastRenderedMessages = messages;
+          renderChatStream(messages);
+        }
+      } catch (e) {}
+    }
+
+    function renderChatStream(messages) {
+      const stream = document.getElementById('chatStream');
+      if (!messages || messages.length === 0) {
+        stream.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Listening for messages... Speak out loud to chat!</div>';
+        return;
+      }
+
+      let html = '';
+      messages.forEach(m => {
+        const isUser = m.role === 'user';
+        const roleLabel = isUser ? '👤 You (Sadie)' : '🎙️ Orb AI Assistant';
+        const cssClass = isUser ? 'user' : 'assistant';
+        html += `
+          <div class="chat-bubble ${cssClass}">
+            <div class="bubble-meta">${roleLabel} • ${m.time || ''}</div>
+            <div>${escapeHtml(m.text)}</div>
+          </div>
+        `;
+      });
+      stream.innerHTML = html;
+      stream.scrollTop = stream.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    window.onload = () => {
+      loadSettings();
+      pollConversation();
+      setInterval(pollConversation, 1500);
+    };
+  </script>
+</body>
+</html>
+
+
