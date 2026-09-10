@@ -19,12 +19,12 @@ if sys.platform == "win32":
         pass
 
 winmm = ctypes.windll.winmm
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TRANSCRIPT_LOG = r"C:\Users\corem\.gemini\antigravity\brain\de5a4648-5c35-4b63-a84f-33cf8597b3ff\.system_generated\logs\transcript.jsonl"
-SETTINGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "voice_settings.json")
-HISTORY_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "speech_history.json")
-STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "speech_live_state.json")
-TEMP_AUDIO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "speech_seamless.mp3")
+SETTINGS_FILE = os.path.join(BASE_DIR, "voice_settings.json")
+HISTORY_FILE = os.path.join(BASE_DIR, "speech_history.json")
+STATE_FILE = os.path.join(BASE_DIR, "speech_live_state.json")
+TEMP_AUDIO = os.path.join(BASE_DIR, "speech_seamless.mp3")
 
 
 def load_settings():
