@@ -48,10 +48,11 @@ def load_settings():
     return default
 
 
-def update_live_state(is_speaking=False, current_text=""):
+def update_live_state(is_speaking=False, current_text="", stop_requested=False):
     state = {
         "is_speaking": is_speaking,
         "current_text": current_text,
+        "stop_requested": stop_requested,
         "timestamp": time.time()
     }
     try:
@@ -59,6 +60,20 @@ def update_live_state(is_speaking=False, current_text=""):
             json.dump(state, f)
     except Exception:
         pass
+
+
+def check_stop_requested(playback_start_time):
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data.get("stop_requested", False):
+                    ts = data.get("timestamp", 0)
+                    if ts >= playback_start_time - 0.1:
+                        return True
+        except Exception:
+            pass
+    return False
 
 
 def log_history(text, voice_label):
@@ -123,17 +138,6 @@ async def generate_seamless_speech(text, settings, output_file):
     await communicate.save(output_file)
 
 
-def check_stop_requested():
-    if os.path.exists(STATE_FILE):
-        try:
-            with open(STATE_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return data.get("stop_requested", False)
-        except Exception:
-            pass
-    return False
-
-
 def play_audio(filepath):
     abs_path = os.path.abspath(filepath)
     alias = f"track_{int(time.time() * 1000) % 10000}"
@@ -149,17 +153,19 @@ def play_audio(filepath):
     except Exception:
         total_ms = 40000
 
-    winmm.mciSendStringW(f"play {alias}", None, 0, None)
     start_time = time.time()
+    update_live_state(is_speaking=True, current_text="Speaking...", stop_requested=False)
+    winmm.mciSendStringW(f"play {alias}", None, 0, None)
 
     while True:
         elapsed_ms = (time.time() - start_time) * 1000
         if elapsed_ms >= total_ms + 100:
             break
 
-        if check_stop_requested():
+        if check_stop_requested(start_time):
             winmm.mciSendStringW(f"stop {alias}", None, 0, None)
             winmm.mciSendStringW(f"close {alias}", None, 0, None)
+            update_live_state(is_speaking=False, current_text="", stop_requested=False)
             print("\n[AUTO-SPEAKER] 🛑 Audio interrupted by user voice!", flush=True)
             break
 
