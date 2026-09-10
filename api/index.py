@@ -45,31 +45,47 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?")[0]
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        api_dir = os.path.dirname(os.path.abspath(__file__))
         
         if path in ("/", "/index.html"):
-            html_file = os.path.join(base_dir, "web_app", "index.html")
-            if os.path.exists(html_file):
-                with open(html_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-                self._set_headers(200, "text/html; charset=utf-8")
-                self.wfile.write(content.encode("utf-8"))
-                return
+            for candidate in [
+                os.path.join(api_dir, "index.html"),
+                os.path.join(base_dir, "public", "index.html"),
+                os.path.join(base_dir, "web_app", "index.html"),
+                os.path.join(os.getcwd(), "public", "index.html")
+            ]:
+                if os.path.exists(candidate):
+                    with open(candidate, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    self._set_headers(200, "text/html; charset=utf-8")
+                    self.wfile.write(content.encode("utf-8"))
+                    return
+
         elif path == "/manifest.json":
-            m_file = os.path.join(base_dir, "web_app", "manifest.json")
-            if os.path.exists(m_file):
-                with open(m_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-                self._set_headers(200, "application/manifest+json")
-                self.wfile.write(content.encode("utf-8"))
-                return
+            for candidate in [
+                os.path.join(api_dir, "manifest.json"),
+                os.path.join(base_dir, "public", "manifest.json"),
+                os.path.join(base_dir, "web_app", "manifest.json")
+            ]:
+                if os.path.exists(candidate):
+                    with open(candidate, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    self._set_headers(200, "application/manifest+json")
+                    self.wfile.write(content.encode("utf-8"))
+                    return
+
         elif path == "/sw.js":
-            s_file = os.path.join(base_dir, "web_app", "sw.js")
-            if os.path.exists(s_file):
-                with open(s_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-                self._set_headers(200, "application/javascript")
-                self.wfile.write(content.encode("utf-8"))
-                return
+            for candidate in [
+                os.path.join(api_dir, "sw.js"),
+                os.path.join(base_dir, "public", "sw.js"),
+                os.path.join(base_dir, "web_app", "sw.js")
+            ]:
+                if os.path.exists(candidate):
+                    with open(candidate, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    self._set_headers(200, "application/javascript")
+                    self.wfile.write(content.encode("utf-8"))
+                    return
         elif path == "/api/settings":
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
