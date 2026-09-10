@@ -146,39 +146,29 @@ def play_audio(filepath):
     if ret != 0:
         return
 
-    buf = ctypes.create_unicode_buffer(128)
-    winmm.mciSendStringW(f"status {alias} length", buf, 128, None)
-    try:
-        total_ms = int(buf.value)
-    except Exception:
-        total_ms = 40000
-
     start_time = time.time()
     update_live_state(is_speaking=True, current_text="Speaking...", stop_requested=False)
-    winmm.mciSendStringW(f"play {alias}", None, 0, None)
 
-    while True:
-        elapsed_ms = (time.time() - start_time) * 1000
-        if elapsed_ms >= total_ms + 200:
-            break
+    is_playing = threading.Event()
+    is_playing.set()
 
+    def worker():
+        winmm.mciSendStringW(f"play {alias} wait", None, 0, None)
+        is_playing.clear()
+
+    t = threading.Thread(target=worker, daemon=True)
+    t.start()
+
+    while is_playing.is_set():
         if check_stop_requested(start_time):
             winmm.mciSendStringW(f"stop {alias}", None, 0, None)
             winmm.mciSendStringW(f"close {alias}", None, 0, None)
             update_live_state(is_speaking=False, current_text="", stop_requested=False)
             print("\n[AUTO-SPEAKER] 🛑 Audio interrupted by user voice!", flush=True)
             return
+        time.sleep(0.03)
 
-        winmm.mciSendStringW(f"status {alias} mode", buf, 128, None)
-        if buf.value in ("stopped", "") and elapsed_ms > 400:
-            # Graceful tail decay padding so no words are ever clipped
-            time.sleep(0.25)
-            break
-
-        time.sleep(0.02)
-
-    # 150ms buffer before closing alias
-    time.sleep(0.15)
+    time.sleep(0.2)
     winmm.mciSendStringW(f"close {alias}", None, 0, None)
 
 
