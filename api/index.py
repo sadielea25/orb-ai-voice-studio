@@ -4,6 +4,7 @@ Vercel Serverless Function for Orb AI Live Voice Studio Cloud API.
 """
 
 from http.server import BaseHTTPRequestHandler
+import os
 import json
 import time
 
@@ -43,22 +44,51 @@ class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path.split("?")[0]
-        if path == "/api/settings":
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        if path in ("/", "/index.html"):
+            html_file = os.path.join(base_dir, "web_app", "index.html")
+            if os.path.exists(html_file):
+                with open(html_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                self._set_headers(200, "text/html; charset=utf-8")
+                self.wfile.write(content.encode("utf-8"))
+                return
+        elif path == "/manifest.json":
+            m_file = os.path.join(base_dir, "web_app", "manifest.json")
+            if os.path.exists(m_file):
+                with open(m_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                self._set_headers(200, "application/manifest+json")
+                self.wfile.write(content.encode("utf-8"))
+                return
+        elif path == "/sw.js":
+            s_file = os.path.join(base_dir, "web_app", "sw.js")
+            if os.path.exists(s_file):
+                with open(s_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                self._set_headers(200, "application/javascript")
+                self.wfile.write(content.encode("utf-8"))
+                return
+        elif path == "/api/settings":
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
+            return
         elif path == "/api/status":
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "online", "mode": "cloud-v1.0"}).encode("utf-8"))
+            return
         elif path == "/api/conversation":
             self._set_headers(200)
             self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
-        else:
-            self._set_headers(200)
-            self.wfile.write(json.dumps({
-                "app": "Orb AI Live Voice Studio",
-                "version": "1.0.0",
-                "status": "active"
-            }).encode("utf-8"))
+            return
+
+        self._set_headers(200)
+        self.wfile.write(json.dumps({
+            "app": "Orb AI Live Voice Studio",
+            "version": "1.0.0",
+            "status": "active"
+        }).encode("utf-8"))
 
     def do_POST(self):
         content_length = int(self.headers.get("Content-Length", 0))
