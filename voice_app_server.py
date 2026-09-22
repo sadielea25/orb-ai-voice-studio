@@ -822,6 +822,13 @@ class PWAHandler(BaseHTTPRequestHandler):
                     sd.stop()
                 except Exception:
                     pass
+                in_queue = os.path.join(BASE_DIR, "speech_queue_incoming.jsonl")
+                if os.path.exists(in_queue):
+                    try:
+                        with open(in_queue, "w", encoding="utf-8") as f:
+                            f.truncate(0)
+                    except Exception:
+                        pass
             else:
                 update_live_state(is_speaking=False, current_text="", stop_requested=False)
                 # Signal auto_voice_reader to scan all chats for missed replies

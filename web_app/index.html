@@ -1512,15 +1512,6 @@
         // Stop microphone
         stopMic();
 
-        // Signal server to halt audio playback & disable AI voice output
-        try {
-          fetch('/api/pause_total', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ total_pause: true })
-          }).catch(() => {});
-        } catch (e) {}
-
         // Stop browser preview audio
         if (currentPreviewAudio) {
           try { currentPreviewAudio.pause(); currentPreviewAudio.currentTime = 0; } catch (e) {}
@@ -1528,21 +1519,44 @@
 
         updateTotalPauseUI(true);
         showToast('🛑 TOTAL PAUSE: AI Muted & Microphone Off.');
+
+        // Signal local and remote server to halt audio playback & disable AI voice output
+        const payload = JSON.stringify({ total_pause: true });
+        const headers = { 'Content-Type': 'application/json' };
+        try {
+          fetch('http://127.0.0.1:8766/api/pause_total', {
+            method: 'POST',
+            mode: 'cors',
+            headers: headers,
+            body: payload
+          }).catch(() => {
+            fetch('/api/pause_total', { method: 'POST', headers: headers, body: payload }).catch(() => {});
+          });
+        } catch (e) {
+          fetch('/api/pause_total', { method: 'POST', headers: headers, body: payload }).catch(() => {});
+        }
       } else {
         // RESUME: Re-enable AI talk
         isTotalPaused = false;
         isManualPaused = true; // Mic remains idle until user clicks Listen
 
-        try {
-          fetch('/api/pause_total', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ total_pause: false })
-          }).catch(() => {});
-        } catch (e) {}
-
         updateTotalPauseUI(false);
         showToast('▶ Voice Resumed. Scanning chats for missed replies...');
+
+        const payload = JSON.stringify({ total_pause: false });
+        const headers = { 'Content-Type': 'application/json' };
+        try {
+          fetch('http://127.0.0.1:8766/api/pause_total', {
+            method: 'POST',
+            mode: 'cors',
+            headers: headers,
+            body: payload
+          }).catch(() => {
+            fetch('/api/pause_total', { method: 'POST', headers: headers, body: payload }).catch(() => {});
+          });
+        } catch (e) {
+          fetch('/api/pause_total', { method: 'POST', headers: headers, body: payload }).catch(() => {});
+        }
       }
     }
 

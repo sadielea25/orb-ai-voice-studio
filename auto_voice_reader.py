@@ -143,6 +143,13 @@ def update_live_state(is_speaking=False, current_text="", stop_requested=False, 
 
 
 def check_stop_requested(playback_start_time):
+    # If voice is disabled via Total Pause, stop immediately
+    try:
+        if not load_settings().get("enabled", True):
+            return True
+    except Exception:
+        pass
+
     if os.path.exists(STATE_FILE):
         try:
             with open(STATE_FILE, "r", encoding="utf-8") as f:
@@ -620,24 +627,24 @@ def speech_queue_worker():
     print("[AUTO-SPEAKER] 🎧 Speech Queue Playback Worker Active (Unified Real-Time Orb Voice)...", flush=True)
 
     while True:
-        if os.path.exists(STATE_FILE):
+        # If voice is globally paused (Total Pause), clear all queues immediately and sleep
+        live_settings = load_settings()
+        if not live_settings.get("enabled", True):
+            with queue_lock:
+                speech_queue.clear()
+            if os.path.exists(INCOMING_QUEUE_FILE):
+                try:
+                    with open(INCOMING_QUEUE_FILE, "w", encoding="utf-8") as f:
+                        f.truncate(0)
+                except Exception:
+                    pass
             try:
-                with open(STATE_FILE, "r", encoding="utf-8") as sf:
-                    sdata = json.load(sf)
-                    if sdata.get("stop_requested", False):
-                        with queue_lock:
-                            if speech_queue:
-                                speech_queue.clear()
-                                print("\n[AUTO-SPEAKER] 🛑 Cleared speech queue on stop request.", flush=True)
-                        if os.path.exists(INCOMING_QUEUE_FILE):
-                            try:
-                                with open(INCOMING_QUEUE_FILE, "w", encoding="utf-8") as f:
-                                    f.truncate(0)
-                            except Exception:
-                                pass
-                        update_live_state(is_speaking=False, current_text="", stop_requested=False)
+                sd.stop()
             except Exception:
                 pass
+            update_live_state(is_speaking=False, current_text="", stop_requested=False)
+            time.sleep(0.1)
+            continue
 
         # Check for externally enqueued speech requests
         check_incoming_queue_file()

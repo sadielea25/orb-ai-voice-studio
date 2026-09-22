@@ -1,15 +1,16 @@
 {
   "engine": "edge",
-  "voice": "en-GB-SoniaNeural",
-  "rate": "+12%",
+  "voice": "en-IE-EmilyNeural",
+  "rate": "+0%",
   "pitch": "+0Hz",
   "volume": "+0%",
   "enabled": true,
   "handsfree_enabled": true,
   "auto_send": true,
-  "energy_threshold": 550.0,
-  "silence_timeout": 1.2,
+  "energy_threshold": 180.0,
+  "silence_timeout": 5.0,
   "stop_requested": false,
   "google_tld": "co.uk",
+  "announce_chat": true,
   "preset": "default"
 }

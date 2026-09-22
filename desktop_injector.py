@@ -51,24 +51,41 @@ def find_antigravity_hwnd():
     found_hwnds = []
 
     def enum_cb(hwnd, lparam):
-        if u32.IsWindowVisible(hwnd):
-            length = u32.GetWindowTextLengthW(hwnd)
-            if length > 0:
-                buff = ctypes.create_unicode_buffer(length + 1)
-                u32.GetWindowTextW(hwnd, buff, length + 1)
-                title = buff.value
-                keywords = ["submitting aa02", "dormant a", "coremarketgoods", "antigravity"]
-                if any(k in title.lower() for k in keywords):
-                    rect = RECT()
-                    u32.GetWindowRect(hwnd, ctypes.byref(rect))
-                    if (rect.right - rect.left) > 100 and (rect.bottom - rect.top) > 100:
-                        found_hwnds.append((hwnd, title, rect))
+        pid = wintypes.DWORD()
+        u32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+        h_proc = k32.OpenProcess(0x1000, False, pid.value)
+        if h_proc:
+            try:
+                exe_buff = ctypes.create_unicode_buffer(1024)
+                size = wintypes.DWORD(1024)
+                if k32.QueryFullProcessImageNameW(h_proc, 0, exe_buff, ctypes.byref(size)):
+                    exe_name = exe_buff.value.lower()
+                    if "antigravity.exe" in exe_name:
+                        rect = RECT()
+                        u32.GetWindowRect(hwnd, ctypes.byref(rect))
+                        w = rect.right - rect.left
+                        h = rect.bottom - rect.top
+                        is_iconic = bool(u32.IsIconic(hwnd))
+                        if is_iconic or (w > 250 and h > 250):
+                            length = u32.GetWindowTextLengthW(hwnd)
+                            title = ""
+                            if length > 0:
+                                buff = ctypes.create_unicode_buffer(length + 1)
+                                u32.GetWindowTextW(hwnd, buff, length + 1)
+                                title = buff.value
+                            found_hwnds.append((hwnd, title, rect, is_iconic))
+            finally:
+                k32.CloseHandle(h_proc)
         return True
 
     EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
     u32.EnumWindows(EnumWindowsProc(enum_cb), 0)
 
     if found_hwnds:
+        fg = u32.GetForegroundWindow()
+        for h, t, r, ico in found_hwnds:
+            if h == fg:
+                return h, r
         return found_hwnds[0][0], found_hwnds[0][2]
     return None, None
 
@@ -87,16 +104,20 @@ def type_text_into_antigravity(text):
     hwnd, rect = find_antigravity_hwnd()
 
     if not hwnd or not rect:
-        print(f"[DESKTOP-INJECTOR] [WARN] Antigravity window NOT FOUND — pasting to active window", flush=True)
-    else:
-        try:
-            w = rect.right - rect.left
-            h = rect.bottom - rect.top
-            chat_x = rect.left + int(w * 0.45)
-            chat_y = rect.bottom - 60
+        print(f"[DESKTOP-INJECTOR] [WARN] Antigravity window NOT FOUND — skipping injection to prevent typing into active window", flush=True)
+        return False
 
-            # 1. Bypass Windows foreground lock
-            fg_hwnd = u32.GetForegroundWindow()
+    try:
+        # 1. Restore window if minimized
+        if u32.IsIconic(hwnd):
+            u32.ShowWindow(hwnd, SW_RESTORE)
+            time.sleep(0.12)
+
+        u32.GetWindowRect(hwnd, ctypes.byref(rect))
+        fg_hwnd = u32.GetForegroundWindow()
+
+        # 2. Bring to foreground if not already foreground
+        if fg_hwnd != hwnd:
             fg_thread = u32.GetWindowThreadProcessId(fg_hwnd, None) if fg_hwnd else 0
             target_thread = u32.GetWindowThreadProcessId(hwnd, None)
             my_thread = k32.GetCurrentThreadId()
@@ -106,11 +127,10 @@ def type_text_into_antigravity(text):
             if my_thread != target_thread:
                 u32.AttachThreadInput(my_thread, target_thread, True)
 
-            u32.ShowWindow(hwnd, SW_RESTORE)
-
             # Alt key press resets Windows foreground lock timer
             u32.keybd_event(VK_MENU, 0, 0, 0)
             u32.SetForegroundWindow(hwnd)
+            u32.BringWindowToTop(hwnd)
             u32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
 
             if fg_thread and fg_thread != target_thread:
@@ -120,17 +140,9 @@ def type_text_into_antigravity(text):
 
             time.sleep(0.08)
 
-            # 2. Click directly into the chat input area
-            u32.SetCursorPos(chat_x, chat_y)
-            time.sleep(0.04)
-            u32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
-            time.sleep(0.04)
-            u32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-            time.sleep(0.08)
-
-            print(f"[DESKTOP-INJECTOR] [OK] Focused & clicked chat input at ({chat_x}, {chat_y}) (hwnd={hwnd})", flush=True)
-        except Exception as e:
-            print(f"[DESKTOP-INJECTOR] Focus/click error: {e}", flush=True)
+        print(f"[DESKTOP-INJECTOR] [OK] Antigravity active chat targeted (hwnd={hwnd})", flush=True)
+    except Exception as e:
+        print(f"[DESKTOP-INJECTOR] Focus error: {e}", flush=True)
 
     time.sleep(0.08)
 
