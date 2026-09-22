@@ -1,5 +1,55 @@
 [
   {
+    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Clean White Full-Screen Backdrop Applied! The dark background has been removed. The full-screen pop-up now uses a clean, light, and airy design matching your strict light-theme guidelines: Desktop Electron App (break.css): Replaced the dark slate overlay with a clean, high-contrast white frosted backdrop: background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px); Keeps your screen gently blurred with pure white aesthetics, crisp dark text, and zero dark blocks. Web or Multi-Widget Window (index.html): Replaced bg-slate-900/80 with bg-white/95 backdrop-blur-md across both the browser overlay and the expanded full-screen popout window. Live Production and Local Access. Live Vercel Production: Local Dev Server: and. Desktop Widget: Restarted and live with the pure white full-screen pop-up.",
+    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
+    "time": "15:43:16"
+  },
+  {
+    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... I have updated the full-screen pop-up backdrop to a clean, frosted white theme across both desktop and web versions and will report back once the live build finishes.",
+    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
+    "time": "15:42:53"
+  },
+  {
+    "text": "From Orb. We've scanned Xero and built its complete feature suite\u2014including Quotes with 1-click invoice conversion, Repeating Invoices/Bills, Products Catalogue, Purchase Orders, HMRC 45p Mileage Tracker, Bank Rules, Trial Balance, FRS 105 Balance Sheet, Manual Double-Entry Journals, Fixed Assets Depreciation, and Director Loan Vouchers\u2014all verified with 0 console errors and 0px mobile overflow. You can test the full suite live right now on Local ( and Network (.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:42:00"
+  },
+  {
+    "text": "From Timber Builds. Customer Website View Active and Ready. The live server is active. You can preview both the Master Admin Backend and the Public Customer Website View across all 246 products: Local Preview: Network or Mobile LAN Preview: Live Online Storefront: What Has Been Built: 1-Click Customer Mode Toggle: Click [ Customer Website View] in the header to instantly switch between internal master admin and front-facing buyer view. Showroom Collection and USPs: Displays customer-focused hero branding with 4 key British buyer trust badges: Free UK Delivery (Direct from Durham Hub). \ufe0f 10-Year Anti-Rot Warranty. Slow-Grown Nordic Spruce (28mm\u201370mm). 0% APR Finance Plans (\u00a3148/mo). Complete Admin and Margin Scrubbing: When Customer View is active, all operational tabs, admin KPI cards, confidential factory EUR base costs (\u20ac), landed costs, secret profit margins, and editing fields are 100% hidden. Customer Buy-Box and Conversion Tools: Viewing any building shows customer actions: \"Request Free Delivery Quote and Reserve Kit\", \"Download Building Specification and Floorplan PDF\", \"Expert Helpline: 0191 384 1000\", and add-on package calculators. Quick Return: A persistent top banner allows instant 1-click switching back to the Master Admin Backend at any time. For full architectural and testing documentation, see the Walkthrough.",
+    "voice": "Timber Builds (en-IE-EmilyNeural)",
+    "time": "15:39:39"
+  },
+  {
+    "text": "From Orb. The Universal /learn Global Synchronization rule is now active across your system. From now on, whenever you invoke /learn and approve a rule in any chat, the agent will automatically write it into your global rules as well as your local project. Files Updated. GEMINI.md: Added Section 11 to enforce automatic global synchronization across all chats. GLOBALRULES.md: Synced Section 11 into your workspace master file. autoapplylearnglobally.md: Created the dedicated modular rule file.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:38:24"
+  },
+  {
+    "text": "From Orb. I have created the proposal in learningproposal.md to make all future /learn rules automatically sync into your global rules files (GEMINI.md and GLOBALRULES.md). Please review and confirm to apply this rule across your system.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:38:00"
+  },
+  {
+    "text": "From Timber Builds. I have prepared the implementation plan to enable a full Customer Website View: implementationplan.md. Key Highlights: Public Website Storefront Transformation: Shows exactly how all 246 listings look to buyers on timberbuilds.co.uk, with customer-facing luxury styling, customer value propositions (Free UK delivery from Durham hub, 10-year warranty, 0% APR finance), and retail prices with VAT. Complete Confidential Data Scrub: Hides all internal toolbars, KPI stats, supplier details, factory costs, profit margins, and edit inputs. Interactive Buyer Features: Adds customer quote request buttons, finance estimators, blueprint download buttons, and customer add-to-bundle upgrade options. 1-Click Mode Toggle: A floating top bar lets you seamlessly toggle between Customer Website View and Master Admin Backend at any moment. Please review the plan and let me know if you would like me to proceed with execution.",
+    "voice": "Timber Builds (en-IE-EmilyNeural)",
+    "time": "15:36:27"
+  },
+  {
+    "text": "From Orb. I have cleaned up your files and updated the global rules so only Option B is ever produced: Cleaned Desktop and Live Updates Folder: Removed all 17 duplicate/static .apk files from D:\\app APK.S Live Updates. Only the official (Option B - Live Updates).apk files remain. Removed app-debug.apk and Snap n Pack.apk from your Desktop. Enforced Strictly Single-Package (Option B Only): Added the invariant to GEMINI.md, GLOBALRULES.md, and autolaunchdeployapkworkflow.md. From now on, agents are strictly forbidden from outputting duplicate or static .apk files to your Desktop or folders. Only the single, auto-updating Option B package will ever be generated and stored.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:35:01"
+  },
+  {
+    "text": "From Orb. Total Pause is now fully fixed and working. Clicking Total Pause (`) immediately cuts active audio output (sd.stop()), wipes the speech queues, and silences all reading. Clicking Resume Voice (\u25b6) restores playback and scans for recent messages. The update is live locally on and synced to Vercel at.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:34:19"
+  },
+  {
+    "text": "From Timber Builds. \ufe0f Visual-First Shop Interface Implemented. The application now opens with a Visual-First Shop Showcase, allowing you to browse all timber builds and bolt-on accessories visually by their photos\u2014just like an online shop\u2014before drilling down into the unified Master Listing detail view. Live Preview Links. Local Browser URL: Network or Mobile and Tablet URL: Live Online Storefront: (always linked in the footer). What\u2019s New. 1. Visual Shop Catalog Grid (Default View). Visual-First Browsing: No need to pick from a plain text dropdown. The catalog displays rich, responsive e-commerce product cards for all 246 builds and bolt-on accessories. Each Shop Card Features: High-Definition Cover Photo: 4:3 showcase photo with a smooth hover zoom animation. Photo Count Badge: Top-right pill showing available images for that model (e.g. 6 photos). Category and Spec Pills: Category tag (Log Cabins, Garden Offices, Saunas, Accessories) and wall thickness (44mm Spruce). Title and Footprint: Clean product title and dimensions (Pavillion \u2022 330 x 330 cm). Retail Pricing and Finance: Bold retail price in emerald (\u00a32,474.75 inc VAT) with finance estimate (Finance \u00a3148/mo). Stock Status: Live warehouse indicator (\u25cf In Stock (Durham Ready)). Confidential Margin Chip (Admin and Sales only): Landed cost and profit margin indicator (Landed: \u00a31,117 \u2022 Margin: 32.0%). 1-Click Drilldown: Clicking any card immediately opens that product in the Master Listing detail layout. 2. Top Visual Thumbnail Ribbon (In Detail View). While inside a product's Master Detail view: An interactive, horizontally scrollable Visual Product Ribbon sits right at the top of the page. You can slide through sibling buil. photo immediately loads that build without opening a dropdown. A \"\u2190 Back to Visual Shop Catalog\" button allows you to instantly return to the visual shop grid. 3. Shop Filter and Sort Toolbar. Category Filter Pills: Click any pill (All, Garden Offices, Log Cabins, Saunas, Summerhouses, Pergolas and Gazebos, Accessories and Add-ons) to update the visual grid. Instant Search: Type any title, thickness, or SKU for real-time filtering. Sort Dropdown: Sort by Featured or Default, Price: Low to High, Price: High to Low, Wall Thickness (Thickest First), or Name (A-Z). View Switcher: Easily toggle between [\ufe0f Shop Grid] and [ Product Details] anytime in the top control bar. 4. Role-Based Access Control (RBAC) Maintained.",
+    "voice": "Timber Builds (en-IE-EmilyNeural)",
+    "time": "15:30:01"
+  },
+  {
     "text": "From Timber Builds. I have created an implementation plan to transform the Master Listing into a visual-first shop interface: implementationplan.md. Key Highlights: Default Visual Shop Catalog: Browsing opens to a responsive grid of luxury product image cards (with cover photos, hover zoom, photo counts, key dimensions/wall thickness, retail prices, and stock badges). Click-to-Inspect: Clicking any card immediately transitions into the unified Master Product Detail layout with all 10 RBAC sections, centralized media hub, and backend controls. Top Visual Thumbnail Ribbon: A scrollable photo strip at the top of the detail page so you can switch builds visually without touching a dropdown. RBAC Maintained: Confidential wholesale costs and margins stay strictly hidden from non-admin roles in both the shop grid and detail views. Please review the implementation plan and let me know if you would like me to proceed with execution.",
     "voice": "Timber Builds (en-IE-EmilyNeural)",
     "time": "15:28:53"
@@ -73,55 +123,5 @@
     "text": "From Coremarket Goods Accounting. Perfect! I've re-connected to the renamed ORB folder and started both the voice server and background speech engine. Everything is active and running smoothly at.",
     "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
     "time": "15:13:06"
-  },
-  {
-    "text": "From Coremarket Goods Accounting. I have fixed the \"Pin Taskbar\" functionality: clicking it now launches the standalone window, writes shortcut items to your Taskbar and Desktop, and lets you right-click the Orb icon on your Windows Taskbar to choose \"Pin to taskbar\". You can test it directly on or on Vercel at.",
-    "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
-    "time": "14:24:18"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Live Preview Links. The live server is active and bound to all interfaces: Local Preview: Network Preview (Mobile or Tablet or LAN): Pinning to the Windows Taskbar. 1. Desktop Widget or Electron App. The widget has been updated to show in the Windows taskbar (skipTaskbar: false enabled by default). You will now see the DoStuff icon directly on your Windows taskbar. To Pin: Right-click the DoStuff icon on your Windows taskbar. Select \"Pin to taskbar\". (Alternative): You can also right-click the shortcut on your desktop (DoStuff Widget.lnk) and select \"Pin to taskbar\". (Settings): Clicking the \u26a1 DoStuff header on the widget opens the Settings panel, where you can toggle the taskbar visibility on or off at any time. 2. Browser Pop-up or Web App (.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "14:14:54"
-  },
-  {
-    "text": "From Visual Daily Board. \u2705 Option B Rule Persisted and Live-Server APK Built! Your preference has been permanently saved across all projects, and your new Option B Live-Server APK is ready: 1. Rules Persisted (Universal for All Apps). Workspace Rule: d:\\Visual Daily Board\\GEMINI.md. Global System Rule: C:\\Users\\corem\\.gemini\\config\\GEMINI.md. Invariant: Across all current and future projects, whenever an Android .apk package is requested, it will always be configured to stream live from your development server over your local network (Option B). You will only ever need to install the .apk once. 2. Your Option B Live-Server APK File. File Path: d:\\Visual Daily Board\\VisualBoard.apk. File Size: 15.83 MB (Native Android Debug APK with Live Stream Bridge).",
-    "voice": "Visual Daily Board (en-IE-EmilyNeural)",
-    "time": "14:13:05"
-  },
-  {
-    "text": "From Coremarket Goods Accounting. I have added the Pin Taskbar button directly into the floating widget, which opens the standalone app and creates your desktop shortcut so you can pin it to your Windows taskbar with one click. You can test it right now in your live preview at or on Vercel at.",
-    "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
-    "time": "14:12:39"
-  },
-  {
-    "text": "From Glitter & Shots. Live! Refresh \u2014 the page is now ready to send to venues. Anyone who sees it on their phone can tap the button and it'll open a text straight to you. The page is looking really polished now \u2014 hero image, split layouts, day/night vibes cards, gallery placeholders, and a clean direct CTA. Ready to start sharing it!",
-    "voice": "Glitter & Shots (en-IE-EmilyNeural)",
-    "time": "14:12:09"
-  },
-  {
-    "text": "From Thermo Retreats. I have added a Live Listing Breakdown and Dimensions Editor to the Admin Portal, creating an e-commerce CMS experience tailored specifically for spatial product visualization. What\u2019s New in the Admin Portal (/admin): Direct Dimensions and Scale Editor: Width ($mm$), Length or Depth ($mm$), and Height ($mm$) inputs with instant millimeter precision. Live Scale Breakdown: Ground Footprint: Automatically calculated in square meters ($m^2$) and meters ($m$). Front Elevation Area: $W \\times H$ in $m^2$. Side Profile Area: $L \\times H$ in $m^2$. Product Specification Breakdown: Edit Model Name, Product Category (Sauna, Cold Plunge, Hot Tub, Pod, Pergola), and Base Price (\u00a3). Edit Capacity (e.g.",
-    "voice": "Thermo Retreats (en-IE-EmilyNeural)",
-    "time": "14:10:57"
-  },
-  {
-    "text": "From Thermo Retreats. The live \"What We Do\" section has been implemented with three clear, dedicated operational feature boxes directly beneath the hero area. The 3 Operational Feature Boxes. 01. Landscaping (SIC 81300 \u2022 Landscape Service Activities). Focus: Groundworks and terrain engineering. Key Capabilities: Pre-build site surveys, land levelling, ground screw piles, concrete pads, soakaways, utility trenching, natural stone pathways and native Welsh planting. Action: Direct link to Groundwork and Build. 02. End-to-End Retreat Builds (Carpentry and Construction). Focus: Turnkey timber carpentry, bespoke pods and masterplanned sanctuaries.",
-    "voice": "Thermo Retreats (en-IE-EmilyNeural)",
-    "time": "14:09:42"
-  },
-  {
-    "text": "From Lead Collect. Got it! That is a highly valuable use-case. Capturing leads from platforms like Facebook (Meta), Instagram, LinkedIn, and TikTok can be tricky because they often trap the data inside their own ad dashboards. I have updated the application specifically for this purpose: UI Tailored to Social Ads: I updated the interface to be a Social Lead Hub, with mock data reflecting incoming leads from Facebook Lead Ads, Instagram Promos, and LinkedIn Sponsored Forms. Flexible API for Automation tools: I updated the api/add-lead.ts serverless function. Social media platforms can send very messy JSON data.",
-    "voice": "Lead Collect (en-IE-EmilyNeural)",
-    "time": "14:08:36"
-  },
-  {
-    "text": "From Timber Builds. Everything is confirmed working. Here's the status: \u2705 Zip tab is fully fixed and working: | Check | Result |. |-------|--------|. | Server running | \u2705 |. | /api/media-archives returns collections | \u2705 98 collections |. | Cover image URLs | \u2705 All valid /media/... paths |. | HTTP 200 on images | \u2705 Confirmed |. | Category breakdown | Saunas: 44 \u00b7 Log Cabins: 22 \u00b7 Glamping: 10 \u00b7 Accessories: 10 \u00b7 Hot Tubs: 7 \u00b7 Ice Baths: 4 \u00b7 Garages: 1 |. | Search bar | \u2705 Wired up |. | Category pills | \u2705 Wired up |. The only \"missing\" folder is Outdoor Shower \u2014 it genuinely has 0 files (empty folder in the original zip), so it shows with a folder icon placeholder instead of a photo. All other 97 collections have cover images.",
-    "voice": "Timber Builds (en-IE-EmilyNeural)",
-    "time": "14:07:23"
-  },
-  {
-    "text": "From Snap N Pack. Compact Section Overviews: \"See More\" and \"See Less\". We've updated the home screen and mission views to prevent the inventory from taking over the screen and running into an endless scroll: My Stuff (Home Screen): Capped at 5 items + the + Snap direct camera tile (forming 2 neat rows on mobile or 1 row on desktop). Added a See More (X more items) \u25be or See Less (Overview) \u25b4 toggle button right below the grid. Searching automatically displays all search results without needing to click \"See More\". My Bags (Home Screen): Initial overview is capped at 2 bags, showing Showing 2 of X bags \u2022 Tap \"See More\" below. Added a See More Bags (X more) \u25be or See Less Bags (Show 2) \u25b4 toggle button.",
-    "voice": "Snap N Pack (en-IE-EmilyNeural)",
-    "time": "14:06:12"
   }
 ]

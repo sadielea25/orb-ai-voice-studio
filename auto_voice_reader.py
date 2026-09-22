@@ -258,6 +258,8 @@ async def synthesize_speech_pcm(text, settings):
 
             audio_bytes = b""
             async for chunk in communicate.stream():
+                if check_stop_requested(time.time()):
+                    return None
                 if chunk["type"] == "audio":
                     audio_bytes += chunk["data"]
 
@@ -695,7 +697,13 @@ def speech_queue_worker():
         }
 
         try:
+            if not load_settings().get("enabled", True):
+                update_live_state(is_speaking=False, current_text="", stop_requested=False, device_name=dev_name)
+                continue
             pcm = asyncio.run(synthesize_speech_pcm(spoken_text, settings_override))
+            if not load_settings().get("enabled", True):
+                update_live_state(is_speaking=False, current_text="", stop_requested=False, device_name=dev_name)
+                continue
             play_audio_pcm(pcm)
             last_spoken_cid = cid
         except Exception as e:
