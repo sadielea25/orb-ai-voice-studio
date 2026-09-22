@@ -18,7 +18,7 @@ VOICE_SETTINGS = {
     "handsfree_enabled": True,
     "auto_send": True,
     "energy_threshold": 45.0,
-    "silence_timeout": 1.2
+    "silence_timeout": 5.0
 }
 
 CONVERSATION_HISTORY = [
