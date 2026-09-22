@@ -567,19 +567,23 @@
         </div>
       </div>
 
-      <!-- Master Floater Controls: Total Pause, Speak AI Reply, Refresh -->
-      <div style="margin-top: 10px; margin-bottom: 12px; display: flex; gap: 6px; align-items: stretch;">
-        <button id="btnTotalPause" type="button" onclick="toggleTotalPause()" style="flex: 1.1; padding: 10px 8px; border-radius: 12px; font-size: 12.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+      <!-- Master Floater Controls: Total Pause, Speak AI Reply, Refresh, Pin to Taskbar -->
+      <div style="margin-top: 10px; margin-bottom: 12px; display: flex; gap: 6px; align-items: stretch; flex-wrap: wrap;">
+        <button id="btnTotalPause" type="button" onclick="toggleTotalPause()" style="flex: 1 1 120px; min-width: 105px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
           <span id="totalPauseIcon">🛑</span>
           <span id="totalPauseText">Total Pause</span>
         </button>
-        <button id="btnFloaterSpeakAI" type="button" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1.2; padding: 10px 8px; border-radius: 12px; font-size: 12.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+        <button id="btnFloaterSpeakAI" type="button" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1 1 130px; min-width: 115px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
           <span>🗣️</span>
           <span>Speak AI Reply</span>
         </button>
-        <button id="btnFloaterRefresh" type="button" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 10px; border-radius: 12px; font-size: 12.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+        <button id="btnFloaterRefresh" type="button" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
           <span id="floaterRefreshIcon">🔄</span>
           <span>Refresh</span>
+        </button>
+        <button id="btnFloaterPinTaskbar" type="button" onclick="pinFloaterToTaskbar()" title="Pin standalone app to Windows Taskbar" style="padding: 10px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span>📌</span>
+          <span>Pin Taskbar</span>
         </button>
       </div>
 
@@ -1223,7 +1227,8 @@
         'setOrbState', 'processUtterance', 'adaptSpeechText', 'renderDraftDisplay',
         'resetSilenceTimer', 'initSpeechRecognition', 'bindOrbHandlers',
         'selectPersona', 'onVoiceSelected', 'updateVoicePersonaUI', 'renderPersonaGallery', 'getAvatarFallback',
-        'selectAccent', 'renderAccentPills', 'render2StepVoicePicker', 'previewPersonaVoice', 'applyHotUpdate', 'speakLastAIReply'
+        'selectAccent', 'renderAccentPills', 'render2StepVoicePicker', 'previewPersonaVoice', 'applyHotUpdate', 'speakLastAIReply',
+        'pinFloaterToTaskbar'
       ];
       bridgeFns.forEach(fn => {
         try { pipWindow[fn] = window[fn]; } catch (e) {}
@@ -1258,6 +1263,11 @@
       const pipRefreshBtn = pipWindow.document.getElementById('btnFloaterRefresh');
       if (pipRefreshBtn) {
         pipRefreshBtn.onclick = () => window.applyHotUpdate(true);
+      }
+
+      const pipPinBtn = pipWindow.document.getElementById('btnFloaterPinTaskbar');
+      if (pipPinBtn) {
+        pipPinBtn.onclick = () => window.pinFloaterToTaskbar();
       }
 
       const floatBtn = pipWindow.document.getElementById('btnPipFloat');
@@ -2258,6 +2268,28 @@
           }
           deferredPrompt = null;
         });
+      }
+    }
+
+    async function pinFloaterToTaskbar() {
+      // 1. If PWA install prompt is available in browser, offer it
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showToast('App installed! You can pin it from Start Menu or Taskbar.');
+          }
+          deferredPrompt = null;
+        });
+      }
+
+      // 2. Also call backend to launch standalone window and drop Desktop shortcut
+      try {
+        const res = await fetch('/api/pin_taskbar', { method: 'POST' });
+        const data = await res.json();
+        showToast('📌 Standalone window opened! Right-click its taskbar icon & choose "Pin to taskbar".');
+      } catch (e) {
+        showToast('📌 Right-click the app window icon on your Windows Taskbar and click "Pin to taskbar".');
       }
     }
 
