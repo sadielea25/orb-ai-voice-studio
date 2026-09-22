@@ -859,38 +859,55 @@ class PWAHandler(BaseHTTPRequestHandler):
         elif self.path == "/api/pin_taskbar":
             import subprocess
             import tempfile
-            bat_path = os.path.join(BASE_DIR, "LAUNCH_FLOATING_ORB.bat")
             desktop_dir = os.path.join(os.path.expanduser("~"), "Desktop")
-            shortcut_created = False
-            try:
-                lnk_path = os.path.join(desktop_dir, "Orb Voice Studio.lnk")
-                vbs_script = (
-                    f'Set oWS = WScript.CreateObject("WScript.Shell")\n'
-                    f'Set oLink = oWS.CreateShortcut("{lnk_path}")\n'
-                    f'oLink.TargetPath = "{bat_path}"\n'
-                    f'oLink.WorkingDirectory = "{BASE_DIR}"\n'
-                    f'oLink.Description = "Orb AI Voice Studio Floating App"\n'
-                    f'oLink.Save\n'
-                )
-                vbs_path = os.path.join(tempfile.gettempdir(), "create_orb_shortcut.vbs")
-                with open(vbs_path, "w", encoding="utf-8") as vf:
-                    vf.write(vbs_script)
-                subprocess.run(["cscript", "//nologo", vbs_path], check=True, timeout=5)
-                shortcut_created = os.path.exists(lnk_path)
-            except Exception as se:
-                print(f"[PIN-SHORTCUT-ERR]: {se}", flush=True)
+            tb_dir = os.path.expandvars(r"%APPDATA%\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar")
+            edge_exe = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+            if not os.path.exists(edge_exe):
+                edge_exe = r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"
+            chrome_exe = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            browser_exe = edge_exe if os.path.exists(edge_exe) else (chrome_exe if os.path.exists(chrome_exe) else "msedge.exe")
 
-            # Launch standalone window so user can immediately right-click on taskbar and pin
+            app_target_url = "http://localhost:8766"
+            app_args = f'--app={app_target_url} --window-size=460,720'
+
+            shortcut_created = False
+            for target_dir in [desktop_dir, tb_dir]:
+                try:
+                    if os.path.exists(target_dir):
+                        lnk_path = os.path.join(target_dir, "Orb Voice Studio.lnk")
+                        vbs_script = (
+                            f'Set oWS = WScript.CreateObject("WScript.Shell")\n'
+                            f'Set oLink = oWS.CreateShortcut("{lnk_path}")\n'
+                            f'oLink.TargetPath = "{browser_exe}"\n'
+                            f'oLink.Arguments = "{app_args}"\n'
+                            f'oLink.Description = "Orb AI Voice Studio"\n'
+                            f'oLink.Save\n'
+                        )
+                        vbs_path = os.path.join(tempfile.gettempdir(), "create_orb_sc.vbs")
+                        with open(vbs_path, "w", encoding="utf-8") as vf:
+                            vf.write(vbs_script)
+                        subprocess.run(["cscript", "//nologo", vbs_path], check=False, timeout=5)
+                        if os.path.exists(lnk_path):
+                            shortcut_created = True
+                except Exception as se:
+                    print(f"[PIN-SC-ERR]: {se}", flush=True)
+
+            # Launch standalone window so user can immediately see it on taskbar
             try:
-                subprocess.Popen(["cmd.exe", "/c", bat_path], shell=False)
+                subprocess.Popen([browser_exe, f"--app={app_target_url}", "--window-size=460,720"])
             except Exception as le:
                 print(f"[PIN-LAUNCH-ERR]: {le}", flush=True)
+                bat_path = os.path.join(BASE_DIR, "LAUNCH_FLOATING_ORB.bat")
+                try:
+                    subprocess.Popen(["cmd.exe", "/c", bat_path], shell=False)
+                except Exception:
+                    pass
 
             self._set_headers(200)
             self.wfile.write(json.dumps({
                 "status": "ok",
                 "shortcut_created": shortcut_created,
-                "message": "Standalone app launched! Right-click the Orb icon on your taskbar and select 'Pin to taskbar'."
+                "message": "Standalone app launched! Right-click the Orb icon on your Windows Taskbar and click 'Pin to taskbar'."
             }).encode("utf-8"))
         elif self.path in ["/api/upload-statement", "/api/delete-statement"]:
             try:

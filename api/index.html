@@ -783,10 +783,19 @@
     let lastRenderedMessages = [];
 
     function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.innerText = msg;
-      t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 2500);
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      docs.forEach(doc => {
+        const t = Document.prototype.getElementById.call(doc, 'toast');
+        if (t) {
+          t.innerText = msg;
+          t.style.display = 'block';
+          t.style.zIndex = '999999';
+          setTimeout(() => { t.style.display = 'none'; }, 3500);
+        }
+      });
     }
 
     function updateRateLabel() {
@@ -2274,22 +2283,40 @@
     async function pinFloaterToTaskbar() {
       // 1. If PWA install prompt is available in browser, offer it
       if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            showToast('App installed! You can pin it from Start Menu or Taskbar.');
-          }
-          deferredPrompt = null;
-        });
+        try {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              showToast('✅ Installed! Right-click icon on Taskbar -> Pin to taskbar.');
+            }
+            deferredPrompt = null;
+          });
+        } catch (pe) {}
       }
 
-      // 2. Also call backend to launch standalone window and drop Desktop shortcut
+      // 2. Call backend to launch standalone window & write shortcuts to Desktop & Taskbar
       try {
-        const res = await fetch('/api/pin_taskbar', { method: 'POST' });
-        const data = await res.json();
-        showToast('📌 Standalone window opened! Right-click its taskbar icon & choose "Pin to taskbar".');
+        let res = null;
+        try {
+          res = await fetch('http://127.0.0.1:8766/api/pin_taskbar', {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' }
+          });
+        } catch (corsErr) {
+          res = await fetch('/api/pin_taskbar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+        if (res && res.ok) {
+          const data = await res.json();
+          showToast('📌 Standalone app opened! Right-click its icon on your Taskbar -> Pin to taskbar.');
+        } else {
+          showToast('📌 Right-click the Orb app window on your Taskbar and click "Pin to taskbar".');
+        }
       } catch (e) {
-        showToast('📌 Right-click the app window icon on your Windows Taskbar and click "Pin to taskbar".');
+        showToast('📌 Right-click the Orb app window on your Taskbar and click "Pin to taskbar".');
       }
     }
 
