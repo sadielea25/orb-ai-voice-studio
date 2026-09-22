@@ -217,13 +217,13 @@ def clean_markdown_for_speech(text):
     res = " ".join(lines)
     res = re.sub(r"\s+", " ", res).strip()
 
-    # Never truncate normal replies; only cap gigantic text dumps (> 800 chars)
-    if len(res) > 800:
+    # Only cap truly gigantic text dumps (> 2500 chars) to prevent edge-tts timeouts
+    if len(res) > 2500:
         sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', res) if s.strip()]
         capped = []
         cur_len = 0
         for s in sentences:
-            if cur_len + len(s) > 750:
+            if cur_len + len(s) > 2400:
                 break
             capped.append(s)
             cur_len += len(s)
@@ -234,35 +234,40 @@ def clean_markdown_for_speech(text):
 
 
 async def synthesize_speech_pcm(text, settings):
-    voice = settings.get("voice", "en-GB-SoniaNeural")
-    rate = settings.get("rate", "+10%")
+    voice = settings.get("voice", "en-GB-LibbyNeural")
+    rate = settings.get("rate", "+0%")
     pitch = settings.get("pitch", "+0Hz")
     volume = settings.get("volume", "+0%")
 
-    communicate = edge_tts.Communicate(
-        text=text,
-        voice=voice,
-        rate=rate,
-        pitch=pitch,
-        volume=volume
-    )
+    for candidate_voice in [voice, "en-GB-LibbyNeural", "en-GB-SoniaNeural"]:
+        try:
+            communicate = edge_tts.Communicate(
+                text=text,
+                voice=candidate_voice,
+                rate=rate,
+                pitch=pitch,
+                volume=volume
+            )
 
-    audio_bytes = b""
-    async for chunk in communicate.stream():
-        if chunk["type"] == "audio":
-            audio_bytes += chunk["data"]
+            audio_bytes = b""
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    audio_bytes += chunk["data"]
 
-    if not audio_bytes:
-        return None
+            if audio_bytes:
+                decoded = miniaudio.decode(
+                    audio_bytes,
+                    nchannels=2,
+                    sample_rate=44100,
+                    output_format=miniaudio.SampleFormat.SIGNED16
+                )
+                pcm = np.frombuffer(decoded.samples, dtype=np.int16).reshape(-1, 2)
+                return pcm
+        except Exception as e:
+            print(f"[EDGE-TTS-WARN] Voice {candidate_voice} failed: {e}", flush=True)
+            await asyncio.sleep(0.1)
 
-    decoded = miniaudio.decode(
-        audio_bytes,
-        nchannels=2,
-        sample_rate=44100,
-        output_format=miniaudio.SampleFormat.SIGNED16
-    )
-    pcm = np.frombuffer(decoded.samples, dtype=np.int16).reshape(-1, 2)
-    return pcm
+    return None
 
 
 def play_audio_pcm(pcm_data):
@@ -710,9 +715,14 @@ def monitor_and_read():
                 res.append(active_path)
             all_logs = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
             all_logs.sort(key=lambda p: os.path.getmtime(p), reverse=True)
-            for p in all_logs[:25]:
+            now = time.time()
+            # Only monitor recent chats modified in the last 2 hours (max 6 active threads) to prevent overload
+            for p in all_logs:
+                if len(res) >= 6:
+                    break
                 if p not in res and os.path.exists(p):
-                    res.append(p)
+                    if (now - os.path.getmtime(p)) < 7200:  # 2 hours
+                        res.append(p)
         except Exception:
             if os.path.exists(FALLBACK_LOG):
                 res.append(FALLBACK_LOG)
@@ -722,10 +732,12 @@ def monitor_and_read():
     seen_hashes = collections.deque(maxlen=400)
 
     def scan_for_missed_replies():
-        print("[AUTO-SPEAKER] 🔍 Scanning all chats for missed replies while paused...", flush=True)
+        print("[AUTO-SPEAKER] 🔍 Checking active chats for recent replies...", flush=True)
         all_files = scan_transcripts()
         missed_count = 0
         for p in all_files:
+            if missed_count >= 2:  # Prevent flooding the queue
+                break
             if not os.path.exists(p):
                 continue
             try:
@@ -733,7 +745,7 @@ def monitor_and_read():
                 file_positions[p] = cur_sz
                 with open(p, "r", encoding="utf-8", errors="ignore") as f:
                     lines = f.readlines()
-                for line in reversed(lines[-35:]):
+                for line in reversed(lines[-20:]):
                     line = line.strip()
                     if not line:
                         continue
@@ -756,7 +768,7 @@ def monitor_and_read():
                         break
             except Exception as e:
                 pass
-        print(f"[AUTO-SPEAKER] 🔍 Scan complete: queued {missed_count} missed replies.", flush=True)
+        print(f"[AUTO-SPEAKER] 🔍 Scan complete: queued {missed_count} replies.", flush=True)
         return missed_count
 
     # Initial seeding: set all existing transcript files to EOF so we only read new messages

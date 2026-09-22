@@ -576,8 +576,8 @@ def trigger_replay_last_ai_reply():
         return {"status": "no_reply_found"}
 
     cleaned = clean_markdown_for_speech(last_reply)
-    if len(cleaned) > 1000:
-        cleaned = cleaned[:1000] + "..."
+    if len(cleaned) > 2500:
+        cleaned = cleaned[:2500] + "..."
 
     active_title, _ = get_active_chat_title_and_transcript()
     label = active_title or "Orb AI Assistant"
