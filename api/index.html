@@ -1116,7 +1116,7 @@
         rate: (rateVal >= 0 ? '+' : '') + rateVal + '%',
         pitch: (pitchVal >= 0 ? '+' : '') + pitchVal + 'Hz',
         volume: '+0%',
-        enabled: true
+        enabled: !isTotalPaused
       };
 
       try {
@@ -1418,9 +1418,6 @@
       window.addEventListener('keydown', trigger, { once: true });
       window.addEventListener('pointerdown', trigger, { once: true });
     }
-
-    let isTotalPaused = false;
-    let isManualPaused = false;
 
     function updateTotalPauseUI(isPaused) {
       isTotalPaused = !!isPaused;

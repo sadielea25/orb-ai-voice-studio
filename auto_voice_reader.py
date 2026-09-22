@@ -648,6 +648,29 @@ def speech_queue_worker():
             time.sleep(0.1)
             continue
 
+        if os.path.exists(STATE_FILE):
+            try:
+                with open(STATE_FILE, "r", encoding="utf-8") as sf:
+                    sdata = json.load(sf)
+                    if sdata.get("stop_requested", False):
+                        with queue_lock:
+                            speech_queue.clear()
+                        if os.path.exists(INCOMING_QUEUE_FILE):
+                            try:
+                                with open(INCOMING_QUEUE_FILE, "w", encoding="utf-8") as f:
+                                    f.truncate(0)
+                            except Exception:
+                                pass
+                        try:
+                            sd.stop()
+                        except Exception:
+                            pass
+                        update_live_state(is_speaking=False, current_text="", stop_requested=False)
+                        time.sleep(0.05)
+                        continue
+            except Exception:
+                pass
+
         # Check for externally enqueued speech requests
         check_incoming_queue_file()
 

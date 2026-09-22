@@ -1,5 +1,70 @@
 [
   {
+    "text": "From Orb. You can download your free transaction statements anytime directly from Tide Web with \u00a30 third-party fees. Simply drag and drop the exported Tide CSV or PDF directly into your portal's built-in Add or Drop Extra Statement Files dropzone, and the app will instantly parse and sync all transactions into your live accounting feed. Live Portal Access. Local Desktop: Network LAN:",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "16:06:29"
+  },
+  {
+    "text": "From Timber Builds. Live Preview and Category System Ready. Local Preview: Network or Mobile LAN: What Was Completed. Visual \"All Categories\" Directory: Browsing \"All\" (or clicking All Categories (7)) displays visual cards for all 7 timber collections: Saunas (73 models \u2022 From \u00a31,650 inc VAT). Log Cabins (47 models \u2022 From \u00a31,995 inc VAT). Glamping Pods (17 models \u2022 From \u00a33,950 inc VAT). Hot Tubs (9 models \u2022 From \u00a32,450 inc VAT). Ice Baths (8 models \u2022 From \u00a31,850 inc VAT). Garages and Carports (6 models \u2022 From \u00a33,200 inc VAT). Accessories and Add-ons (86 products \u2022 From \u00a345 inc VAT). Every card features high-res photography on pure white studio backdrops, model counts, starting prices, and subcategory chips. Dedicated Category Pages: Clicking any category card opens that collection's dedicated page. Clickable Breadcrumbs: \u2190 All Categories or [Category Name]. 1-Tap Back Button: [ \u2190 All Categories ] returns to the directory. Subcategory Filter Pills: Dynamically filters models (e.g. Outdoor Saunas, Barrel Saunas, Infrared Saunas). Dedicated Hero Spotlight: Clickable hero image on a pure white backdrop provides a 1-tap overview into the premier building of that category. In product view, the back button intelligently points to \u2190 Back to [Category] Collection. Zero Admin Crumbs in Customer View: Toggling Customer Website View strictly hides all wholesale landed costs, competitor radar, warehouse packaging forms, media upload dropzones, zip downloads, margin badges, and permissions. Form inputs are replaced with read-only specifications and marketing copy. The buy box uses a light luxury emerald theme (bg-emerald-50/60 border border-emerald-200 text-slate-800) with zero dark backdrops. Automated Verification: Automated test suite (scripts/verifycategoriesandzerocrumbs.js) ran with 0 errors. Details are documented in the Walkthrough Artifact.",
+    "voice": "Timber Builds (en-IE-EmilyNeural)",
+    "time": "16:02:32"
+  },
+  {
+    "text": "From Orb. You can register for free UK Open Banking API keys at Plaid Developer Sign-Up. For direct bank exports with zero third-party APIs, log in to the Tide Web Banking Portal to download or schedule automated statement feeds directly into your portal.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "16:00:14"
+  },
+  {
+    "text": "From Orb. GoCardless recently closed self-serve signups after phasing out the legacy Nordigen free tier to push new users toward their sales team. The best immediate alternatives are Plaid's free developer tier (which supports Tide and UK Open Banking), or using Tide's built-in automated statement exports directly inside our portal with zero approvals or external fees.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:59:39"
+  },
+  {
+    "text": "From Orb. Xero has millions of global users across the UK, US, and Australia, so they negotiate direct enterprise connections with banks rather than relying on a third-party developer service. They also hold their own multimillion-pound regulatory banking licenses and charge high monthly subscription fees to justify maintaining their own dedicated, proprietary bank feeds.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:59:02"
+  },
+  {
+    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Live Previews and Ready-to-Install Mobile Package. Live Vercel Production: Local Preview: Network LAN: Live Mobile APK: D:\\app APK.S Live Updates\\Screen Time Do Stuff (Option B - Live Updates).apk. What Was Fixed to Stop the Glitching and Stutters: Touchscreen Dragging and Touch Jitter: Replaced mouse-only dragging with native single-touch handlers (touchstart, touchmove, touchend), making the floating capsule smooth on phones without jumping. Crash/Glitch Security Freeze: Disabled unprompted requestFullscreen() calls inside the mobile WebView that were causing Android Chrome/Capacitor render freezes. Flashing and Repetitive Suggestions: Stripped out distracting frame-flashing and connected the live Pollinations AI micro-break coach to stream fresh suggestions on every break. Pure White Light Backdrop: Modal overlays are now 100% clean frosted white blur (bg-white/95) with high-contrast text and zero black/dark backdrops. Taskbar Pinning: Added [ Pin to Taskbar] in the pop-up and widget header. Install the freshly compiled .apk from D:\\app APK.S Live Updates\\ once; all future updates will stream seamlessly over your connection!",
+    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
+    "time": "15:56:53"
+  },
+  {
+    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Gradle is currently linking the Dex packages and assets for the updated APK. I will send you the confirmation as soon as it deposits the final package into D:\\app APK.S Live Updates.",
+    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
+    "time": "15:56:26"
+  },
+  {
+    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... I have pinpointed the cause of the glitch on the mobile APK and am compiling a fresh package for you now: Why It Was Glitching: The app was attempting to call browser requestFullscreen() during timer countdowns without a direct user touch gesture, which triggers security warnings and stuttering on mobile Android WebViews. Mouse-only drag handlers on the floating capsule did not have native single-touch boundaries (touchstart/touchmove), causing visual drag jitter on mobile touchscreens. The Fix: Added native touch event listeners (touchstart/touchmove/touchend) for smooth dragging. Guarded requestFullscreen() so mobile Android WebViews display smoothly without throwing security exceptions. Rebuilding the clean, live package directly into D:\\app APK.S Live Updates. I will update you as soon as the APK finishes compiling!",
+    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
+    "time": "15:54:49"
+  },
+  {
+    "text": "From Timber Builds. \u26a1 Header Cleanup, Pure White Studios and All Builds Hero Spotlight Complete. The live dev server is running and updated in the background: Local Live Preview: Network or Mobile LAN: Live Online Storefront: What Has Been Cleaned and Upgraded: Header Cleanup and Zero Overlapping Between Views: No More Floating Overlap: The top mode bar is now an inline top banner that sits naturally above the sticky header, completely eliminating the previous fixed top-0 collision where the bar covered the logo and buttons. Zero Clutter in Customer View: Switching to Website Customer View instantly hides all internal logistics clutter (FX rates, zone selectors, portal dropdowns, wholesale badges, and CSV export). The header cleanly transforms to public showroom branding with 0191 384 1000 customer support, free delivery guarantees, and a 1-click [Back to Master Admin] restore button. Zero Container Spills: Removed rigid height clipping (lg:h-16) and streamlined controls so buttons never wrap into or bleed over the navigation tabs. \u26aa Pure White Image Studios (Zero Black Backgrounds): Shop Grid Cards: Converted all photo containers from dark bg-slate-950 to pure white studio frames (bg-white border-b border-slate-100) with object-contain scaling. Removed black hover overlays and replaced with light warm tints. Visual Ribbon and Media Hub: All thumbnail containers converted from bg-slate-900 to pure white backdrops. Detail View Hero Stage: Converted from bg-slate-950 to crisp pure white backdrop with clean light navigation arrows and light caption bars. Full Lightbox Modals: Zoom modals now render against clean frosted light backdrops (bg-white/95) with zero black frames. Showroom Banner: Restyled to a luxury light timber theme with pure white USP cards and high-contrast dark text. \u2b50 Clickable Hero Spotlight on \"All Builds\": Placed directly where it says All Builds at the top of the catalog: Displays a large, high-definition Featured Build Hero Photo on a pure white studio card. Clickable Image: Clicking the hero image (or the [Open Building Overview] button) opens the full overview, specifications, and media for that build. Live Specs Overview: Includes footprint dimensions (330 x 330 cm), log thickness (44mm), stock status (In Stock \u2022 Durham Hub Ready), price inc VAT, and monthly finance estimate.",
+    "voice": "Timber Builds (en-IE-EmilyNeural)",
+    "time": "15:50:16"
+  },
+  {
+    "text": "From Orb. To set it up, create a free developer account at bankaccountdata.gocardless.com, generate your Secret ID and Key, and add them to your portal backend to automatically generate bank authorization links and stream transactions. Xero and QuickBooks use direct Open Banking API partnerships with major banks alongside aggregators like Yodlee and Plaid, but GoCardless gives your app the exact same real-time bank feeds without needing expensive enterprise contracts.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:49:32"
+  },
+  {
+    "text": "From Orb. It works by generating an official bank link where your users approve read-only access in their banking app via Face ID, streaming live transactions directly into your portal with 100% bank-grade security because passwords and funds are never accessible. Yes, you can legally use this to sell paid plans commercially, as GoCardless acts as the FCA-regulated provider so your SaaS can charge customers without needing its own costly regulatory license.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:48:55"
+  },
+  {
+    "text": "From Orb. Yes: you can use GoCardless Bank Account Data (formerly Nordigen), which offers a free UK Open Banking API tier where they cover the FCA license and handle the official bank login links, allowing you to connect accounts like Tide and Virgin for free without contacting banks or paying aggregator fees. Alternatively, you can use Tide's free automated statement export feature to pipe transactions directly into your portal's background sync engine with zero external setup.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:47:19"
+  },
+  {
+    "text": "From Orb. Total Pause glitch is resolved. Fixed state desync and UI flicker: Declared global state variables and smoothed the bidirectional status poller so the button state no longer bounces or lags. Instant TTS abort: Added immediate cancellation inside the live Edge-TTS speech stream and pre-playback checks so queued phrases never slip through after pause is clicked. Pushed and Live: Updated on both local ( and production (.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "15:46:39"
+  },
+  {
     "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Clean White Full-Screen Backdrop Applied! The dark background has been removed. The full-screen pop-up now uses a clean, light, and airy design matching your strict light-theme guidelines: Desktop Electron App (break.css): Replaced the dark slate overlay with a clean, high-contrast white frosted backdrop: background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px); Keeps your screen gently blurred with pure white aesthetics, crisp dark text, and zero dark blocks. Web or Multi-Widget Window (index.html): Replaced bg-slate-900/80 with bg-white/95 backdrop-blur-md across both the browser overlay and the expanded full-screen popout window. Live Production and Local Access. Live Vercel Production: Local Dev Server: and. Desktop Widget: Restarted and live with the pure white full-screen pop-up.",
     "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
     "time": "15:43:16"
@@ -58,70 +123,5 @@
     "text": "From Orb. Your live accounting portal is now active and has been launched in your browser. You can access it locally at or test it on any mobile or tablet device on your network at.",
     "voice": "Orb (en-IE-EmilyNeural)",
     "time": "15:28:34"
-  },
-  {
-    "text": "From Option B Live Server Apks For All Site.... Option B Live Updates and Branded Icon Suite Complete. Your development guidelines have been updated in both C:\\Users\\corem\\.gemini\\config\\GEMINI.md and d:\\Visual Daily Board\\GEMINI.md with the Mandatory Unique App Branding and Icon Display invariant. All 16 web applications across your system have been compiled into Option B (Live Updates) packages, each equipped with its own unique, high-resolution branded launcher icon display (standard squircle, circular badge, and adaptive foreground across all density tiers). When uploaded to Google Drive or installed on your phone, every app package displays its own distinctive color palette and brand initials. Central Folder: D:\\app APK.S Live Updates. | # | Application | Branded Icon Display | Package Name | Size | Live Stream Destination |. | :---: | :--- | :--- | :--- | :---: | :--- |. | 1 | Visual Board | [VB] Indigo (#4F46E5) | Visual Board (Option B - Live Updates).apk.apk) | 4.05 MB | |. | 2 | ClearSpace | [CS] Sage Emerald (#059669) | ClearSpace (Option B - Live Updates).apk.apk) | 4.07 MB | |. | 3 | Snap N Snack | [SS] Amber Gold (#D97706) | Snap N Snack (Option B - Live Updates).apk.apk) | 4.06 MB | |. | 4 | Next 3 Weeks | [3W] Slate and Gold (#334155) | Next 3 Weeks (Option B - Live Updates).apk.apk) | 4.07 MB | |. | 5 | BLOG OFF | [BO] Matrix Emerald (#. %20Updates/Thermo%20Retreats%20Designer%20(Option%20B%20-%20Live%20Updates).apk) | 4.06 MB | |. | 13 | Festi Face | [FF] Festival Violet (#7C3AED) | Festi Face (Option B - Live Updates).apk.apk) | 4.04 MB | |. | 14 | Lead Collect | [LC] Deep Teal (#0F766E) | Lead Collect (Option B - Live Updates).apk.apk) | 4.06 MB | |. | 15 | Orb AI Voice Studio | [ORB] Cyber Obsidian (#090D16) | Orb AI Voice Studio (Option B - Live Updates).apk.apk) | 4.06 MB | |. | 16 | Glitter and Shots | [GS] Party Berry (#9F1239) | Glitter and Shots (Option B - Live Updates).apk.apk) | 4.06 MB | |. \u26a1 Key Highlights. Google Drive and Phone Icon Display: Each app package embeds its own branded launcher icons. When you view them in Google Drive, download them, or place them on your phone's home screen, each app visually stands out with its distinct colors and initials. Install-Once Invariant: Install each .apk only once. Any future web changes, bug fixes, or feature updates stream live into the installed apps automatically.",
-    "voice": "Option B Live Server Apks For All Site... (en-IE-EmilyNeural)",
-    "time": "15:23:08"
-  },
-  {
-    "text": "From Orb. I have fixed the voice glitching and cut-offs: Eliminated Premature Cut-Offs: Raised the text synthesis limit from 750 characters up to 2,500 characters with fallback voice recovery, so full read-outs complete naturally without cutting off mid-sentence. Prevented Chat Overload: Limited background scanning to only chats active in the last 2 hours (capped at the 2 most recent messages), so older threads can no longer flood the speech queue. Confirmed Announcement Name: All replies for this chat now announce smoothly as \"From Orb\".",
-    "voice": "Orb (en-IE-EmilyNeural)",
-    "time": "15:21:19"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... I have deployed the update with the \"Pin to Taskbar\" controls added directly inside the pop-up and will report back once the live build completes.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "15:20:45"
-  },
-  {
-    "text": "From Option B Live Server Apks For All Site.... I have updated our global development rules with the new Mandatory Unique App Branding and Icon Display invariant in both C:\\Users\\corem\\.gemini\\config\\GEMINI.md and d:\\Visual Daily Board\\GEMINI.md. I have launched the batch build task to generate custom high-resolution icons (launcher, round, and adaptive foreground across all mipmap densities) and package all 16 applications with their distinctive color themes and branding into D:\\app APK.S Live Updates. I will notify you with the complete list and color palette as soon as the build finishes.",
-    "voice": "Option B Live Server Apks For All Site... (en-IE-EmilyNeural)",
-    "time": "15:19:31"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... \u2728 Flashing Removed and Real-Time AI Micro-Coach Live! 1. Eliminated Distracting Flashing and Focus Stealing. Removed flashFrame(true): In Windows Electron, flashFrame(true) causes the window and taskbar to strobe/flash repeatedly upon trigger, which was jarring and distracting. This is now completely disabled. Calm Focus Transition: Removed the aggressive 400ms focus-stealing loop that caused screen flickering when other windows were open. The pop-up now appears smoothly in front without stuttering. 2. Real-Time AI Micro-Task Generator (Never Loops the Same Suggestions). Dynamic AI Micro-Coach: Integrated a real-time background AI engine (aiService.js) into both the desktop widget and web app.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "15:17:44"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... I have triggered the update and deployment, and will report back once the live build finishes.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "15:17:23"
-  },
-  {
-    "text": "From Option B Live Server Apks For All Site.... I have launched the batch build process for all remaining Option B (Live Updates) APK packages: Callback Widget (Option B - Live Updates).apk. Onsite (Option B - Live Updates).apk. Thermo Retreats Designer (Option B - Live Updates).apk. Festi Face (Option B - Live Updates).apk. Lead Collect (Option B - Live Updates).apk. Orb AI Voice Studio (Option B - Live Updates).apk. Glitter and Shots (Option B - Live Updates).apk. The APKs will be saved directly into D:\\app APK.S Live Updates. I will summarize the final inventory as soon as all builds finish.",
-    "voice": "Option B Live Server Apks For All Site... (en-IE-EmilyNeural)",
-    "time": "15:15:58"
-  },
-  {
-    "text": "From Timber Builds. Unified Master Product Listing with Role-Based Access Control (RBAC). We have consolidated all disparate tabs and redundant views into one single Master Product Listing. The application now uses an identical layout everywhere, structured like an online storefront with a hidden backend, where you see everything while other team members only view and edit what their login permits. Live Preview Links. Local Browser URL: Network or Mobile and Tablet URL: Live Online Storefront: (always linked in the footer). Key Enhancements. 1. One Single Master Layout Everywhere.",
-    "voice": "Timber Builds (en-IE-EmilyNeural)",
-    "time": "15:14:58"
-  },
-  {
-    "text": "From Option B Live Server Apks For All Site.... Packaging classes and DEX bytecode for Screen Time Do Stuff (Option B - Live Updates).apk. Finishing up now.",
-    "voice": "Option B Live Server Apks For All Site... (en-IE-EmilyNeural)",
-    "time": "15:14:28"
-  },
-  {
-    "text": "From Option B Live Server Apks For All Site.... Packaging the APK resources. Standing by for compilation completion.",
-    "voice": "Option B Live Server Apks For All Site... (en-IE-EmilyNeural)",
-    "time": "15:14:12"
-  },
-  {
-    "text": "From Option B Live Server Apks For All Site.... The Gradle build process is assembling the APK for Screen Time Do Stuff. I will check back momentarily once the build is finalized.",
-    "voice": "Option B Live Server Apks For All Site... (en-IE-EmilyNeural)",
-    "time": "15:13:51"
-  },
-  {
-    "text": "From Option B Live Server Apks For All Site.... I have launched the automated build for Screen Time Do Stuff (Option B - Live Updates).apk and will proceed as soon as the build completes.",
-    "voice": "Option B Live Server Apks For All Site... (en-IE-EmilyNeural)",
-    "time": "15:13:27"
-  },
-  {
-    "text": "From Coremarket Goods Accounting. Perfect! I've re-connected to the renamed ORB folder and started both the voice server and background speech engine. Everything is active and running smoothly at.",
-    "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
-    "time": "15:13:06"
   }
 ]
