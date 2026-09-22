@@ -367,8 +367,11 @@ def save_chat_voices(cfg):
 
 
 KNOWN_PROJECTS = {
-    "coremarketgoods accounting": "Coremarket Goods Accounting",
-    "coremarketgoods": "Coremarket Goods Accounting",
+    "coremarketgoods accounting": "Orb",
+    "coremarketgoods": "Orb",
+    "orb": "Orb",
+    "orb ai voice studio v1": "Orb",
+    "orb ai voice studio": "Orb",
     "timber builds": "Timber Builds",
     "snap n pack app": "Snap N Pack",
     "snap n pack": "Snap N Pack",
@@ -378,8 +381,6 @@ KNOWN_PROJECTS = {
     "blogflow": "BlogFlow",
     "festi face": "Festi Face",
     "glitterandshots": "Glitter & Shots",
-    "orb ai voice studio v1": "Orb AI Voice Studio",
-    "orb ai voice studio": "Orb AI Voice Studio",
     "spook studio": "Spook Studio",
 }
 
@@ -407,7 +408,9 @@ def format_project_title(raw):
         if wl in ("hmrc", "adhd", "vat", "ltd", "llc", "ai", "p&l", "api", "ui", "ux"):
             formatted.append(wl.upper())
         elif wl == "coremarketgoods":
-            formatted.append("Coremarket Goods")
+            formatted.append("Orb")
+        elif wl == "orb":
+            formatted.append("Orb")
         elif wl == "snapnpack":
             formatted.append("Snap N Pack")
         elif wl in ("dostuff", "dostuff:"):
@@ -429,12 +432,22 @@ def is_garbage_title(cand):
 
 def extract_chat_title(transcript_path):
     if not transcript_path or not os.path.exists(transcript_path):
-        return "Coremarket Goods Accounting"
+        return "Orb"
 
     chat_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(transcript_path))))
     cid = os.path.basename(chat_dir)
 
-    # 1. First priority: Workspace Directory from transcript.jsonl
+    # 1. First priority: Custom label from chat_voices.json
+    if os.path.exists(CHAT_VOICES_FILE):
+        try:
+            with open(CHAT_VOICES_FILE, "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+                chat = cfg.get("chats", {}).get(cid, {})
+                cand = chat.get("label") or chat.get("title")
+                if cand and not is_garbage_title(cand):
+                    return cand
+        except Exception:
+            pass
     try:
         with open(transcript_path, "r", encoding="utf-8", errors="ignore") as f:
             for _ in range(80):

@@ -1,0 +1,74 @@
+{
+  "announce_chat": true,
+  "default_voice": "en-IE-EmilyNeural",
+  "voice_palette": [
+    {
+      "id": "en-IE-EmilyNeural",
+      "name": "Emily (Irish Female - Warm, Soft & Easygoing)"
+    },
+    {
+      "id": "en-GB-RyanNeural",
+      "name": "Ryan (British Male - Friendly & Casual)"
+    },
+    {
+      "id": "en-US-AvaMultilingualNeural",
+      "name": "Ava (Conversational Female - Relaxed & Natural)"
+    },
+    {
+      "id": "en-US-BrianMultilingualNeural",
+      "name": "Brian (Calm Studio Male - Smooth & Warm)"
+    },
+    {
+      "id": "en-IE-ConnorNeural",
+      "name": "Connor (Irish Male - Easygoing & Natural)"
+    },
+    {
+      "id": "en-AU-NatashaNeural",
+      "name": "Natasha (Australian Female - Friendly & Warm)"
+    }
+  ],
+  "chats": {
+    "a13d0459-9628-4d86-b96f-c472fa81c72b": {
+      "label": "Orb",
+      "title": "Orb AI Voice Studio",
+      "voice": "en-IE-EmilyNeural",
+      "rate": "+0%",
+      "pitch": "+0Hz"
+    },
+    "de5a4648-5c35-4b63-a84f-33cf8597b3ff": {
+      "label": "Orb",
+      "title": "Orb AI Voice Studio",
+      "voice": "en-IE-EmilyNeural",
+      "rate": "+0%",
+      "pitch": "+0Hz"
+    },
+    "47140674-350a-480a-829b-89bc8cf40c51": {
+      "label": "Accounting & Kevin",
+      "title": "Thermo Retreats - Accountant Communication",
+      "voice": "en-GB-RyanNeural",
+      "rate": "+0%",
+      "pitch": "+0Hz"
+    },
+    "6dea43b2-e56a-4d81-8cb2-069a08cc93d6": {
+      "label": "Arts Grant",
+      "title": "Creative Practice Grant Application",
+      "voice": "en-US-AvaMultilingualNeural",
+      "rate": "+0%",
+      "pitch": "+0Hz"
+    },
+    "41caa3f8-1f9a-46d2-ba16-d264fdc4d92e": {
+      "label": "Arts Council Portal",
+      "title": "Navigating Online Portal",
+      "voice": "en-US-BrianMultilingualNeural",
+      "rate": "+0%",
+      "pitch": "+0Hz"
+    },
+    "94c24aad-45fe-460f-b12f-f4633fb1b98d": {
+      "label": "Timber Builds",
+      "title": "Timber Builds",
+      "voice": "en-IE-ConnorNeural",
+      "rate": "+0%",
+      "pitch": "+0Hz"
+    }
+  }
+}
