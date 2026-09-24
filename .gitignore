@@ -13,8 +13,12 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Node modules
+# Node modules & deployments
 node_modules/
 .vercel
 
-.vercel
+# Local secrets & test files
+.env
+voice_settings.json
+*.signal
+test_*.py
