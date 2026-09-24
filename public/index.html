@@ -1825,25 +1825,21 @@
           if (sub) sub.innerText = 'Talk naturally anywhere in the room';
         };
 
-        rec.onresult = (event) => {
-          if (recognition !== rec) return;
-          // Instant barge-in: If user talks while AI is speaking, immediately silence AI
+        rec.onspeechstart = () => {
           if (isAISpeaking) {
             stopSpeech();
+            isAISpeaking = false;
           }
-          const inAcousticShield = isAISpeaking || (Date.now() - lastAISpeechEndTime < 3000);
-          if (inAcousticShield) {
-            interimText = '';
-            currentDraft = '';
-            if (silenceTimer) {
-              clearTimeout(silenceTimer);
-              silenceTimer = null;
-            }
-            if (silenceCountdownInterval) {
-              clearInterval(silenceCountdownInterval);
-              silenceCountdownInterval = null;
-            }
-            return;
+        };
+
+        rec.onresult = (event) => {
+          if (recognition !== rec) return;
+          if (isTotalPaused) return;
+
+          // Instant barge-in: If user speaks while AI is talking, immediately kill AI voice
+          if (isAISpeaking) {
+            stopSpeech();
+            isAISpeaking = false;
           }
 
           interimText = '';
@@ -2034,7 +2030,7 @@
     }
 
     function processUtterance(text) {
-      if (!text || isAISpeaking) return;
+      if (!text) return;
 
       const cleanLower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
       const words = cleanLower.split(' ');

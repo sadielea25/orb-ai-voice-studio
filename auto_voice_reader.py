@@ -142,8 +142,7 @@ def update_live_state(is_speaking=False, current_text="", stop_requested=False, 
         pass
 
 
-def check_stop_requested(playback_start_time):
-    # If voice is disabled via Total Pause, stop immediately
+def check_stop_requested(playback_start_time=0):
     try:
         if not load_settings().get("enabled", True):
             return True
@@ -154,10 +153,8 @@ def check_stop_requested(playback_start_time):
         try:
             with open(STATE_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                if data.get("stop_requested", False):
-                    ts = data.get("timestamp", 0)
-                    if ts >= playback_start_time - 0.1:
-                        return True
+                if data.get("stop_requested", False) or data.get("user_talking", False):
+                    return True
         except Exception:
             pass
     return False
@@ -573,6 +570,8 @@ def queue_speech(cid, text, transcript_path):
         label = "Coremarket Goods Accounting"
 
     with queue_lock:
+        if len(speech_queue) >= 1:
+            speech_queue.clear()
         speech_queue.append({
             "cid": cid,
             "label": label,
