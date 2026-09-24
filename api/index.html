@@ -1791,6 +1791,43 @@
       });
     }
 
+    let currentAISpeakingText = '';
+    let knownAITexts = [];
+
+    function cleanWordsForEcho(text) {
+      if (!text) return [];
+      return String(text).toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+    }
+
+    function isEchoOfAI(text) {
+      if (!text || !text.trim()) return false;
+      const userWords = cleanWordsForEcho(text);
+      if (userWords.length < 3) return false;
+
+      const userPhrase = ' ' + userWords.join(' ') + ' ';
+      const aiSources = [currentAISpeakingText, ...knownAITexts];
+
+      for (const src of aiSources) {
+        if (!src) continue;
+        const aiWords = cleanWordsForEcho(src);
+        if (aiWords.length < 3) continue;
+        const aiPhrase = ' ' + aiWords.join(' ') + ' ';
+
+        if (aiPhrase.includes(userPhrase)) {
+          return true;
+        }
+
+        // Check sliding 3-word window
+        for (let i = 0; i <= userWords.length - 3; i++) {
+          const sub = ' ' + userWords.slice(i, i + 3).join(' ') + ' ';
+          if (aiPhrase.includes(sub) && userWords.length <= 6) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
     function initSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -1842,12 +1879,8 @@
             isAISpeaking = false;
           }
 
-          interimText = '';
-          setOrbState('hearing');
-          const title = document.getElementById('statusTitle');
-          if (title) title.innerText = 'Hearing Speech...';
-
           let latestFinal = '';
+          let currentInterim = '';
           for (let i = event.resultIndex; i < event.results.length; ++i) {
             const res = event.results[i];
             const text = res[0].transcript;
@@ -1855,9 +1888,24 @@
             if (res.isFinal) {
               latestFinal = text.trim();
             } else {
-              interimText += text;
+              currentInterim += text;
             }
           }
+
+          // Echo Shield: If the microphone heard the laptop speaker playing AI output, discard it
+          if (latestFinal && isEchoOfAI(latestFinal)) {
+            console.log('[ECHO-SHIELD] Discarded speaker echo (final):', latestFinal);
+            return;
+          }
+          if (currentInterim && isEchoOfAI(currentInterim)) {
+            console.log('[ECHO-SHIELD] Discarded speaker echo (interim):', currentInterim);
+            return;
+          }
+
+          interimText = currentInterim;
+          setOrbState('hearing');
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'Hearing Speech...';
 
           if (latestFinal) {
             processUtterance(latestFinal);
@@ -2592,6 +2640,7 @@
 
         const wasSpeaking = isAISpeaking;
         isAISpeaking = !!state.is_speaking;
+        currentAISpeakingText = state.current_text || '';
         if (wasSpeaking && !isAISpeaking) {
           lastAISpeechEndTime = Date.now();
         }
@@ -2643,6 +2692,11 @@
     }
 
     function renderChatStream(messages) {
+      knownAITexts = (messages || [])
+        .filter(m => m.role === 'assistant' && m.text)
+        .slice(-15)
+        .map(m => m.text);
+
       const stream = document.getElementById('chatStream');
       if (!messages || messages.length === 0) {
         stream.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Listening for messages... Speak out loud to chat!</div>';
