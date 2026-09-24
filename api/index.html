@@ -598,6 +598,30 @@
         <button id="btnMicToggle" type="button" onclick="event.stopPropagation(); toggleMicOnly();" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.2s ease;">🎙️ Start Listening</button>
       </div>
 
+      <!-- Live Draft Display (Placed directly below Listening) -->
+      <div id="draftContainer" class="draft-container" style="margin-top: 10px;">
+        <div class="draft-label">
+          <span>📝 Spoken Words (Live Syllable Stream)</span>
+          <span id="draftStatus" style="color: #60a5fa;">Continuous Listening</span>
+        </div>
+        <div id="draftBox" class="draft-box">
+          <span style="color: var(--text-muted);">Click the green button above and start talking...</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div id="actionGrid" class="action-grid" style="margin-bottom: 12px;">
+        <button class="btn-readback" onclick="readDraftBack()">
+          <span>🔊</span> Read Back
+        </button>
+        <button class="btn-send" onclick="sendDraftNow()">
+          <span>🚀</span> Send Now
+        </button>
+        <button class="btn-clear" onclick="clearDraft(false)">
+          <span>🗑️</span> Clear
+        </button>
+      </div>
+
       <!-- 2-Step Voice Persona Selector (1. Accent -> 2. Person) -->
       <div id="voiceSelectorSection" class="voice-selector-section">
         <!-- Currently Active Persona Header Bar -->
@@ -673,30 +697,6 @@
             <button type="button" class="btn-test" onclick="testVoicePreview()" style="margin-top: 6px; padding: 9px 12px; font-size: 12px; border-radius: 8px;">🔊 Test Voice Preview</button>
           </div>
         </div>
-      </div>
-
-      <!-- Live Draft Display -->
-      <div id="draftContainer" class="draft-container">
-        <div class="draft-label">
-          <span>📝 Spoken Words (Live Syllable Stream)</span>
-          <span id="draftStatus" style="color: #60a5fa;">Continuous Listening</span>
-        </div>
-        <div id="draftBox" class="draft-box">
-          <span style="color: var(--text-muted);">Click the green button above and start talking...</span>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div id="actionGrid" class="action-grid">
-        <button class="btn-readback" onclick="readDraftBack()">
-          <span>🔊</span> Read Back
-        </button>
-        <button class="btn-send" onclick="sendDraftNow()">
-          <span>🚀</span> Send Now
-        </button>
-        <button class="btn-clear" onclick="clearDraft(false)">
-          <span>🗑️</span> Clear
-        </button>
       </div>
     </div>
     <div id="toast" class="toast">Notice</div>
