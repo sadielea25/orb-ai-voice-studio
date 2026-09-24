@@ -794,6 +794,7 @@
     let interimText = "";
     let silenceTimer = null;
     let silenceCountdownInterval = null;
+    let isDraftPolished = false;
     let lastRenderedMessages = [];
 
     function showToast(msg) {
@@ -2059,6 +2060,7 @@
       }
 
       // Normal speech: adapt in context, then append
+      isDraftPolished = false;
       currentDraft = (currentDraft ? currentDraft + ' ' : '') + text;
       currentDraft = adaptSpeechText(currentDraft);
       interimText = '';
@@ -2071,6 +2073,19 @@
       if (silenceCountdownInterval) {
         clearInterval(silenceCountdownInterval);
         silenceCountdownInterval = null;
+      }
+
+      // If draft is polished or manually edited, DO NOT auto-send — user is reviewing/editing!
+      if (isDraftPolished) {
+        const docs = [document];
+        if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+          try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+        }
+        docs.forEach(doc => {
+          const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+          if (statusEl) statusEl.innerText = '✨ Polished — Review & click "Send Now"';
+        });
+        return;
       }
 
       // Hands-free mode: Generous 12-second pause buffer with live countdown
@@ -2090,6 +2105,11 @@
       updateDraftStatus(`⏳ Auto-sending in ${secondsLeft}s (or click Send)...`);
 
       silenceCountdownInterval = setInterval(() => {
+        if (isDraftPolished) {
+          clearInterval(silenceCountdownInterval);
+          silenceCountdownInterval = null;
+          return;
+        }
         secondsLeft -= 1;
         if (secondsLeft > 0) {
           updateDraftStatus(`⏳ Auto-sending in ${secondsLeft}s (or click Send)...`);
@@ -2103,6 +2123,9 @@
         if (silenceCountdownInterval) {
           clearInterval(silenceCountdownInterval);
           silenceCountdownInterval = null;
+        }
+        if (isDraftPolished) {
+          return; // Polished draft never auto-sends
         }
         if (currentDraft.trim()) {
           showToast('⚡ Silence elapsed — Auto-sending...');
@@ -2142,12 +2165,18 @@
       const text = (el ? (el.innerText || el.textContent || '') : '').replace(/Speak your message out loud\.\.\./gi, '').trim();
       currentDraft = text;
       interimText = '';
+      isDraftPolished = true; // Freeze auto-send while user types/edits
+
+      if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+      if (silenceCountdownInterval) { clearInterval(silenceCountdownInterval); silenceCountdownInterval = null; }
 
       const docs = [document];
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
         try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
       }
       docs.forEach(doc => {
+        const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+        if (statusEl) statusEl.innerText = '✍️ Editing Draft — Click "Send Now" when ready';
         const box = Document.prototype.getElementById.call(doc, 'draftBox');
         if (box && box !== el) {
           if (!text) {
@@ -2175,6 +2204,7 @@
       }
       if (isPolishing) return;
       isPolishing = true;
+      isDraftPolished = true; // Lock in polish mode so timer NEVER auto-sends!
 
       // Pause silence auto-send while polishing
       if (silenceTimer) {
@@ -2283,10 +2313,11 @@
             btn.style.opacity = '1';
           }
           const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
-          if (statusEl) statusEl.innerText = 'Continuous Listening (Polished)';
+          if (statusEl) statusEl.innerText = '✨ Polished — Review & click "Send Now"';
         });
         isPolishing = false;
       }
+    }
     }
 
     function renderDraftDisplay() {
@@ -2344,6 +2375,7 @@
       }
 
       showToast('🚀 Sending message to chat...');
+      isDraftPolished = false;
       currentDraft = "";
       interimText = "";
       renderDraftDisplay();
@@ -2415,6 +2447,7 @@
         clearInterval(silenceCountdownInterval);
         silenceCountdownInterval = null;
       }
+      isDraftPolished = false;
       currentDraft = "";
       interimText = "";
       renderDraftDisplay();
