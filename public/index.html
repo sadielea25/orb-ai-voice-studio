@@ -2152,21 +2152,41 @@
       showToast('✨ Polishing speech with AI...');
 
       async function fetchPolish(text) {
-        // 1. Try local server endpoint if on localhost / HTTP
-        if (window.location.protocol !== 'https:') {
-          try {
-            const r = await fetch('http://127.0.0.1:8766/api/polish_text', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text: text }),
-              mode: 'cors'
-            });
-            const d = await r.json();
-            if (d && d.polished) return d.polished;
-          } catch(e) {}
+        // 1. Direct Google Gemini Flash API call using Developer Key (fastest & most reliable)
+        try {
+          const gemKey = "AIzaSyDRqJUd_G-_JW2pmM48Rs7qi61c48k7Tx4";
+          const gemUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${gemKey}`;
+          const gemBody = {
+            system_instruction: {
+              parts: [{ text: "You are an AI Speech Polish Engine (TextBlaze / Grammarly style). Take raw spoken voice-to-text and output a clean, polished, grammatically sound version. Fix speech errors, accent slips, misheard words, and awkward phrasing while strictly preserving the speaker's original intent, personality, and tone. Return ONLY the single corrected plain-text sentence(s) with no quotation marks, no markdown commentary, and no extra preamble." }]
+            },
+            contents: [{
+              parts: [{ text: text }]
+            }],
+            generationConfig: {
+              maxOutputTokens: 2048,
+              temperature: 0.1
+            }
+          };
+          const gRes = await fetch(gemUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gemBody)
+          });
+          const gData = await gRes.json();
+          const cand = gData?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+          if (cand) {
+            let clean = cand;
+            if ((clean.startsWith('"') && clean.endsWith('"')) || (clean.startsWith("'") && clean.endsWith("'"))) {
+              clean = clean.slice(1, -1).trim();
+            }
+            if (clean) return clean;
+          }
+        } catch(e) {
+          console.warn('[POLISH-GEMINI-DIRECT-ERR]', e);
         }
 
-        // 2. Try relative serverless endpoint (/api/polish_text)
+        // 2. Try server endpoint (/api/polish_text)
         try {
           const r = await fetch('/api/polish_text', {
             method: 'POST',
@@ -2177,33 +2197,7 @@
           if (d && d.polished) return d.polished;
         } catch(e) {}
 
-        // 3. Direct Google Gemini Flash API call using Developer Key (ultra fast, zero proxy bottleneck)
-        try {
-          const gemKey = "AIzaSyDRqJUd_G-_JW2pmM48Rs7qi61c48k7Tx4";
-          const gemUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${gemKey}`;
-          const gemBody = {
-            contents: [{
-              parts: [{
-                text: `You are an expert AI speech polisher (TextBlaze / Grammarly style). Take this spoken text and clean it up into clear, natural, well-punctuated English. Fix accent errors, misheard words, repeated words, and awkward grammar, while preserving the user's natural voice and intent. Return ONLY the polished text with no quotation marks, no preamble, and no commentary:\n\n${text}`
-              }]
-            }]
-          };
-          const gRes = await fetch(gemUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(gemBody)
-          });
-          const gData = await gRes.json();
-          let cand = gData?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-          if (cand) {
-            if ((cand.startsWith('"') && cand.endsWith('"')) || (cand.startsWith("'") && cand.endsWith("'"))) {
-              cand = cand.slice(1, -1).trim();
-            }
-            return cand;
-          }
-        } catch(e) {}
-
-        // 4. Fallback to offline phonetic & accent adapter
+        // 3. Fallback to offline phonetic & accent adapter
         return adaptSpeechText(text);
       }
 
@@ -2213,6 +2207,15 @@
           currentDraft = polished;
           interimText = '';
           renderDraftDisplay();
+
+          docs.forEach(doc => {
+            const box = Document.prototype.getElementById.call(doc, 'draftBox');
+            if (box) {
+              box.style.borderColor = '#10b981';
+              setTimeout(() => { box.style.borderColor = '#3b82f6'; }, 1800);
+            }
+          });
+
           showToast('✨ Speech polished and ready!');
         }
       } catch (err) {
