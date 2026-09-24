@@ -600,9 +600,15 @@
 
       <!-- Live Draft Display (Placed directly below Listening) -->
       <div id="draftContainer" class="draft-container" style="margin-top: 10px;">
-        <div class="draft-label">
-          <span>📝 Spoken Words (Live Syllable Stream)</span>
-          <span id="draftStatus" style="color: #60a5fa;">Continuous Listening</span>
+        <div class="draft-label" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <span>📝 Spoken Words</span>
+            <span id="draftTargetTag" style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(124,58,237,0.35)); border: 1px solid #3b82f6; color: #93c5fd; text-transform: none; letter-spacing: 0;" title="Spoken words will send into this chat">
+              <span>🎯 Sending to:</span>
+              <span id="draftTargetChatName" style="color: #ffffff; font-weight: 900;">Orb</span>
+            </span>
+          </div>
+          <span id="draftStatus" style="color: #60a5fa; font-size: 11px;">Continuous Listening</span>
         </div>
         <div id="draftBox" class="draft-box">
           <span style="color: var(--text-muted);">Click the green button above and start talking...</span>
@@ -2167,7 +2173,7 @@
           }
         }
 
-        // Dynamically update active chat highlight banner across main tab and floating PiP window
+        // Dynamically update active chat highlight banner and spoken words target tag across main tab and floating PiP window
         if (state.active_chat_title) {
           const docs = [document];
           if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
@@ -2178,6 +2184,10 @@
             if (chatEl && chatEl.innerText !== state.active_chat_title) {
               chatEl.innerText = state.active_chat_title;
               chatEl.title = 'Active Chat: ' + state.active_chat_title;
+            }
+            const draftTagEl = Document.prototype.getElementById.call(doc, 'draftTargetChatName');
+            if (draftTagEl && draftTagEl.innerText !== state.active_chat_title) {
+              draftTagEl.innerText = state.active_chat_title;
             }
           });
         }

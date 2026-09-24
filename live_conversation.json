@@ -1,16 +1,6 @@
 [
   {
     "role": "user",
-    "text": "sunshine",
-    "time": "18:09"
-  },
-  {
-    "role": "user",
-    "text": "I don't I don't know what like all you get in our preparing stuff for it I'm just I'm well I've done a free trial on xero to link tie there so I'm trying a link here a sort of creates an account it's in a free trial and linked IT to tides because I started trying to bank statements today and start getting massive so neutron's important it's not picking up on",
-    "time": "18:09"
-  },
-  {
-    "role": "user",
     "text": "it's not picking up on my past ions so you didn't yeah why",
     "time": "18:09"
   },
@@ -198,5 +188,15 @@
     "role": "user",
     "text": "The spoken words in needs to be and placed directly Below The Listening section",
     "time": "10:53"
+  },
+  {
+    "role": "user",
+    "text": "The live spoken words also needs to be above the speaking voice tab",
+    "time": "10:54"
+  },
+  {
+    "role": "user",
+    "text": "Okay so there's a few things for so for up I need the chat that it's going to be sent through to be in the title or as a tag on the spoken words box to make sure it's not going to be sub-through to the wrong trapped",
+    "time": "11:02"
   }
 ]

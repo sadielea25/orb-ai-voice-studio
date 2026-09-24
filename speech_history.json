@@ -1,5 +1,55 @@
 [
   {
+    "text": "From Coremarket Goods Accounting. The updated desktop package has also been recompiled and placed in your central apps folder: Location: D:\\app APK.S Live Updates\\DoStuff (Option B - Live Updates).exe. Summary of Protections Now Active. \u2715 Top-Right Exit Button: Always visible so you can leave a break at any moment. Esc Key Safe-Exit: Hardware-level keyboard shortcut to instantly close the break screen. Resilient Buttons: Done and Skip can never get stuck or disabled. Smart Offline and Timeout Fallback: Live Gemini Flash generation has an automatic 3-second timeout guard, falling back instantly to quick desk stretches if the network ever lags.",
+    "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
+    "time": "11:03:43"
+  },
+  {
+    "text": "From Delete Snacks, Delete Demo Data & Card.... Updated: V1 Explicitly Configured in App Bundle and Live Links. App Bundle Renamed and Rebuilt: The package is now versioned as Snap N Snack V1 (Option B - Live Updates).apk in D:\\app APK.S Live Updates (with Android versionName \"1.0-V1\" and appName: \"Snap N Snack V1\"). V Included in Live Link: Configured SPA routing and aliases on Vercel so the version path is active and matches directly. Git Versioned and Tagged: Saved and locked in Git as sequential tag v1.0. Updated Android Package. Filename: Snap N Snack V1 (Option B - Live Updates).apk. Location: D:\\app APK.S Live Updates\\Snap N Snack V1 (Option B - Live Updates).apk. Architecture: Option B Thin Client auto-streaming from the live V1 server. Versioned Live Links. Production (Live V1): (or. Local Dev (V1): Network LAN (V1):",
+    "voice": "Delete Snacks, Delete Demo Data & Card... (en-IE-EmilyNeural)",
+    "time": "10:59:22"
+  },
+  {
+    "text": "From Delete Snacks, Delete Demo Data & Card.... Gradle packaging is finishing...",
+    "voice": "Delete Snacks, Delete Demo Data & Card... (en-IE-EmilyNeural)",
+    "time": "10:59:11"
+  },
+  {
+    "text": "From Delete Snacks, Delete Demo Data & Card.... Waiting for Gradle build to finish...",
+    "voice": "Delete Snacks, Delete Demo Data & Card... (en-IE-EmilyNeural)",
+    "time": "10:58:59"
+  },
+  {
+    "text": "From Delete Snacks, Delete Demo Data & Card.... Waiting for build and deploy to complete...",
+    "voice": "Delete Snacks, Delete Demo Data & Card... (en-IE-EmilyNeural)",
+    "time": "10:58:44"
+  },
+  {
+    "text": "From Coremarket Goods Accounting. I'm so sorry that happened! I found the exact culprit and fixed it immediately. What Caused The Glitch. Broken Buttons: An unexpected script error crashed the break window right before the Done and Skip buttons could attach their click listeners. That's why clicking them did nothing. Stuck on Loading: The task failed to populate because the script halted before receiving the exercise data, leaving it frozen on \"loading\". Screen Trapped: The app had Windows \"Kiosk Mode\" enabled, which locked the screen with no emergency escape route. \ufe0f What I Just Fixed (Already Live on Your App!). Because your desktop app is an Option B Thin Client, this fix is streamed directly to your app right now: \u2705 Never Trapped Again: Added a visible \u2715 Emergency Exit button in the top-right corner of the card, plus a hardware Esc key shortcut\u2014tapping Esc will instantly release your screen. \u2705 Buttons 100% Responsive: Completely rebuilt the event handlers so Done and Skip are bulletproof and can never fail to register clicks. \u2705 No More Stuck \"Loading\": Replaced the empty loading state with instant, creative micro-breaks powered by Gemini Flash (with a 3-second timeout guard so it never freezes). \u2705 Removed OS Kiosk Lockout: The break window now takes focus smoothly without hijacking your entire operating system. If you ever need to dismiss it instantly, just press Esc or click the new \u2715 in the corner!",
+    "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
+    "time": "10:56:41"
+  },
+  {
+    "text": "From Delete Snacks, Delete Demo Data & Card.... Building and deploying V1...",
+    "voice": "Delete Snacks, Delete Demo Data & Card... (en-IE-EmilyNeural)",
+    "time": "10:56:29"
+  },
+  {
+    "text": "From Delete Snacks, Delete Demo Data & Card.... Assembling Android V1 APK...",
+    "voice": "Delete Snacks, Delete Demo Data & Card... (en-IE-EmilyNeural)",
+    "time": "10:56:00"
+  },
+  {
+    "text": "From Orb. The Spoken Words (Live Syllable Stream) section and its action buttons are positioned directly below the Listening section and above the Speaking Voice tab: Listening and Mic Section (orbRow). Spoken Words and Actions (draftContainer + actionGrid). \ufe0f Speaking Voice Tab and Persona Selector (voiceSelectorSection). Pushed live to Git and synced across and.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "10:55:14"
+  },
+  {
+    "text": "From Orb. Moved the Spoken Words section directly below the Listening section. Layout order: Listening (orbRow or Ear button) \u2794 Spoken Words (draftContainer + Action Buttons) \u2794 Voice Persona Selector (voiceSelectorSection). Live and Synced: Updated locally on and deployed to Vercel at.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "10:53:58"
+  },
+  {
     "text": "From Orb. All systems are active and listening. Local Server (V2): Network LAN (V2): Production (Stable V1):",
     "voice": "Orb (en-IE-EmilyNeural)",
     "time": "10:50:08"
@@ -73,55 +123,5 @@
     "text": "From Clearspace: ADHD Friendly Spoken Room .... Building the APK with Gradle in the background...",
     "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
     "time": "21:13:10"
-  },
-  {
-    "text": "From Timber Builds. I have completed a thorough audit and repair of all images across the Timber Builds catalog and platform views. Active Dev Server Links. Local Preview: Network LAN (Mobile and Multi-Device): Customer Shop View: Summary of Work and Verification. 100% Product Cover Image Coverage: Resolved 32 products that previously had missing or unmapped cover images. Fixed broken relative catalog file paths by linking exact existing renders, photos, and high-resolution PDF catalog page cutouts. Result: 246 or 246 products (100%) now have verified, high-quality cover photos on disk and via HTTP. Created Clean Fallback SVG Placeholder: Created a custom SVG vector graphic at public/icons/placeholder.svg depicting a timber cabin with a camera badge. Updated onerror handlers in app.js, masterlisting.js, and supplier.js so that any fallback image displays a clean graphic instead of a broken browser 404 icon. Data Synchronization: Exported updated media links from SQLite timberbuilds.db to data/products.json to keep database and JSON feeds synchronized. Automated Verification: Ran scripts/verifysystem.py \u2014 all 9 system, API, and media download verification tests passed with 100% success.",
-    "voice": "Timber Builds (en-IE-EmilyNeural)",
-    "time": "19:36:09"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Standard browser popup windows (window.open) don't have operating system permission to stay on top of other applications, which is why clicking another window sent it behind your open app. What is fixed: True Always-On-Top Floating (Picture-in-Picture): When clicking [\u26a1 Launch Widget], it now launches via Chrome's native Document Picture-in-Picture API. This gives the widget OS-level Always-on-Top privileges so it stays floating in the corner even when you click away, browse other tabs, or use other software. Never Blank: Injected full Tailwind CSS and fallback styling directly into the PiP window so it renders immediately with the active timer capsule and reset screen. If You Run Orb and DoStuff Simultaneously: Because Chrome allows only 1 PiP window at a time, you can also launch the native Desktop App (installed on your machine with npm start or the desktop shortcut), which uses Windows native Always-on-Top (screen-saver level) with zero browser conflicts. Deployed live to production: (and local Click [\u26a1 Launch Widget] to see the floating capsule stay on top!",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "19:18:36"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... The blank window was caused by browser security blocking stylesheet injection into about:blank. Fixed: Created a dedicated, self-contained standalone-widget.html with its own built-in responsive styling, live countdown timer, and full-screen recharge break overlay. Clicking [\u26a1 Launch Widget] now instantly loads standalone-widget.html directly\u2014it will never show up blank. Deployed live to production. Test it now: or.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "19:14:19"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Done! Simplified down to one single mode: What changed: One Master Button: The launcher now only has [\u26a1 Launch Widget] (no confusing choices or secondary buttons). Default Multi-Widget Popout: Clicking [\u26a1 Launch Widget] defaults directly to the popout multi-widget window that runs smoothly alongside Orb without competing for Picture-in-Picture or causing either window to vanish. Removed Redundant Options: Stripped out conflicting secondary buttons, tips banners, and duplicate controls so it is clean, minimal, and distraction-free. Live Links: Local: Network: Production:",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "19:06:49"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Yes, absolutely. Full screen takeover will happen regardless of how you are running DoStuff: 1. In the Desktop App (Electron). The break window is configured with breakWindow.setFullScreen(true) and setAlwaysOnTop(true, 'screen-saver', 1). The moment the countdown reaches 00:00, it launches across your entire monitor with a clean white frosted backdrop, placing the micro-break card in the center and locking out background distractions until you click [\u2705 Done]. 2. In Multi-Widget Window Mode (window.open). When the timer expires, the popout window automatically expands (moveTo(0,0), resizeTo(screen.availWidth, screen.availHeight)) and requests full screen, displaying the complete white frosted reset overlay. 3. In the Web App or Mobile APK (index.html). The #breakOverlay is set to fixed inset-0 z-[99999]. It takes over the entire display viewport with a clean white frosted lightbox (bg-white/90 backdrop-blur-md) and triggers the browser's full screen API. You will never miss a break\u2014it takes over cleanly without flickering or black backgrounds.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "19:04:40"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Here is exactly what happens the second the timer hits 00:00: Gentle Attention Chime Plays: A pleasant 3-tone harmonic chime rings out to gently catch your attention. Full Screen Clean Lightbox Takeover: The screen softly frosted-white blurs and locks out distraction, bringing up your physical reset card front and center. Fresh 60-Second Win Displayed: A quick physical win appears (e.g. 5 quick push-ups, drink a glass of water, or clear 3 items off desk). If using real-time AI boosts, fresh non-repetitive micro-wins are dynamically presented. Interactive Action Buttons: [\u2705 Done]: Plays a celebration sound, fires multi-colored confetti , increments your daily win streak, closes the overlay, and smoothly restarts the next focus cycle. [ Try Another Task or Skip]: Instantly rolls a different movement or physical reset if you prefer something else. [ Pin to Taskbar]: Accessible right there if you need to pin DoStuff to your taskbar. You can test this right now by clicking the \u26a1 icon or letting the countdown hit zero on or.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "19:02:33"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Live Previews and Package Status. Local Preview: Network LAN: Production Live Deployment: Option B Live Updates APK: D:\\app APK.S Live Updates\\Screen Time Do Stuff (Option B - Live Updates).apk (Built and Verified). Summary of Updates Completed. Multi-Widget Coexistence (Orb + DoStuff): Added a dedicated Multi-Widget Mode (Run Alongside Orb) button directly on the launcher. Runs in independent popup/popout windows that never trigger Chrome's 1-PiP limit, allowing DoStuff and Orb to stay active on screen at the exact same time without either window disappearing. Preserved full screen takeover for recharge breaks without widget flicker. Prominent \"Pin to Windows Taskbar\" Visibility: On the Launcher Card: Added a prominent [ Pin to Windows Taskbar (1-Click Info)] button with clear, immediate steps for both Desktop and Browser PWA. On the Pop-up Break Overlay: Prominent [ Pin to Windows Taskbar] button visible at every screen resolution without scrolling. On the Popout and PiP Break Cards: Visible [ Pin to Taskbar] toggle action button. On the Floating Capsule Widget: Added an immediate [] button right on the capsule next to the timer pill. Mandatory Legal Footer Added: Integrated full working footer with live production link, Privacy Policy, Terms of Service, Cookie Preferences, and dynamic copyright.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "18:58:05"
-  },
-  {
-    "text": "From DoStuff \u2014 ADHD Micro Break Accountabil.... Building the updated Option B Live Updates APK package in the background. I will update you as soon as the compilation finishes.",
-    "voice": "DoStuff \u2014 ADHD Micro Break Accountabil... (en-IE-EmilyNeural)",
-    "time": "18:56:31"
-  },
-  {
-    "text": "From Timber Builds. Both URLs are now live! \u2705 Two Completely Separate Pages. | | URL | Who sees it |. |---|---|---|. | Customer Shop | | Public buyers \u2014 clean storefront |. | Admin Panel | | You only \u2014 full backend |. Network (mobile/tablet): Shop \u2192. Admin \u2192. What the customer shop has: All products from the same database \u2014 same prices, same stock. Search bar + category tabs (Saunas, Log Cabins, Hot Tubs and so on). \ufe0f Product cards with images, price inc. VAT. Slide-out product detail panel with image gallery. SumUp checkout \u2014 redirects to live SumUp payment page. \u2705 Success screen on return from SumUp. Fully mobile responsive. \u274c Zero admin controls \u2014 costs, margins, supplier data all hidden. Go have a look at and let me know what you'd like tweaked!",
-    "voice": "Timber Builds (en-IE-EmilyNeural)",
-    "time": "17:19:10"
-  },
-  {
-    "text": "From Timber Builds. \u2705 Live \u00a31 checkout created! Click this link: Go through the full card payment and let me know what happens \u2014 I'll be watching to confirm the order comes back successfully.",
-    "voice": "Timber Builds (en-IE-EmilyNeural)",
-    "time": "17:11:17"
   }
 ]
