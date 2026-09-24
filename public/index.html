@@ -102,8 +102,11 @@
     /* Draft Display */
     .draft-container { text-align: left; margin-bottom: 14px; }
     .draft-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; }
-    .draft-box { background: #ffffff !important; border: 2px solid #3b82f6; border-radius: 12px; padding: 14px 16px; min-height: 95px; max-height: 320px; overflow-y: auto; font-size: 16px; font-weight: 600; color: #0f172a !important; line-height: 1.5; word-break: break-word; box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
-    .interim-text { color: #2563eb; font-style: italic; opacity: 0.9; }
+    .draft-box { background: #ffffff !important; border: 2px solid #3b82f6 !important; border-radius: 12px !important; padding: 14px 16px !important; min-height: 95px !important; max-height: 320px !important; overflow-y: auto !important; font-size: 16px !important; font-weight: 700 !important; color: #0f172a !important; line-height: 1.5 !important; word-break: break-word !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; }
+    .draft-box span { color: #0f172a !important; }
+    .draft-box .placeholder-text { color: #64748b !important; font-weight: 500 !important; }
+    .draft-box .interim-text { color: #1d4ed8 !important; font-style: italic !important; font-weight: 600 !important; }
+    .interim-text { color: #1d4ed8 !important; font-style: italic !important; font-weight: 600 !important; }
 
     /* Auto-Send Toggle Bar */
     .mode-bar { background: var(--card-inner); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
@@ -611,7 +614,7 @@
           <span id="draftStatus" style="color: #60a5fa; font-size: 11px;">Continuous Listening</span>
         </div>
         <div id="draftBox" class="draft-box">
-          <span style="color: var(--text-muted);">Click the green button above and start talking...</span>
+          <span class="placeholder-text" style="color: #64748b !important; font-weight: 500;">Speak your message out loud...</span>
         </div>
       </div>
 
@@ -2053,19 +2056,32 @@
     }
 
     function renderDraftDisplay() {
-      const box = document.getElementById('draftBox');
-      if (!box) return;
-
-      const rawCombined = (currentDraft + (interimText ? ' ' + interimText : '')).trim();
-      if (rawCombined) {
-        // Real-time smart word correction in context inside the box
-        const corrected = adaptSpeechText(rawCombined);
-        box.innerHTML = `<span style="color: #0f172a; font-weight: 600;">${escapeHtml(corrected)}</span>`;
-        // Ensure the full message is visible and auto-scrolls with long speech
-        box.scrollTop = box.scrollHeight;
-      } else {
-        box.innerHTML = '<span style="color: #64748b; font-weight: 500;">Speak your message out loud...</span>';
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
       }
+
+      docs.forEach(doc => {
+        const box = Document.prototype.getElementById.call(doc, 'draftBox');
+        if (!box) return;
+
+        const adaptedFinal = currentDraft ? adaptSpeechText(currentDraft) : '';
+        const adaptedInterim = interimText ? adaptSpeechText(interimText) : '';
+
+        if (adaptedFinal || adaptedInterim) {
+          let html = '';
+          if (adaptedFinal) {
+            html += `<span style="color: #000000 !important; font-weight: 700;">${escapeHtml(adaptedFinal)}</span>`;
+          }
+          if (adaptedInterim) {
+            html += (html ? ' ' : '') + `<span class="interim-text" style="color: #1d4ed8 !important; font-style: italic; font-weight: 600;">${escapeHtml(adaptedInterim)}</span>`;
+          }
+          box.innerHTML = html;
+          box.scrollTop = box.scrollHeight;
+        } else {
+          box.innerHTML = '<span class="placeholder-text" style="color: #64748b !important; font-weight: 500;">Speak your message out loud...</span>';
+        }
+      });
     }
 
     function readDraftBack() {

@@ -1,16 +1,6 @@
 [
   {
     "role": "user",
-    "text": "I got some fuel I I really laying but I took my things into regenerates and the thing that was worth given them was like JB album box I get it back it'll cost me 30 quid extra",
-    "time": "18:10"
-  },
-  {
-    "role": "user",
-    "text": "and the thing that was worth given them was like JB album box I get it back it'll cost me 30 quid extra bills in that fuel",
-    "time": "18:10"
-  },
-  {
-    "role": "user",
     "text": "yeah",
     "time": "18:10"
   },
@@ -198,5 +188,15 @@
     "role": "user",
     "text": "So I did the full screen override to not have the small description box tax as you're not really going to read it and it makes it more busy for their reason",
     "time": "11:11"
+  },
+  {
+    "role": "user",
+    "text": "Yes but regarding the IP API key is it using a lassa version of AI would it be stronger if I integrated an API key so it could actually link to Google better or will it not make a difference",
+    "time": "11:14"
+  },
+  {
+    "role": "user",
+    "text": "The speaker message out loud text is still white so I can't see what it's saying as I speak girl",
+    "time": "11:15"
   }
 ]
