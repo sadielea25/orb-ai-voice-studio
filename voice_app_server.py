@@ -818,7 +818,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             api_key = data.get("api_key") or settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY", "")
 
             if api_key:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={api_key}"
+                models_to_try = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"]
                 payload = {
                     "system_instruction": {
                         "parts": [{"text": "You are an expert AI Speech Polisher (Gemini / TextBlaze style). Transform raw, messy, or rambling spoken voice transcripts into clear, articulate, natural, well-phrased English. Fix speech errors, misheard words, filler words, and awkward grammar while strictly keeping the speaker's original meaning and voice. Return ONLY the final polished text with no surrounding quotes, no markdown explanations, and no preamble."}]
@@ -830,24 +830,27 @@ class PWAHandler(BaseHTTPRequestHandler):
                     }
                 }
 
-                try:
-                    req = urllib.request.Request(
-                        url,
-                        data=json.dumps(payload).encode("utf-8"),
-                        headers={"Content-Type": "application/json"}
-                    )
-                    with urllib.request.urlopen(req, timeout=5) as resp:
-                        resp_data = json.loads(resp.read().decode("utf-8"))
-                        candidate = resp_data.get("candidates", [{}])[0]
-                        parts = candidate.get("content", {}).get("parts", [])
-                        if parts and parts[0].get("text"):
-                            ai_text = parts[0]["text"].strip()
-                            if (ai_text.startswith('"') and ai_text.endswith('"')) or (ai_text.startswith("'") and ai_text.endswith("'")):
-                                ai_text = ai_text[1:-1].strip()
-                            if ai_text:
-                                polished = ai_text
-                except Exception as e:
-                    print(f"[POLISH-ERR]: {e}", flush=True)
+                for mod in models_to_try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={api_key}"
+                    try:
+                        req = urllib.request.Request(
+                            url,
+                            data=json.dumps(payload).encode("utf-8"),
+                            headers={"Content-Type": "application/json"}
+                        )
+                        with urllib.request.urlopen(req, timeout=5) as resp:
+                            resp_data = json.loads(resp.read().decode("utf-8"))
+                            candidate = resp_data.get("candidates", [{}])[0]
+                            parts = candidate.get("content", {}).get("parts", [])
+                            if parts and parts[0].get("text"):
+                                ai_text = parts[0]["text"].strip()
+                                if (ai_text.startswith('"') and ai_text.endswith('"')) or (ai_text.startswith("'") and ai_text.endswith("'")):
+                                    ai_text = ai_text[1:-1].strip()
+                                if ai_text:
+                                    polished = ai_text
+                                    break
+                    except Exception as e:
+                        print(f"[POLISH-ERR] ({mod}): {e}", flush=True)
 
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "ok", "polished": polished}).encode("utf-8"))
