@@ -1,5 +1,10 @@
 [
   {
+    "text": "From Orb. \u2728 Added: AI \"Polish\" Button (Blaze or Grammarly Style). [ \u2728 Polish ] Button Added: Placed directly next to Read Back, Send Now, and Clear in the action bar (on both the main tab and floating widget). Blaze-Style AI Speech Polish: Tapping \u2728 Polish takes whatever you have spoken, instantly cleans up speech recognition hiccups, fixes accent slips, removes filler words, and repairs grammar while preserving your natural meaning and tone. Zero Accidental Sends: Removed over-sensitive single-word triggers (go, send, done). You can speak completely freely. Extended 12-Second Thinking Buffer: You now have a relaxed 12-second pause timer with a visible live countdown before hands-free sending, so you never get cut off mid-thought. Live Links. Local (Working V1): Network LAN (V1): Production (Live V1): (Tip: Click the Refresh button on your floating overlay or press Ctrl + F5 to see the new Polish button right away).",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "11:30:01"
+  },
+  {
     "text": "From Orb. Here is why that happened: Over-sensitive trigger words: Common words like \"send\", \"go\", or \"done\" inside natural sentences (e.g., \"I was going to...\" or \"send them a...\") were accidentally triggering an immediate auto-send before you finished speaking. Short 5-Second Silence Timer: Pausing for a few seconds to think was timing out and sending prematurely. Recommended Fixes to Apply: Strict Trigger Phrases Only: Only send on explicit commands like \"SEND NOW\" or \"SEND IT\" (or clicking Send Now), removing accidental single-word triggers (\"go\", \"send\", \"done\"). Extended Silence Buffer: Increase the thinking pause from 5 seconds to 10\u201312 seconds so you have plenty of time to pause and speak continuously without getting cut off. Instant AI Cut-Off (Barge-In): If AI ever starts speaking while you want to talk, the moment you speak or tap, it immediately halts AI speech. Would you like me to apply these fixes right now?",
     "voice": "Orb (en-IE-EmilyNeural)",
     "time": "11:18:32"
@@ -118,10 +123,5 @@
     "text": "From Clearspace: ADHD Friendly Spoken Room .... \ufe0f Root Cause Found and Fixed. The blank screen was caused by a JavaScript Temporal Dead Zone ReferenceError (stopCamera()) inside the camera cleanup effect on startup. When React mounted, it threw an unhandled reference exception that wiped the screen blank. What was done: Fixed the Startup Crash: Rewrote the camera cleanup effect safely so stopCamera can never trigger a ReferenceError. Added an ErrorBoundary: Wrapped the application in an error recovery boundary so unexpected errors can never cause a blank screen. Verified and Deployed: Tested the build and deployed live to production. Active Clickable Links (Tested and Live). Live Production URL: (Open this in your desktop browser or mobile right now \u2014 it will immediately load the fresh interface!). Local Dev Server: Network Dev Server (Wi-Fi): Updated Option B APK: D:\\app APK.S Live Updates\\ClearSpace (Option B - Live Updates).apk.",
     "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
     "time": "22:08:34"
-  },
-  {
-    "text": "From Clearspace: ADHD Friendly Spoken Room .... Building in the background...",
-    "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
-    "time": "22:08:20"
   }
 ]

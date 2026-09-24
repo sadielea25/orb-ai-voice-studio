@@ -1579,6 +1579,33 @@
       }
     }
 
+    function stopSpeech() {
+      if (currentPreviewAudio) {
+        try { currentPreviewAudio.pause(); currentPreviewAudio.currentTime = 0; } catch (e) {}
+      }
+      if (window.speechSynthesis) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+
+      isAISpeaking = false;
+      lastAISpeechEndTime = 0;
+
+      const payload = JSON.stringify({ stop: true });
+      const headers = { 'Content-Type': 'application/json' };
+      try {
+        fetch('http://127.0.0.1:8766/api/stop', {
+          method: 'POST',
+          mode: 'cors',
+          headers: headers,
+          body: payload
+        }).catch(() => {
+          fetch('/api/stop', { method: 'POST', headers: headers, body: payload }).catch(() => {});
+        });
+      } catch (e) {
+        fetch('/api/stop', { method: 'POST', headers: headers, body: payload }).catch(() => {});
+      }
+    }
+
     function toggleMicOnly() {
       if (isTotalPaused) {
         showToast('System is in Total Pause. Click Resume to enable.');
@@ -1588,6 +1615,7 @@
         stopMic();
         showToast('⏹️ Microphone stopped.');
       } else {
+        stopSpeech();
         startMic();
       }
     }
@@ -1597,12 +1625,13 @@
         toggleTotalPause();
         return;
       }
-      // If AI is speaking, clicking the Orb activates TOTAL PAUSE immediately
-      if (isAISpeaking) {
-        toggleTotalPause();
-        return;
+      // Instantly kill any AI voice playback when clicking the Ear to talk!
+      stopSpeech();
+      if (!isConnected) {
+        startMic();
+      } else {
+        stopMic();
       }
-      toggleMicOnly();
     }
 
     function setOrbState(state) {
@@ -1682,8 +1711,12 @@
         showToast('System is in Total Pause. Click Resume to enable.');
         return;
       }
+      // Silence AI speech immediately when listening starts
+      stopSpeech();
       isManualPaused = false;
       isConnected = true;
+      lastAISpeechEndTime = 0;
+
       const docs = [document];
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
         try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
@@ -1771,6 +1804,10 @@
 
         rec.onresult = (event) => {
           if (recognition !== rec) return;
+          // Instant barge-in: If user talks while AI is speaking, immediately silence AI
+          if (isAISpeaking) {
+            stopSpeech();
+          }
           const inAcousticShield = isAISpeaking || (Date.now() - lastAISpeechEndTime < 3000);
           if (inAcousticShield) {
             interimText = '';
