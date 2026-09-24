@@ -1629,6 +1629,111 @@
       }
     }
 
+    let isMicActive = false;
+    let isStartingMic = false;
+
+    function getOrCreateSpeechRecognition() {
+      if (recognition) return recognition;
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return null;
+
+      const rec = new SpeechRecognition();
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.lang = 'en-GB';
+
+      rec.onstart = () => {
+        isMicActive = true;
+        isStartingMic = false;
+        if (!isAISpeaking) setOrbState('listening');
+      };
+
+      rec.onspeechstart = () => {
+        if (isAISpeaking) {
+          stopSpeech();
+          isAISpeaking = false;
+        }
+      };
+
+      rec.onresult = (event) => {
+        if (!isConnected || isTotalPaused) return;
+
+        if (isAISpeaking) {
+          stopSpeech();
+          isAISpeaking = false;
+        }
+
+        let latestFinal = '';
+        let currentInterim = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const res = event.results[i];
+          const text = res[0].transcript;
+
+          if (res.isFinal) {
+            latestFinal = text.trim();
+          } else {
+            currentInterim += text;
+          }
+        }
+
+        // Echo Shield: If the microphone heard the laptop speaker playing AI output, discard it
+        if (latestFinal && isEchoOfAI(latestFinal)) {
+          console.log('[ECHO-SHIELD] Discarded speaker echo (final):', latestFinal);
+          return;
+        }
+        if (currentInterim && isEchoOfAI(currentInterim)) {
+          console.log('[ECHO-SHIELD] Discarded speaker echo (interim):', currentInterim);
+          return;
+        }
+
+        interimText = currentInterim;
+        setOrbState('hearing');
+        const title = document.getElementById('statusTitle');
+        if (title) title.innerText = 'Hearing Speech...';
+
+        if (latestFinal) {
+          processUtterance(latestFinal);
+        } else {
+          renderDraftDisplay();
+          resetSilenceTimer();
+        }
+      };
+
+      rec.onerror = (e) => {
+        console.log('STT Event:', e.error);
+        isStartingMic = false;
+        if (e.error === 'not-allowed') {
+          alert('Microphone permission was denied. Please click the lock icon in your address bar and allow Microphone.');
+          stopMic();
+        } else if (e.error === 'network' || e.error === 'audio-capture') {
+          showToast('⚠️ Mic warning: ' + e.error);
+        }
+      };
+
+      rec.onend = () => {
+        isMicActive = false;
+        isStartingMic = false;
+        if (isConnected && !isTotalPaused) {
+          setTimeout(() => {
+            if (isConnected && !isTotalPaused && !isMicActive && !isStartingMic) {
+              try {
+                isStartingMic = true;
+                rec.start();
+              } catch (e) {
+                isStartingMic = false;
+              }
+            }
+          }, 40);
+        } else {
+          if (!isAISpeaking) setOrbState('paused');
+        }
+      };
+
+      recognition = rec;
+      return rec;
+    }
+
     function toggleMicOnly() {
       if (isTotalPaused) {
         showToast('System is in Total Pause. Click Resume to enable.');
@@ -1638,7 +1743,6 @@
         stopMic();
         showToast('⏹️ Microphone stopped.');
       } else {
-        stopSpeech();
         startMic();
       }
     }
@@ -1648,8 +1752,6 @@
         toggleTotalPause();
         return;
       }
-      // Instantly kill any AI voice playback when clicking the Ear to talk!
-      stopSpeech();
       if (!isConnected) {
         startMic();
       } else {
@@ -1734,7 +1836,6 @@
         showToast('System is in Total Pause. Click Resume to enable.');
         return;
       }
-      // Silence AI speech immediately when listening starts
       stopSpeech();
       isManualPaused = false;
       isConnected = true;
@@ -1752,12 +1853,21 @@
       });
       setOrbState('listening');
 
-      initSpeechRecognition();
+      const rec = getOrCreateSpeechRecognition();
+      if (rec && !isMicActive && !isStartingMic) {
+        try {
+          isStartingMic = true;
+          rec.start();
+        } catch (e) {
+          isStartingMic = false;
+        }
+      }
       showToast('👂 Listening to room! Speak freely.');
     }
 
     function stopMic() {
       isConnected = false;
+      isStartingMic = false;
       if (silenceTimer) {
         clearTimeout(silenceTimer);
         silenceTimer = null;
@@ -1766,16 +1876,13 @@
         clearInterval(silenceCountdownInterval);
         silenceCountdownInterval = null;
       }
-      if (recognition) {
+
+      if (recognition && isMicActive) {
         try {
-          recognition.onend = null;
-          recognition.onerror = null;
-          recognition.onresult = null;
-          recognition.onstart = null;
-          recognition.abort();
+          recognition.stop();
         } catch (e) {}
-        recognition = null;
       }
+
       setOrbState('paused');
       const docs = [document];
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
@@ -1791,161 +1898,8 @@
       });
     }
 
-    let currentAISpeakingText = '';
-    let knownAITexts = [];
-
-    function cleanWordsForEcho(text) {
-      if (!text) return [];
-      return String(text).toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
-    }
-
-    function isEchoOfAI(text) {
-      if (!text || !text.trim()) return false;
-      const userWords = cleanWordsForEcho(text);
-      if (userWords.length < 3) return false;
-
-      const userPhrase = ' ' + userWords.join(' ') + ' ';
-      const aiSources = [currentAISpeakingText, ...knownAITexts];
-
-      for (const src of aiSources) {
-        if (!src) continue;
-        const aiWords = cleanWordsForEcho(src);
-        if (aiWords.length < 3) continue;
-        const aiPhrase = ' ' + aiWords.join(' ') + ' ';
-
-        if (aiPhrase.includes(userPhrase)) {
-          return true;
-        }
-
-        // Check sliding 3-word window
-        for (let i = 0; i <= userWords.length - 3; i++) {
-          const sub = ' ' + userWords.slice(i, i + 3).join(' ') + ' ';
-          if (aiPhrase.includes(sub) && userWords.length <= 6) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
     function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert('Speech recognition is not supported in this browser. Please open this page in Google Chrome or Microsoft Edge.');
-        stopMic();
-        return;
-      }
-
-      if (recognition) {
-        try {
-          recognition.onend = null;
-          recognition.onerror = null;
-          recognition.onresult = null;
-          recognition.onstart = null;
-          recognition.abort();
-        } catch (e) {}
-        recognition = null;
-      }
-
-      try {
-        const rec = new SpeechRecognition();
-        rec.continuous = true;
-        rec.interimResults = true;
-        rec.lang = 'en-GB';
-
-        rec.onstart = () => {
-          if (recognition !== rec) return;
-          setOrbState('listening');
-          const title = document.getElementById('statusTitle');
-          if (title) title.innerText = 'Listening for Voice...';
-          const sub = document.getElementById('statusSub');
-          if (sub) sub.innerText = 'Talk naturally anywhere in the room';
-        };
-
-        rec.onspeechstart = () => {
-          if (isAISpeaking) {
-            stopSpeech();
-            isAISpeaking = false;
-          }
-        };
-
-        rec.onresult = (event) => {
-          if (recognition !== rec) return;
-          if (isTotalPaused) return;
-
-          // Instant barge-in: If user speaks while AI is talking, immediately kill AI voice
-          if (isAISpeaking) {
-            stopSpeech();
-            isAISpeaking = false;
-          }
-
-          let latestFinal = '';
-          let currentInterim = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            const res = event.results[i];
-            const text = res[0].transcript;
-
-            if (res.isFinal) {
-              latestFinal = text.trim();
-            } else {
-              currentInterim += text;
-            }
-          }
-
-          // Echo Shield: If the microphone heard the laptop speaker playing AI output, discard it
-          if (latestFinal && isEchoOfAI(latestFinal)) {
-            console.log('[ECHO-SHIELD] Discarded speaker echo (final):', latestFinal);
-            return;
-          }
-          if (currentInterim && isEchoOfAI(currentInterim)) {
-            console.log('[ECHO-SHIELD] Discarded speaker echo (interim):', currentInterim);
-            return;
-          }
-
-          interimText = currentInterim;
-          setOrbState('hearing');
-          const title = document.getElementById('statusTitle');
-          if (title) title.innerText = 'Hearing Speech...';
-
-          if (latestFinal) {
-            processUtterance(latestFinal);
-          } else {
-            renderDraftDisplay();
-            resetSilenceTimer();
-          }
-        };
-
-        rec.onerror = (e) => {
-          console.log('STT Event:', e.error);
-          if (recognition !== rec) return;
-          if (e.error === 'not-allowed') {
-            alert('Microphone permission was denied. Please click the lock icon in your address bar and allow Microphone.');
-            stopMic();
-          } else if (e.error === 'network' || e.error === 'audio-capture') {
-            stopMic();
-            showToast('⚠️ Mic error: ' + e.error);
-          }
-        };
-
-        rec.onend = () => {
-          if (recognition !== rec) return;
-          if (!isAISpeaking) setOrbState(isConnected ? 'listening' : 'paused');
-          if (isConnected) {
-            setTimeout(() => {
-              if (isConnected && recognition === rec) {
-                initSpeechRecognition();
-              }
-            }, 150);
-          }
-        };
-
-        recognition = rec;
-        rec.start();
-      } catch (err) {
-        console.error('Recognition error:', err);
-        stopMic();
-        showToast('Mic start error: ' + err.message);
-      }
+      return getOrCreateSpeechRecognition();
     }
 
     function adaptSpeechText(rawText) {
