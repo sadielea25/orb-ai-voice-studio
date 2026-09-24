@@ -823,12 +823,12 @@ class PWAHandler(BaseHTTPRequestHandler):
                 models_to_try = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"]
                 payload = {
                     "system_instruction": {
-                        "parts": [{"text": "You are an expert AI Speech Polisher (Gemini / TextBlaze style). Transform raw, messy, or rambling spoken voice transcripts into clear, articulate, natural, well-phrased English. Fix speech errors, misheard words, filler words, and awkward grammar while strictly keeping the speaker's original meaning and voice. Return ONLY the final polished text with no surrounding quotes, no markdown explanations, and no preamble."}]
+                        "parts": [{"text": "You are an expert AI Speech Writer & Polishing Engine (like Google Gemini / Gmail 'Help Me Write' / Grammarly Go). Actively REWRITE and ELEVATE the user's spoken thoughts into crisp, articulate, high-impact, professional, and natural English. Streamline rambling phrases, eliminate filler words, enhance vocabulary and structure, and make the communication sharp and compelling while preserving the core intent. Return ONLY the polished rewrite with no quotes, explanations, or preamble."}]
                     },
                     "contents": [{"parts": [{"text": raw_text}]}],
                     "generationConfig": {
                         "maxOutputTokens": 2048,
-                        "temperature": 0.2
+                        "temperature": 0.3
                     }
                 }
 
