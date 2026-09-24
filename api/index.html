@@ -102,8 +102,8 @@
     /* Draft Display */
     .draft-container { text-align: left; margin-bottom: 14px; }
     .draft-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; }
-    .draft-box { background: var(--card-inner); border: 1px solid var(--border); border-radius: 12px; padding: 16px; min-height: 95px; font-size: 17px; color: #f8fafc; line-height: 1.5; word-break: break-word; }
-    .interim-text { color: #93c5fd; font-style: italic; opacity: 0.9; }
+    .draft-box { background: #ffffff !important; border: 2px solid #3b82f6; border-radius: 12px; padding: 14px 16px; min-height: 95px; max-height: 320px; overflow-y: auto; font-size: 16px; font-weight: 600; color: #0f172a !important; line-height: 1.5; word-break: break-word; box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+    .interim-text { color: #2563eb; font-style: italic; opacity: 0.9; }
 
     /* Auto-Send Toggle Bar */
     .mode-bar { background: var(--card-inner); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
@@ -1840,8 +1840,16 @@
         // Voice commands & UI
         [/\bmassage[s]?\s+cute\b/gi, "messages queued"],
         [/\bmassage[s]?\s+queue[d]?\b/gi, "messages queued"],
+        [/\bfull\s+massage\b/gi, "full message"],
+        [/\bsee\s+the\s+massage\b/gi, "see the message"],
+        [/\bthe\s+massage\b/gi, "the message"],
+        [/\ba\s+massage\b/gi, "a message"],
+        [/\bmassages\b/gi, "messages"],
+        [/\bsend\s+in\s+a\s+massive\b/gi, "send in a message"],
+        [/\bsending\s+a\s+massive\b/gi, "sending a message"],
         [/\bsound\s+sander\b/gi, "send it"],
         [/\bsand\s+through\b/gi, "send through"],
+        [/\bsub[- ]through\b/gi, "send through"],
         [/\bsand\s+it\b/gi, "send it"],
         [/\bsand\s+say\b/gi, "send, say"],
         [/\bsand\s+say\s+go\b/gi, "send, say go"],
@@ -1851,6 +1859,19 @@
         [/\bpleas\s+sand\b/gi, "please send"],
         [/^\bcasting\b$/gi, "testing"],
         [/\bcasting\s+casting\b/gi, "testing testing"],
+        [/\bfor\s+so\s+for\s+up\b/gi, "first off"],
+        [/\bso\s+for\s+up\b/gi, "so first off"],
+        [/\bfor\s+up\b/gi, "first off"],
+
+        // UI Visuals & Elements
+        [/\bblack\s+tax\b/gi, "black text"],
+        [/\bwhite\s+background\s+black\s+tax\b/gi, "white background black text"],
+        [/\bvoice\s+box\s+type\b/gi, "voice box"],
+        [/\bthem\s+for\s+a\s+spots\b/gi, "the voice box"],
+        [/\bfor\s+a\s+spots\b/gi, "voice box"],
+        [/\bweirding\b/gi, "wording"],
+        [/\bcontacts\s+of\b/gi, "context of"],
+        [/\bwithin\s+the\s+contacts\b/gi, "within the context"],
 
         // Antigravity & Orb
         [/\banti\s+gravity\b/gi, "Antigravity"],
@@ -1863,6 +1884,8 @@
         [/\bdifferent\s+charts\b/gi, "different chats"],
         [/\bongoing\s+charts\b/gi, "ongoing chats"],
         [/\bdifferent\s+traps\b/gi, "different chats"],
+        [/\bwrong\s+trapped\b/gi, "wrong chat"],
+        [/\bwrong\s+trap\b/gi, "wrong chat"],
         [/\bcertain\s+trap\b/gi, "certain chat"],
         [/\bjump\s+between\s+a\s+chart\b/gi, "jump between a chat"],
         [/\bjump\s+between\s+charts\b/gi, "jump between chats"],
@@ -2037,9 +2060,11 @@
       if (rawCombined) {
         // Real-time smart word correction in context inside the box
         const corrected = adaptSpeechText(rawCombined);
-        box.innerHTML = `<span style="color: #f8fafc; font-weight: 500;">${escapeHtml(corrected)}</span>`;
+        box.innerHTML = `<span style="color: #0f172a; font-weight: 600;">${escapeHtml(corrected)}</span>`;
+        // Ensure the full message is visible and auto-scrolls with long speech
+        box.scrollTop = box.scrollHeight;
       } else {
-        box.innerHTML = '<span style="color: var(--text-muted);">Speak your message out loud...</span>';
+        box.innerHTML = '<span style="color: #64748b; font-weight: 500;">Speak your message out loud...</span>';
       }
     }
 

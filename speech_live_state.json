@@ -1,1 +1,1 @@
-{"is_speaking": true, "current_text": "Speaking...", "stop_requested": false, "device_name": "Headset (@System32\\drivers\\bthhfenum.sys,#2;%1 Hands-Free AG Audio%0\r\n;(budi 50))", "timestamp": 1790244239.0995681, "last_speech_end_time": 0.0}
+{"is_speaking": false, "current_text": "", "stop_requested": false, "device_name": "Headset (@System32\\drivers\\bthhfenum.sys,#2;%1 Hands-Free AG Audio%0\r\n;(budi 50))", "timestamp": 1790244331.1370053, "last_speech_end_time": 1790244331.1370058}

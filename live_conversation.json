@@ -1,16 +1,6 @@
 [
   {
     "role": "user",
-    "text": "it's not picking up on my past ions so you didn't yeah why",
-    "time": "18:09"
-  },
-  {
-    "role": "user",
-    "text": "are you up to anyway",
-    "time": "18:10"
-  },
-  {
-    "role": "user",
     "text": "I got some fuel I I really laying but I took my things into regenerates and the thing that was worth given them was like JB album box I get it back it'll cost me 30 quid extra",
     "time": "18:10"
   },
@@ -198,5 +188,15 @@
     "role": "user",
     "text": "Okay so there's a few things for so for up I need the chat that it's going to be sent through to be in the title or as a tag on the spoken words box to make sure it's not going to be sub-through to the wrong trapped",
     "time": "11:02"
+  },
+  {
+    "role": "user",
+    "text": "There's a few things voice box type should stretch with the amount of speakers and so I can always see the full massage so if I speak for a long period of time it always shows there I want them for a spots to be white background black tax so it stands out more I can see the voice box already structures so that's fine I need the autocorrect text in the within the contacts of the voice but to be done in typing because it's still sometimes picking up on the wrong words because of my accent and then send in a massive with like weirding so do I need to integrate AI or an API key for it to do there",
+    "time": "11:08"
+  },
+  {
+    "role": "user",
+    "text": "So I did the full screen override to not have the small description box tax as you're not really going to read it and it makes it more busy for their reason",
+    "time": "11:11"
   }
 ]

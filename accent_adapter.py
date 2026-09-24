@@ -16,8 +16,16 @@ PHONETIC_PHRASE_RULES = [
     # Voice commands & UI
     (r"\bmassage[s]?\s+cute\b", "messages queued"),
     (r"\bmassage[s]?\s+queue[d]?\b", "messages queued"),
+    (r"\bfull\s+massage\b", "full message"),
+    (r"\bsee\s+the\s+massage\b", "see the message"),
+    (r"\bthe\s+massage\b", "the message"),
+    (r"\ba\s+massage\b", "a message"),
+    (r"\bmassages\b", "messages"),
+    (r"\bsend\s+in\s+a\s+massive\b", "send in a message"),
+    (r"\bsending\s+a\s+massive\b", "sending a message"),
     (r"\bsound\s+sander\b", "send it"),
     (r"\bsand\s+through\b", "send through"),
+    (r"\bsub[- ]through\b", "send through"),
     (r"\bsand\s+it\b", "send it"),
     (r"\bsand\s+say\b", "send, say"),
     (r"\bsand\s+say\s+go\b", "send, say go"),
@@ -27,12 +35,27 @@ PHONETIC_PHRASE_RULES = [
     (r"\bpleas\s+sand\b", "please send"),
     (r"^\bcasting\b$", "testing"),
     (r"\bcasting\s+casting\b", "testing testing"),
+    (r"\bfor\s+so\s+for\s+up\b", "first off"),
+    (r"\bso\s+for\s+up\b", "so first off"),
+    (r"\bfor\s+up\b", "first off"),
+
+    # UI Visuals & Elements
+    (r"\bblack\s+tax\b", "black text"),
+    (r"\bwhite\s+background\s+black\s+tax\b", "white background black text"),
+    (r"\bvoice\s+box\s+type\b", "voice box"),
+    (r"\bthem\s+for\s+a\s+spots\b", "the voice box"),
+    (r"\bfor\s+a\s+spots\b", "voice box"),
+    (r"\bweirding\b", "wording"),
+    (r"\bcontacts\s+of\b", "context of"),
+    (r"\bwithin\s+the\s+contacts\b", "within the context"),
 
     # Chat / Charts / Traps confusion
     (r"\bbetween\s+charts\b", "between chats"),
     (r"\bdifferent\s+charts\b", "different chats"),
     (r"\bongoing\s+charts\b", "ongoing chats"),
     (r"\bdifferent\s+traps\b", "different chats"),
+    (r"\bwrong\s+trapped\b", "wrong chat"),
+    (r"\bwrong\s+trap\b", "wrong chat"),
     (r"\bcertain\s+trap\b", "certain chat"),
     (r"\bjump\s+between\s+a\s+chart\b", "jump between a chat"),
     (r"\bjump\s+between\s+charts\b", "jump between chats"),
@@ -89,8 +112,9 @@ PHONETIC_PHRASE_RULES = [
 ]
 
 VERB_SAND_PATTERNS = [
-    (r"\b(i|we|you|they|to|please|can\s+you|just|will)\s+sand\b", r"\1 send"),
-    (r"\bsand\s+(me|you|it|that|this|them|him|her|through|now)\b", r"send \1"),
+    (r"\b(i|we|you|they|to|please|can\s+you|just|will|could|should|would)\s+sand\b", r"\1 send"),
+    (r"\bsand\s+(me|you|it|that|this|them|him|her|through|now|to|into|out)\b", r"send \1"),
+    (r"\bsand\s+(a|an|the)\s+(message|prompt|chat|update|request)\b", r"send \1 \2"),
 ]
 
 def load_custom_vocab():

@@ -1,5 +1,10 @@
 [
   {
+    "text": "From Orb. Added the dynamic destination chat tag directly on the Spoken Words box. Visual Tag: Displays Sending to: [Active Chat Name] right in the header of the Spoken Words box so you can confirm the exact conversation target before sending. Real-Time Sync: Updates automatically whenever you switch chats across both the main window and the floating PiP overlay. Pushed and Live: Updated on and synced to Vercel at.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "11:04:51"
+  },
+  {
     "text": "From Coremarket Goods Accounting. The updated desktop package has also been recompiled and placed in your central apps folder: Location: D:\\app APK.S Live Updates\\DoStuff (Option B - Live Updates).exe. Summary of Protections Now Active. \u2715 Top-Right Exit Button: Always visible so you can leave a break at any moment. Esc Key Safe-Exit: Hardware-level keyboard shortcut to instantly close the break screen. Resilient Buttons: Done and Skip can never get stuck or disabled. Smart Offline and Timeout Fallback: Live Gemini Flash generation has an automatic 3-second timeout guard, falling back instantly to quick desk stretches if the network ever lags.",
     "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
     "time": "11:03:43"
@@ -118,10 +123,5 @@
     "text": "From Clearspace: ADHD Friendly Spoken Room .... The cause of the unresponsiveness has been resolved, and both the live links and the Option B Android APK have been rebuilt, tested, and verified. Active Live Clickable Links. Live Production URL (Mobile and Desktop): Local Dev Server: Network Dev Server (Wi-Fi): Android APK (Option B Live Server Standard). The single, officially named Option B package is now available in your central repository: D:\\app APK.S Live Updates\\ClearSpace (Option B - Live Updates).apk. Strict Single Package: Deleted previous duplicate build artifacts (ClearSpace.apk). Live Server Streaming: Streams live from with cleartext traffic enabled. Install-Once Invariant: Install this .apk on your mobile device once; all future code updates stream live into the app automatically. \ufe0f Root Causes Fixed. Dev Server Had Stopped: During the idle gap, the background dev server was not listening on port 5173, causing the Option B APK to fail to connect over Wi-Fi. It has been restarted with --host enabled. Instant Demo Presets: Clicking sample rooms (e.g. Bedroom and Floor Clutter) previously attempted a network vision call that blocked if no API key was present. Demo spaces now load their pre-computed, hyper-specific items and spotlights instantly in 0ms without requiring an API key. Resilient Vision Fallback: For custom room photos without an API key, the app now automatically uses smart on-device detection so you never get blocked or frozen.",
     "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
     "time": "21:14:33"
-  },
-  {
-    "text": "From Clearspace: ADHD Friendly Spoken Room .... Building the APK with Gradle in the background...",
-    "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
-    "time": "21:13:10"
   }
 ]
