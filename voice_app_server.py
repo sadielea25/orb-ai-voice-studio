@@ -820,7 +820,11 @@ class PWAHandler(BaseHTTPRequestHandler):
                 "system_instruction": {
                     "parts": [{"text": "You are an AI Speech Polishing Engine (TextBlaze / Grammarly style). Your job is to take raw spoken voice-to-text and output a clean, polished, grammatically sound version. Fix accent slips, repeated phrases, misheard words, and awkward phrasing while strictly preserving the speaker's original intent, personality, and tone. Return ONLY the polished plain text sentences with no quotation marks, no markdown formatting, and no commentary."}]
                 },
-                "contents": [{"parts": [{"text": raw_text}]}]
+                "contents": [{"parts": [{"text": raw_text}]}],
+                "generationConfig": {
+                    "maxOutputTokens": 2048,
+                    "temperature": 0.1
+                }
             }
 
             try:

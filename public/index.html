@@ -615,7 +615,7 @@
           </div>
           <span id="draftStatus" style="color: #60a5fa; font-size: 11px;">Continuous Listening</span>
         </div>
-        <div id="draftBox" class="draft-box">
+        <div id="draftBox" class="draft-box" contenteditable="true" oninput="handleDraftBoxInput(this)" onkeydown="handleDraftBoxKey(event)" spellcheck="false">
           <span class="placeholder-text" style="color: #64748b !important; font-weight: 500;">Speak your message out loud...</span>
         </div>
       </div>
@@ -1251,7 +1251,7 @@
         'resetSilenceTimer', 'initSpeechRecognition', 'bindOrbHandlers',
         'selectPersona', 'onVoiceSelected', 'updateVoicePersonaUI', 'renderPersonaGallery', 'getAvatarFallback',
         'selectAccent', 'renderAccentPills', 'render2StepVoicePicker', 'previewPersonaVoice', 'applyHotUpdate', 'speakLastAIReply',
-        'pinFloaterToTaskbar'
+        'pinFloaterToTaskbar', 'getDraftText', 'handleDraftBoxInput', 'handleDraftBoxKey'
       ];
       bridgeFns.forEach(fn => {
         try { pipWindow[fn] = window[fn]; } catch (e) {}
@@ -1260,6 +1260,12 @@
       // Bind click handlers inside popup window
       bindOrbHandlers(pipWindow.document);
       render2StepVoicePicker(pipWindow.document);
+
+      const pipDraftBox = pipWindow.document.getElementById('draftBox');
+      if (pipDraftBox) {
+        pipDraftBox.oninput = () => window.handleDraftBoxInput(pipDraftBox);
+        pipDraftBox.onkeydown = (e) => window.handleDraftBoxKey(e);
+      }
 
       const pipVoiceSelect = pipWindow.document.getElementById('selectVoice');
       if (pipVoiceSelect) {
@@ -2107,18 +2113,64 @@
       }, 12000);
     }
 
+    function getDraftText() {
+      // 1. Check currentDraft & interimText variables
+      let t = (currentDraft + (interimText ? ' ' + interimText : '')).trim();
+      if (t) return t;
+
+      // 2. Check DOM draftBox across main tab and PiP overlay
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      for (const d of docs) {
+        try {
+          const box = Document.prototype.getElementById.call(d, 'draftBox');
+          if (box) {
+            let text = (box.innerText || box.textContent || '').trim();
+            text = text.replace(/Speak your message out loud\.\.\./gi, '')
+                       .replace(/Click the green button above and start talking\.\.\./gi, '')
+                       .trim();
+            if (text) return text;
+          }
+        } catch (e) {}
+      }
+      return '';
+    }
+
+    function handleDraftBoxInput(el) {
+      const text = (el ? (el.innerText || el.textContent || '') : '').replace(/Speak your message out loud\.\.\./gi, '').trim();
+      currentDraft = text;
+      interimText = '';
+
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      docs.forEach(doc => {
+        const box = Document.prototype.getElementById.call(doc, 'draftBox');
+        if (box && box !== el) {
+          if (!text) {
+            box.innerHTML = '<span class="placeholder-text" style="color: #64748b !important; font-weight: 500;">Speak your message out loud...</span>';
+          } else {
+            box.innerHTML = `<span style="color: #000000 !important; font-weight: 700;">${escapeHtml(text)}</span>`;
+          }
+        }
+      });
+    }
+
+    function handleDraftBoxKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendDraftNow();
+      }
+    }
+
     let isPolishing = false;
     async function polishDraft() {
-      let rawText = (currentDraft + (interimText ? ' ' + interimText : '')).trim();
+      let rawText = getDraftText();
       if (!rawText) {
-        const box = document.getElementById('draftBox');
-        if (box) {
-          const domText = box.innerText.replace('Speak your message out loud...', '').replace('Click the green button above and start talking...', '').trim();
-          if (domText) rawText = domText;
-        }
-      }
-      if (!rawText) {
-        showToast('Draft is empty. Speak something first to polish!');
+        showToast('Draft is empty. Speak or type something first to polish!');
         return;
       }
       if (isPolishing) return;
@@ -2267,11 +2319,12 @@
     }
 
     function readDraftBack() {
-      if (!currentDraft.trim()) {
-        speakAudio("You haven't spoken any message yet. Go ahead and speak.");
+      const text = getDraftText();
+      if (!text) {
+        speakAudio("You haven't spoken or typed any message yet. Go ahead and speak.");
         return;
       }
-      speakAudio(`You said: ${currentDraft}. Say 'Send' or click Send Now.`);
+      speakAudio(`You said: ${text}. Say 'Send' or click Send Now.`);
     }
 
     function sendDraftNow() {
@@ -2283,9 +2336,10 @@
         clearInterval(silenceCountdownInterval);
         silenceCountdownInterval = null;
       }
-      const fullText = adaptSpeechText((currentDraft + ' ' + interimText).trim());
+      const rawText = getDraftText();
+      const fullText = adaptSpeechText(rawText);
       if (!fullText) {
-        showToast('Draft is empty. Speak something first!');
+        showToast('Draft is empty. Speak or type something first!');
         return;
       }
 
@@ -2293,8 +2347,17 @@
       currentDraft = "";
       interimText = "";
       renderDraftDisplay();
-      document.getElementById('draftStatus').innerText = '⏳ Relaying...';
-      document.getElementById('orbEl').className = 'orb';
+
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      docs.forEach(doc => {
+        const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+        if (statusEl) statusEl.innerText = '⏳ Relaying...';
+        const orb = Document.prototype.getElementById.call(doc, 'orbEl');
+        if (orb) orb.className = 'orb';
+      });
 
       const payload = JSON.stringify({ text: fullText, auto_send: true, source: 'app' });
       const headers = { 'Content-Type': 'application/json' };
@@ -2308,7 +2371,10 @@
       }).then(res => {
         if (!res.ok) throw new Error('Status ' + res.status);
         showToast('✅ Sent directly into Antigravity chat!');
-        document.getElementById('draftStatus').innerText = '✅ Relayed to Chat!';
+        docs.forEach(doc => {
+          const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+          if (statusEl) statusEl.innerText = '✅ Relayed to Chat!';
+        });
       }).catch((err) => {
         // Fallback to relative URL
         return fetch('/api/speech_input', {
@@ -2318,14 +2384,23 @@
         }).then(res => {
           if (!res.ok) throw new Error('Status ' + res.status);
           showToast('✅ Sent directly into Antigravity chat!');
-          document.getElementById('draftStatus').innerText = '✅ Relayed to Chat!';
+          docs.forEach(doc => {
+            const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+            if (statusEl) statusEl.innerText = '✅ Relayed to Chat!';
+          });
         }).catch(finalErr => {
           showToast('❌ Relay error: Unable to connect to local server on port 8766');
-          document.getElementById('draftStatus').innerText = '❌ Failed to connect';
+          docs.forEach(doc => {
+            const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+            if (statusEl) statusEl.innerText = '❌ Failed to connect';
+          });
         });
       }).finally(() => {
         setTimeout(() => {
-          document.getElementById('draftStatus').innerText = 'Continuous Listening';
+          docs.forEach(doc => {
+            const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+            if (statusEl) statusEl.innerText = 'Continuous Listening';
+          });
         }, 2500);
         pollConversation();
       });
@@ -2343,7 +2418,14 @@
       currentDraft = "";
       interimText = "";
       renderDraftDisplay();
-      document.getElementById('draftStatus').innerText = 'Continuous Listening';
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      docs.forEach(doc => {
+        const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+        if (statusEl) statusEl.innerText = 'Continuous Listening';
+      });
       showToast('Draft cleared');
       if (spoken) speakAudio("Draft cleared.");
     }
