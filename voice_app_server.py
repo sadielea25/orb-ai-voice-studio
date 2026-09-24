@@ -800,6 +800,51 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(b'{"status": "received"}')
 
+        elif self.path == "/api/polish_text":
+            raw_text = data.get("text", "").strip()
+            if not raw_text:
+                self._set_headers(200)
+                self.wfile.write(b'{"status": "ok", "polished": ""}')
+                return
+
+            polished = raw_text
+            try:
+                import accent_adapter
+                polished = accent_adapter.adapt_speech_text(raw_text)
+            except Exception:
+                pass
+
+            api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyDRqJUd_G-_JW2pmM48Rs7qi61c48k7Tx4")
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={api_key}"
+            payload = {
+                "system_instruction": {
+                    "parts": [{"text": "You are an AI Speech Polishing Engine (TextBlaze / Grammarly style). Your job is to take raw spoken voice-to-text and output a clean, polished, grammatically sound version. Fix accent slips, repeated phrases, misheard words, and awkward phrasing while strictly preserving the speaker's original intent, personality, and tone. Return ONLY the polished plain text sentences with no quotation marks, no markdown formatting, and no commentary."}]
+                },
+                "contents": [{"parts": [{"text": raw_text}]}]
+            }
+
+            try:
+                req = urllib.request.Request(
+                    url,
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers={"Content-Type": "application/json"}
+                )
+                with urllib.request.urlopen(req, timeout=4) as resp:
+                    resp_data = json.loads(resp.read().decode("utf-8"))
+                    candidate = resp_data.get("candidates", [{}])[0]
+                    parts = candidate.get("content", {}).get("parts", [])
+                    if parts and parts[0].get("text"):
+                        ai_text = parts[0]["text"].strip()
+                        if (ai_text.startswith('"') and ai_text.endswith('"')) or (ai_text.startswith("'") and ai_text.endswith("'")):
+                            ai_text = ai_text[1:-1].strip()
+                        if ai_text:
+                            polished = ai_text
+            except Exception as e:
+                print(f"[POLISH-ERR]: {e}", flush=True)
+
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "polished": polished}).encode("utf-8"))
+
         elif self.path == "/api/stop":
             update_live_state(is_speaking=False, current_text="", stop_requested=True)
             try:

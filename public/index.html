@@ -119,10 +119,12 @@
     input:checked + .slider:before { transform: translateX(20px); }
 
     /* Action Buttons */
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-    button { padding: 11px 10px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .btn-readback { background: #6366f1; color: #fff; }
-    .btn-readback:hover { background: #4f46e5; }
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    button { padding: 11px 8px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .btn-polish { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; box-shadow: 0 2px 10px rgba(139, 92, 246, 0.35); }
+    .btn-polish:hover { background: linear-gradient(135deg, #7c3aed, #4f46e5); transform: translateY(-1px); }
+    .btn-readback { background: #3b82f6; color: #fff; }
+    .btn-readback:hover { background: #2563eb; }
     .btn-send { background: var(--accent); color: #fff; }
     .btn-send:hover { background: var(--accent-hover); }
     .btn-clear { background: var(--card-inner); color: #f87171; border: 1px solid var(--border); }
@@ -620,6 +622,9 @@
 
       <!-- Action Buttons -->
       <div id="actionGrid" class="action-grid" style="margin-bottom: 12px;">
+        <button id="btnPolish" class="btn-polish" onclick="polishDraft()" title="AI Polish (TextBlaze / Grammarly Style)">
+          <span id="polishIcon">✨</span> Polish
+        </button>
         <button class="btn-readback" onclick="readDraftBack()">
           <span>🔊</span> Read Back
         </button>
@@ -1240,7 +1245,7 @@
       const bridgeFns = [
         'toggleTotalPause', 'updateTotalPauseUI', 'toggleMicOnly', 'handleOrbClick',
         'toggleOrb', 'pauseAI', 'toggleMic', 'startMic', 'stopMic', 'readDraftBack', 'sendDraftNow', 'clearDraft',
-        'saveVoiceSettings', 'updateRateLabel', 'updatePitchLabel', 'testVoicePreview',
+        'polishDraft', 'saveVoiceSettings', 'updateRateLabel', 'updatePitchLabel', 'testVoicePreview',
         'speakAudio', 'stopSpeech', 'showToast', 'installPWA', 'popOutFloatingWidget',
         'setOrbState', 'processUtterance', 'adaptSpeechText', 'renderDraftDisplay',
         'resetSilenceTimer', 'initSpeechRecognition', 'bindOrbHandlers',
@@ -1259,6 +1264,10 @@
       const pipVoiceSelect = pipWindow.document.getElementById('selectVoice');
       if (pipVoiceSelect) {
         pipVoiceSelect.onchange = () => window.onVoiceSelected();
+      }
+      const pipPolishBtn = pipWindow.document.getElementById('btnPolish') || pipWindow.document.querySelector('.btn-polish');
+      if (pipPolishBtn) {
+        pipPolishBtn.onclick = () => window.polishDraft();
       }
       const pipReadBackBtn = pipWindow.document.querySelector('.btn-readback');
       if (pipReadBackBtn) {
@@ -1985,15 +1994,12 @@
         return;
       }
 
-      // 3. Smart Send Matcher: Instant send on "GO" or "SEND"
-      const sendTriggers = ['go', 'send', 'sand', 'sent', 'cent', 'scent', 'submit', 'done'];
-      const sendPhrases = ['let\'s go', 'lets go', 'go now', 'go ahead', 'send it', 'send that', 'send now', 'send message', 'sand it'];
+      // 3. Smart Send Matcher: ONLY intentional send phrases (no accidental single-word triggers)
+      const sendPhrases = ['send now', 'send it', 'send message', 'shoot it', 'send that', 'send draft', 'dispatch message'];
+      const isPhraseMatch = sendPhrases.includes(lastTwo) || (lastWord === 'send' && words.length <= 2);
 
-      const isPhraseMatch = sendPhrases.includes(lastTwo);
-      const isWordMatch = sendTriggers.includes(lastWord);
-
-      if (isPhraseMatch || isWordMatch) {
-        const wordsToDrop = isPhraseMatch ? 2 : 1;
+      if (isPhraseMatch) {
+        const wordsToDrop = lastTwo.includes('send') ? 2 : 1;
         const textWords = text.trim().split(/\s+/);
         const remainingWords = textWords.slice(0, -wordsToDrop);
         const contentBefore = remainingWords.join(' ').trim();
@@ -2004,8 +2010,7 @@
 
         currentDraft = adaptSpeechText(currentDraft);
         renderDraftDisplay();
-        const isGoTrigger = lastWord === 'go' || lastTwo.includes('go');
-        showToast(isGoTrigger ? "🚀 'GO' detected — Sending instantly!" : '🚀 Send trigger recognized!');
+        showToast('🚀 Send trigger recognized!');
         sendDraftNow();
         return;
       }
@@ -2025,16 +2030,26 @@
         silenceCountdownInterval = null;
       }
 
-      // Hands-free mode is default and always active.
-      // Message dispatches ONLY after 5 seconds of silence OR immediately when "GO" is said.
-      let secondsLeft = 5;
-      const statusEl = document.getElementById('draftStatus');
-      if (statusEl) statusEl.innerText = `⏳ Auto-sending in ${secondsLeft}s (or say 'GO')...`;
+      // Hands-free mode: Generous 12-second pause buffer with live countdown
+      let secondsLeft = 12;
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+
+      const updateDraftStatus = (txt) => {
+        docs.forEach(doc => {
+          const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+          if (statusEl) statusEl.innerText = txt;
+        });
+      };
+
+      updateDraftStatus(`⏳ Auto-sending in ${secondsLeft}s (or click Send)...`);
 
       silenceCountdownInterval = setInterval(() => {
         secondsLeft -= 1;
         if (secondsLeft > 0) {
-          if (statusEl) statusEl.innerText = `⏳ Auto-sending in ${secondsLeft}s (or say 'GO')...`;
+          updateDraftStatus(`⏳ Auto-sending in ${secondsLeft}s (or click Send)...`);
         } else {
           clearInterval(silenceCountdownInterval);
           silenceCountdownInterval = null;
@@ -2047,12 +2062,100 @@
           silenceCountdownInterval = null;
         }
         if (currentDraft.trim()) {
-          showToast('⚡ 5s silence elapsed — Auto-sending...');
+          showToast('⚡ Silence elapsed — Auto-sending...');
           sendDraftNow();
         } else {
-          if (statusEl) statusEl.innerText = 'Continuous Listening';
+          updateDraftStatus('Continuous Listening');
         }
-      }, 5000);
+      }, 12000);
+    }
+
+    let isPolishing = false;
+    async function polishDraft() {
+      const rawText = (currentDraft + (interimText ? ' ' + interimText : '')).trim();
+      if (!rawText) {
+        showToast('Draft is empty. Speak something first to polish!');
+        return;
+      }
+      if (isPolishing) return;
+      isPolishing = true;
+
+      // Pause silence auto-send while polishing
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+        silenceTimer = null;
+      }
+      if (silenceCountdownInterval) {
+        clearInterval(silenceCountdownInterval);
+        silenceCountdownInterval = null;
+      }
+
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+
+      docs.forEach(doc => {
+        const btn = Document.prototype.getElementById.call(doc, 'btnPolish');
+        if (btn) {
+          btn.innerHTML = '<span>⏳</span> Polishing...';
+          btn.style.opacity = '0.75';
+        }
+        const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+        if (statusEl) statusEl.innerText = '✨ AI Polishing speech...';
+      });
+
+      showToast('✨ Polishing speech with AI...');
+
+      const payload = JSON.stringify({ text: rawText });
+      const headers = { 'Content-Type': 'application/json' };
+
+      let polishedResult = '';
+      try {
+        const res = await fetch('http://127.0.0.1:8766/api/polish_text', {
+          method: 'POST',
+          headers: headers,
+          body: payload,
+          mode: 'cors'
+        });
+        const data = await res.json();
+        if (data && data.polished) {
+          polishedResult = data.polished;
+        }
+      } catch (err) {
+        try {
+          const resFallback = await fetch('/api/polish_text', {
+            method: 'POST',
+            headers: headers,
+            body: payload
+          });
+          const dataFallback = await resFallback.json();
+          if (dataFallback && dataFallback.polished) {
+            polishedResult = dataFallback.polished;
+          }
+        } catch (e2) {
+          polishedResult = adaptSpeechText(rawText);
+        }
+      }
+
+      if (polishedResult) {
+        currentDraft = polishedResult;
+        interimText = '';
+        renderDraftDisplay();
+        showToast('✨ Speech polished and ready!');
+      }
+
+      docs.forEach(doc => {
+        const btn = Document.prototype.getElementById.call(doc, 'btnPolish');
+        if (btn) {
+          btn.innerHTML = '<span id="polishIcon">✨</span> Polish';
+          btn.style.opacity = '1';
+        }
+        const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+        if (statusEl) statusEl.innerText = 'Continuous Listening (Polished)';
+      });
+
+      isPolishing = false;
     }
 
     function renderDraftDisplay() {

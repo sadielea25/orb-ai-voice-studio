@@ -1,5 +1,20 @@
 [
   {
+    "text": "From Orb. Here is why that happened: Over-sensitive trigger words: Common words like \"send\", \"go\", or \"done\" inside natural sentences (e.g., \"I was going to...\" or \"send them a...\") were accidentally triggering an immediate auto-send before you finished speaking. Short 5-Second Silence Timer: Pausing for a few seconds to think was timing out and sending prematurely. Recommended Fixes to Apply: Strict Trigger Phrases Only: Only send on explicit commands like \"SEND NOW\" or \"SEND IT\" (or clicking Send Now), removing accidental single-word triggers (\"go\", \"send\", \"done\"). Extended Silence Buffer: Increase the thinking pause from 5 seconds to 10\u201312 seconds so you have plenty of time to pause and speak continuously without getting cut off. Instant AI Cut-Off (Barge-In): If AI ever starts speaking while you want to talk, the moment you speak or tap, it immediately halts AI speech. Would you like me to apply these fixes right now?",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "11:18:32"
+  },
+  {
+    "text": "From Orb. I'm ready \u2014 lay them all out!",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "11:17:51"
+  },
+  {
+    "text": "From Orb. \u2705 Fixed: Spoken Words Text Visibility. High-Contrast Bold Black Text (#000000): As you speak, every word now displays in solid bold black text inside the white box. Live Typing or Interim Speech (#1d4ed8): Unfinalized live speech as you talk shows in high-contrast dark blue italic before locking into solid black. Placeholder Fixed (#64748b): The idle text \"Speak your message out loud...\" is styled in muted slate grey so it never shows as white or invisible. Multi-Window Sync: Applied across both the main browser window and the floating PiP overlay. Live Links. Local (Working V1): Network LAN (V1): Production (Live V1): (Tip: Click the Refresh button on your floating widget or press Ctrl + F5 to see the new colors immediately).",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "11:16:45"
+  },
+  {
     "text": "From Coremarket Goods Accounting. The small description box has been completely removed from the fullscreen override! \u2728 What's Changed. Ultra-Clean and Minimal: The card now focuses purely on what matters: the animated movement emoji, the bold task title, and the Done or Skip action buttons. Zero Visual Clutter: Eliminated the extra tip/explanation text box so you can glance at the movement, do it, and get right back into flow without reading filler. Instant Live Stream: Since your desktop app is an Option B Thin Client, this cleaner layout is already streaming directly into your active app and online preview!",
     "voice": "Coremarket Goods Accounting (en-IE-EmilyNeural)",
     "time": "11:15:18"
@@ -108,20 +123,5 @@
     "text": "From Clearspace: ADHD Friendly Spoken Room .... Building in the background...",
     "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
     "time": "22:08:20"
-  },
-  {
-    "text": "From Clearspace: ADHD Friendly Spoken Room .... Here is exactly what is happening across all the newly installed apps: Why the newly installed apps aren't loading. Option B APKs are configured to stream live code directly from a dev server running on this PC (. They will appear blank, frozen, or non-responsive if: The dev server on the PC isn't actively running (right now, only ClearSpace is running\u2014the other 15 project servers are stopped). Your phone is on mobile data (4G/5G) instead of your home Wi-Fi. Your phone is connected to the main router while the PC is on the Wi-Fi extender (SKYWCVREEXT), which blocks local device-to-device streaming. The Permanent Solution (Like Snap 'n Pack and DoStuff). In your projects like Snap 'n Pack and Screen Time DoStuff, their live-server APK is set to stream from their live cloud URL ( rather than a local IP address: \u2705 Always works 24/7 \u2014 even when your PC is turned off or asleep. \u2705 Works everywhere \u2014 on 4G/5G, outside, or on any Wi-Fi. \u2705 Still Auto-Updates \u2014 every time new code is deployed, your installed app on your phone updates instantly without reinstalling. What would you like to do? Option 1 (Recommended): I can update ClearSpace (Option B - Live Updates).apk to stream from the live cloud server ( It will be 100% reliable anywhere. Option 2: Keep it streaming strictly over your local Wi-Fi from this PC. (Right now, you can open in your phone's browser to test and use ClearSpace immediately with zero setup!).",
-    "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
-    "time": "22:05:43"
-  },
-  {
-    "text": "From Clearspace: ADHD Friendly Spoken Room .... Yes, reinstall it just this once. The very first APK file had a mismatched port setting baked into its native config, which prevented it from talking to the live dev server. The new package fixes the connection permanently: D:\\app APK.S Live Updates\\ClearSpace (Option B - Live Updates).apk. What to expect once you install this one: Install-Once Standard: You will never need to reinstall it again. From now on, any code edits, voice tweaks, or fixes will stream into the app live automatically over Wi-Fi. Instant Demo Presets: You can tap Bedroom or Study Desk to test the Voice Orb and hyper-specific object spotlights with zero delay. (You can also use the live web link in your phone browser anytime:",
-    "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
-    "time": "22:03:07"
-  },
-  {
-    "text": "From Clearspace: ADHD Friendly Spoken Room .... No, you don't need to reinstall. Option B APKs update automatically over Wi-Fi. To see the update right now: Close the app completely (swipe it away from your phone's recent apps screen) and tap to reopen it. Make sure your phone is connected to your home Wi-Fi. (If your phone's cache is stubbornly holding onto the old screen, you can do a quick 1-tap install of the fresh package: D:\\app APK.S Live Updates\\ClearSpace (Option B - Live Updates).apk). You can also test the updated app instantly in your phone's browser with zero installation:",
-    "voice": "Clearspace: ADHD Friendly Spoken Room ... (en-IE-EmilyNeural)",
-    "time": "22:00:21"
   }
 ]

@@ -4,7 +4,7 @@
   "rate": "+0%",
   "pitch": "+0Hz",
   "volume": "+0%",
-  "enabled": true,
+  "enabled": false,
   "handsfree_enabled": true,
   "auto_send": true,
   "energy_threshold": 180.0,
