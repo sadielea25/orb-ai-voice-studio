@@ -1,5 +1,10 @@
 [
   {
+    "text": "From Delete Snacks, Delete Demo Data & Card.... Versioned Localhost Links and Instant Rollback System Active. Version Specified in Localhost Link: The /v1 path is now directly configured and supported on both local dev and production: Local Dev (V1): Network LAN (V1): Production (Live V1): Automatic Versioning Protocol: Every time an update is made, it will automatically be classified as a new sequential version (V2, V3, and so on), reflected across: The clickable link labels and URLs (/v2, /v3). The UI header badge. The Android package filename in your repository and on your Desktop. A sequential Git tag (v1.0, v2.0, and so on). Instant Rollback Assurance: You can revert to any previous version at any time in two ways: In chat: Simply say \"rollback to v1\" and I will immediately restore that exact state. 1-Click batch script: Run D:\\Snap N Snack\\rollback-to-version.bat to pick any version tag and restore it instantly.",
+    "voice": "Delete Snacks, Delete Demo Data & Card... (en-IE-EmilyNeural)",
+    "time": "12:08:18"
+  },
+  {
     "text": "From Orb. Fixed: Instant Audio Cut-Off on Ear Tap and Barge-In. Instant Cut-Off on Ear Tap: Clicking the Ear (or Start Listening) now sends an immediate hardware stop signal that kills any currently playing speech within milliseconds and puts the mic into Listening mode so you can talk right away. Instant Speech Barge-In: If the AI is reading aloud and you simply start talking, it detects your voice and automatically silences the AI so it never talks over you. Queue Purged: Any remaining queued sentences are wiped instantly so the AI won't resume speaking after you interrupt it. Live Links. Local (Working V1): Network LAN (V1): Production (Live V1): (Click Refresh on your floating widget or press Ctrl + F5 to use the instant cut-off).",
     "voice": "Orb (en-IE-EmilyNeural)",
     "time": "11:33:12"
@@ -118,10 +123,5 @@
     "text": "From Timber Builds. Great questions. Here is how both of those are handled: 1. 1-Click Autofill (Stored Details). I have just updated the shop's checkout form code to include strict HTML autocomplete tags (e.g. autocomplete=\"street-address\", autocomplete=\"name\"). This means when a customer taps the first box on their iPhone or Android, their keyboard will instantly prompt them to \"Autofill Contact and Address\", filling out the entire form in a single tap. 2. Apple Pay and Google Pay. The SumUp Card Widget we installed actually supports Apple Pay and Google Pay out of the box. However, they won't appear while we are testing on Apple and Google have incredibly strict security rules that completely hide the wallet buttons unless the website is running on a live, secure https:// domain. As soon as we deploy your shop to your real domain (e.g. the Apple Pay and Google Pay buttons will automatically appear at the top of the SumUp pop-up for customers using compatible devices!",
     "voice": "Timber Builds (en-IE-EmilyNeural)",
     "time": "22:12:51"
-  },
-  {
-    "text": "From Timber Builds. Ah! I see exactly what happened. The backend checkout was correctly locked to charge exactly \u00a31.00, but because of how the factory logistics engine calculates baseline delivery costs, the frontend button and UI still incorrectly displayed the price as \u00a3643 (adding minimum freight and UK delivery costs onto a \u00a30 item). I've just pushed a fix to force the storefront UI to display exactly \u00a31.00 across the board for that specific test product, so the display perfectly matches the actual final SumUp charge. Refresh the page at and you'll see the test product now correctly says \u00a31.00 everywhere, including the final pay button!",
-    "voice": "Timber Builds (en-IE-EmilyNeural)",
-    "time": "22:10:21"
   }
 ]

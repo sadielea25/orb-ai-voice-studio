@@ -751,16 +751,8 @@ def monitor_and_read():
             _, active_path = get_active_chat_title_and_transcript()
             if active_path and os.path.exists(active_path):
                 res.append(active_path)
-            all_logs = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
-            all_logs.sort(key=lambda p: os.path.getmtime(p), reverse=True)
-            now = time.time()
-            # Only monitor recent chats modified in the last 2 hours (max 6 active threads) to prevent overload
-            for p in all_logs:
-                if len(res) >= 6:
-                    break
-                if p not in res and os.path.exists(p):
-                    if (now - os.path.getmtime(p)) < 7200:  # 2 hours
-                        res.append(p)
+            elif os.path.exists(FALLBACK_LOG):
+                res.append(FALLBACK_LOG)
         except Exception:
             if os.path.exists(FALLBACK_LOG):
                 res.append(FALLBACK_LOG)
@@ -770,44 +762,7 @@ def monitor_and_read():
     seen_hashes = collections.deque(maxlen=400)
 
     def scan_for_missed_replies():
-        print("[AUTO-SPEAKER] 🔍 Checking active chats for recent replies...", flush=True)
-        all_files = scan_transcripts()
-        missed_count = 0
-        for p in all_files:
-            if missed_count >= 2:  # Prevent flooding the queue
-                break
-            if not os.path.exists(p):
-                continue
-            try:
-                cur_sz = os.path.getsize(p)
-                file_positions[p] = cur_sz
-                with open(p, "r", encoding="utf-8", errors="ignore") as f:
-                    lines = f.readlines()
-                for line in reversed(lines[-20:]):
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        data = json.loads(line)
-                    except Exception:
-                        continue
-                    is_model = data.get("source") == "MODEL"
-                    is_response = data.get("type") == "PLANNER_RESPONSE"
-                    has_tools = bool(data.get("tool_calls"))
-                    content = data.get("content", "").strip()
-
-                    if is_model and is_response and not has_tools and content:
-                        msg_hash = hash(content[:150])
-                        if msg_hash not in seen_hashes:
-                            seen_hashes.append(msg_hash)
-                            cid = p.split(os.sep)[-4]
-                            queue_speech(cid, content, p)
-                            missed_count += 1
-                        break
-            except Exception as e:
-                pass
-        print(f"[AUTO-SPEAKER] 🔍 Scan complete: queued {missed_count} replies.", flush=True)
-        return missed_count
+        return 0
 
     # Initial seeding: set all existing transcript files to EOF so we only read new messages
     for p in scan_transcripts():
@@ -833,7 +788,7 @@ def monitor_and_read():
 
     last_scan_time = time.time()
     known_files = list(file_positions.keys())
-    print(f"[AUTO-SPEAKER] Tracking {len(known_files)} existing conversation threads simultaneously.", flush=True)
+    print(f"[AUTO-SPEAKER] Monitoring active chat conversation thread.", flush=True)
 
     was_paused = not load_settings().get("enabled", True)
 
@@ -842,8 +797,10 @@ def monitor_and_read():
             is_enabled = load_settings().get("enabled", True)
             if was_paused and is_enabled:
                 was_paused = False
-                print("[AUTO-SPEAKER] 🔔 Unpaused! Running catch-up scan across all conversation threads...", flush=True)
-                scan_for_missed_replies()
+                for p in scan_transcripts():
+                    if os.path.exists(p):
+                        file_positions[p] = os.path.getsize(p)
+                print("[AUTO-SPEAKER] 🔔 Unpaused! Ready for new messages.", flush=True)
             elif not is_enabled:
                 was_paused = True
 
@@ -852,7 +809,6 @@ def monitor_and_read():
                     os.remove(SCAN_SIGNAL_FILE)
                 except Exception:
                     pass
-                scan_for_missed_replies()
 
             now = time.time()
             if now - last_scan_time >= 2.0:
