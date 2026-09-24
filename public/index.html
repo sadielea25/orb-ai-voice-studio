@@ -2739,6 +2739,73 @@
       }
     }
 
+    let lastMediaTapTime = 0;
+    let mediaTapCount = 0;
+
+    function setupMediaSessionHandlers() {
+      if (!('mediaSession' in navigator)) return;
+
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: 'Orb AI Assistant',
+          artist: 'Live Conversational Voice',
+          album: 'Orb Voice Studio'
+        });
+
+        const handleDoubleTapResume = () => {
+          if (isTotalPaused) {
+            showToast('🎧 Earbud Double-Tap: Resuming playback from Total Pause...');
+            toggleTotalPause();
+            setTimeout(() => {
+              speakLastAIReply();
+            }, 250);
+          } else if (isAISpeaking) {
+            stopSpeech();
+          } else {
+            speakLastAIReply();
+          }
+        };
+
+        navigator.mediaSession.setActionHandler('nexttrack', handleDoubleTapResume);
+        navigator.mediaSession.setActionHandler('previoustrack', handleDoubleTapResume);
+        try { navigator.mediaSession.setActionHandler('seekforward', handleDoubleTapResume); } catch (e) {}
+        try { navigator.mediaSession.setActionHandler('seekbackward', handleDoubleTapResume); } catch (e) {}
+
+        const onPlayPauseTap = () => {
+          const now = Date.now();
+          if (now - lastMediaTapTime < 650) {
+            mediaTapCount++;
+          } else {
+            mediaTapCount = 1;
+          }
+          lastMediaTapTime = now;
+
+          if (mediaTapCount >= 2) {
+            mediaTapCount = 0;
+            console.log('[EARBUD] 🎧 Double-tap detected -> Resuming playback!');
+            handleDoubleTapResume();
+          } else {
+            setTimeout(() => {
+              if (mediaTapCount === 1) {
+                mediaTapCount = 0;
+                if (isAISpeaking) {
+                  stopSpeech();
+                } else if (!isTotalPaused && !isConnected) {
+                  startMic();
+                }
+              }
+            }, 350);
+          }
+        };
+
+        navigator.mediaSession.setActionHandler('play', onPlayPauseTap);
+        navigator.mediaSession.setActionHandler('pause', onPlayPauseTap);
+        navigator.mediaSession.setActionHandler('stop', () => { if (isAISpeaking) stopSpeech(); });
+      } catch (err) {
+        console.warn('MediaSession init:', err);
+      }
+    }
+
     window.onload = () => {
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const badge = document.getElementById('connectionBadge');
@@ -2765,6 +2832,7 @@
 
       bindOrbHandlers(document);
       setOrbState('paused');
+      setupMediaSessionHandlers();
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});

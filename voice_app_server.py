@@ -1054,8 +1054,65 @@ def keep_orb_pinned_loop():
         pass
 
 
+def earbud_gesture_listener_loop():
+    """
+    Listens for hardware headset / earbud gestures:
+    - Double-tap on earbud (VK_MEDIA_NEXT_TRACK 0xB0 or 2x VK_MEDIA_PLAY_PAUSE 0xB3 within 650ms)
+    - If in Total Pause, automatically unpauses and resumes playback of latest AI reply!
+    """
+    try:
+        u32 = ctypes.windll.user32
+        VK_MEDIA_NEXT_TRACK = 0xB0
+        VK_MEDIA_PLAY_PAUSE = 0xB3
+
+        last_pp_press = 0.0
+        prev_next_state = False
+        prev_pp_state = False
+
+        while True:
+            try:
+                next_down = bool(u32.GetAsyncKeyState(VK_MEDIA_NEXT_TRACK) & 0x8000)
+                pp_down = bool(u32.GetAsyncKeyState(VK_MEDIA_PLAY_PAUSE) & 0x8000)
+                now = time.time()
+
+                if next_down and not prev_next_state:
+                    print("[EARBUD] 🎧 Double-tap gesture (Next Track) detected!", flush=True)
+                    handle_earbud_resume_gesture()
+
+                if pp_down and not prev_pp_state:
+                    if now - last_pp_press < 0.65:
+                        print("[EARBUD] 🎧 2x Play/Pause tap detected -> Earbud Double-Tap!", flush=True)
+                        handle_earbud_resume_gesture()
+                        last_pp_press = 0.0
+                    else:
+                        last_pp_press = now
+
+                prev_next_state = next_down
+                prev_pp_state = pp_down
+            except Exception:
+                pass
+            time.sleep(0.04)
+    except Exception:
+        pass
+
+
+def handle_earbud_resume_gesture():
+    settings = load_settings()
+    is_paused = not settings.get("enabled", True)
+    if is_paused:
+        print("[EARBUD-RESUME] 🎧 Unpausing from Total Pause and resuming speech...", flush=True)
+        settings["enabled"] = True
+        save_settings(settings)
+        update_live_state(is_speaking=False, current_text="", stop_requested=False)
+        time.sleep(0.15)
+        trigger_replay_last_ai_reply()
+    else:
+        trigger_replay_last_ai_reply()
+
+
 def run():
     threading.Thread(target=keep_orb_pinned_loop, daemon=True).start()
+    threading.Thread(target=earbud_gesture_listener_loop, daemon=True).start()
     server_address = ("127.0.0.1", PORT)
     while True:
         try:
