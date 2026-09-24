@@ -2230,7 +2230,10 @@
       isPolishing = true;
       isDraftPolished = true; // Lock in polish mode so timer NEVER auto-sends!
 
-      // Pause silence auto-send while polishing
+      // Stop microphone so ambient noise/speech never resets polish state or auto-sends
+      stopMic();
+
+      // Cancel all auto-send timers permanently
       if (silenceTimer) {
         clearTimeout(silenceTimer);
         silenceTimer = null;
