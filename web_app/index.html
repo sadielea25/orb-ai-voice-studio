@@ -2109,7 +2109,14 @@
 
     let isPolishing = false;
     async function polishDraft() {
-      const rawText = (currentDraft + (interimText ? ' ' + interimText : '')).trim();
+      let rawText = (currentDraft + (interimText ? ' ' + interimText : '')).trim();
+      if (!rawText) {
+        const box = document.getElementById('draftBox');
+        if (box) {
+          const domText = box.innerText.replace('Speak your message out loud...', '').replace('Click the green button above and start talking...', '').trim();
+          if (domText) rawText = domText;
+        }
+      }
       if (!rawText) {
         showToast('Draft is empty. Speak something first to polish!');
         return;
@@ -2144,55 +2151,87 @@
 
       showToast('✨ Polishing speech with AI...');
 
-      const payload = JSON.stringify({ text: rawText });
-      const headers = { 'Content-Type': 'application/json' };
+      async function fetchPolish(text) {
+        // 1. Try local server endpoint if on localhost / HTTP
+        if (window.location.protocol !== 'https:') {
+          try {
+            const r = await fetch('http://127.0.0.1:8766/api/polish_text', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: text }),
+              mode: 'cors'
+            });
+            const d = await r.json();
+            if (d && d.polished) return d.polished;
+          } catch(e) {}
+        }
 
-      let polishedResult = '';
+        // 2. Try relative serverless endpoint (/api/polish_text)
+        try {
+          const r = await fetch('/api/polish_text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
+          });
+          const d = await r.json();
+          if (d && d.polished) return d.polished;
+        } catch(e) {}
+
+        // 3. Direct Google Gemini Flash API call using Developer Key (ultra fast, zero proxy bottleneck)
+        try {
+          const gemKey = "AIzaSyDRqJUd_G-_JW2pmM48Rs7qi61c48k7Tx4";
+          const gemUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${gemKey}`;
+          const gemBody = {
+            contents: [{
+              parts: [{
+                text: `You are an expert AI speech polisher (TextBlaze / Grammarly style). Take this spoken text and clean it up into clear, natural, well-punctuated English. Fix accent errors, misheard words, repeated words, and awkward grammar, while preserving the user's natural voice and intent. Return ONLY the polished text with no quotation marks, no preamble, and no commentary:\n\n${text}`
+              }]
+            }]
+          };
+          const gRes = await fetch(gemUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(gemBody)
+          });
+          const gData = await gRes.json();
+          let cand = gData?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+          if (cand) {
+            if ((cand.startsWith('"') && cand.endsWith('"')) || (cand.startsWith("'") && cand.endsWith("'"))) {
+              cand = cand.slice(1, -1).trim();
+            }
+            return cand;
+          }
+        } catch(e) {}
+
+        // 4. Fallback to offline phonetic & accent adapter
+        return adaptSpeechText(text);
+      }
+
       try {
-        const res = await fetch('http://127.0.0.1:8766/api/polish_text', {
-          method: 'POST',
-          headers: headers,
-          body: payload,
-          mode: 'cors'
-        });
-        const data = await res.json();
-        if (data && data.polished) {
-          polishedResult = data.polished;
+        const polished = await fetchPolish(rawText);
+        if (polished) {
+          currentDraft = polished;
+          interimText = '';
+          renderDraftDisplay();
+          showToast('✨ Speech polished and ready!');
         }
       } catch (err) {
-        try {
-          const resFallback = await fetch('/api/polish_text', {
-            method: 'POST',
-            headers: headers,
-            body: payload
-          });
-          const dataFallback = await resFallback.json();
-          if (dataFallback && dataFallback.polished) {
-            polishedResult = dataFallback.polished;
-          }
-        } catch (e2) {
-          polishedResult = adaptSpeechText(rawText);
-        }
-      }
-
-      if (polishedResult) {
-        currentDraft = polishedResult;
-        interimText = '';
+        console.error('Polish error:', err);
+        currentDraft = adaptSpeechText(rawText);
         renderDraftDisplay();
-        showToast('✨ Speech polished and ready!');
+        showToast('✨ Speech adapted!');
+      } finally {
+        docs.forEach(doc => {
+          const btn = Document.prototype.getElementById.call(doc, 'btnPolish');
+          if (btn) {
+            btn.innerHTML = '<span id="polishIcon">✨</span> Polish';
+            btn.style.opacity = '1';
+          }
+          const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+          if (statusEl) statusEl.innerText = 'Continuous Listening (Polished)';
+        });
+        isPolishing = false;
       }
-
-      docs.forEach(doc => {
-        const btn = Document.prototype.getElementById.call(doc, 'btnPolish');
-        if (btn) {
-          btn.innerHTML = '<span id="polishIcon">✨</span> Polish';
-          btn.style.opacity = '1';
-        }
-        const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
-        if (statusEl) statusEl.innerText = 'Continuous Listening (Polished)';
-      });
-
-      isPolishing = false;
     }
 
     function renderDraftDisplay() {
@@ -2405,7 +2444,7 @@
           const title = document.getElementById('statusTitle');
           if (title) title.innerText = 'AI Speaking...';
           const sub = document.getElementById('statusSub');
-          if (sub) sub.innerText = state.current_text || 'Answering your question';
+          if (sub) sub.innerText = 'Click Ear or speak to talk';
           if (silenceTimer) {
             clearTimeout(silenceTimer);
             silenceTimer = null;
