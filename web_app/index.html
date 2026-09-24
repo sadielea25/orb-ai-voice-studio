@@ -1335,10 +1335,21 @@
         });
       } catch (e) {}
 
+      // If user clicked Refresh button, perform complete, total reload of entire application & scripts
+      if (force) {
+        showToast('🔄 Full reload & syncing latest version...');
+        try {
+          sessionStorage.setItem('reopen_pip_after_reload', 'true');
+        } catch (e) {}
+        setTimeout(() => {
+          window.location.href = window.location.pathname + '?v=' + Date.now();
+        }, 200);
+        return;
+      }
+
       try {
         const isPipOpen = window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed;
         if (!isPipOpen) {
-          // In regular tab mode, reload cleanly
           window.location.reload();
           return;
         }
@@ -1376,7 +1387,7 @@
         updateTotalPauseUI(isTotalPaused);
         renderDraftDisplay();
 
-        showToast(force ? '🔄 Floater refreshed!' : '⚡ Floater auto-updated live!');
+        showToast('⚡ Floater auto-updated live!');
         console.log('[AUTO-UPDATE] Floater DOM hot-swapped successfully.');
       } catch (err) {
         console.error('[AUTO-UPDATE] Error applying hot update:', err);
