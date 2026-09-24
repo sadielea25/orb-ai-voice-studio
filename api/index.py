@@ -122,15 +122,36 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"status": "ok", "polished": ""}')
                 return
 
+            chat_title = data.get("chat_title") or "Orb"
+            context = data.get("context")
+
             import base64
             default_gem_key = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=").decode()
             api_key = data.get("api_key") or os.environ.get("GEMINI_API_KEY") or default_gem_key
             models_to_try = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"]
+
+            content_text = raw_text
+            if context:
+                content_text = f"CURRENT CONVERSATION CONTEXT:\n{context}\n\nUSER'S SPOKEN DRAFT TO REWRITE & POLISH:\n\"{raw_text}\""
+
+            sys_instruction = (
+                "You are an elite, context-aware AI Speech Polishing & Thought Articulation Engine (like Google Gemini / Gmail 'Help Me Write' / Grammarly Go / Whisper Accent-Aware Engine). "
+                "Actively REWRITE and ELEVATE the user's spoken thoughts into crisp, articulate, high-impact, professional, and natural English while seamlessly maintaining the context of the ongoing conversation.\n\n"
+                "ACCENT & PHONETIC RECOGNITION RULES:\n"
+                "1. Interpret diverse regional accents (British, Irish, Scottish, Northern English, American, Canadian, Australian, etc.).\n"
+                "2. Intelligently rectify common Speech-To-Text phonetic blurs, homophones, and misheard technical/development terms based on the conversational context (e.g. misheard 'versal' -> 'Vercel', 'German I' -> 'Gemini', 'sans better' -> 'send button', 'oil budget' / 'all budget' -> 'Orb widget', 'for spots' -> 'voice box', 'trapped' -> 'chat', 'dex builder' -> 'dexBuilder', 'apk s' -> 'APKs', 'tax' -> 'text', 'massage' -> 'message', 'policy Jesus' -> 'polish feature', 'lassa version' -> 'lesser version', 'balance chic' -> 'balance sheet').\n\n"
+                "CONVERSATIONAL CONTEXT INTELLIGENCE:\n"
+                "1. Analyze the surrounding conversation context (active project/chat topic, recent assistant messages, recent user turns) to understand what the user is referring to.\n"
+                "2. Seamlessly resolve pronouns and references (e.g. 'it', 'that', 'the second one', 'the button') into precise, contextually clear phrasing.\n"
+                "3. Streamline rambling phrases, eliminate filler words ('like', 'you know', 'um', 'ah', 'basically', 'so yeah'), and enhance vocabulary and structure while preserving the user's core intent.\n"
+                "4. Return ONLY the polished rewrite with no quotes, explanations, or preamble."
+            )
+
             payload = {
                 "system_instruction": {
-                    "parts": [{"text": "You are an expert AI Speech Writer & Polishing Engine (like Google Gemini / Gmail 'Help Me Write' / Grammarly Go). Actively REWRITE and ELEVATE the user's spoken thoughts into crisp, articulate, high-impact, professional, and natural English. Streamline rambling phrases, eliminate filler words, enhance vocabulary and structure, and make the communication sharp and compelling while preserving the core intent. Return ONLY the polished rewrite with no quotes, explanations, or preamble."}]
+                    "parts": [{"text": sys_instruction}]
                 },
-                "contents": [{"parts": [{"text": raw_text}]}],
+                "contents": [{"parts": [{"text": content_text}]}],
                 "generationConfig": {
                     "maxOutputTokens": 2048,
                     "temperature": 0.3

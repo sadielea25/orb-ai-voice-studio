@@ -2255,24 +2255,63 @@
           btn.style.opacity = '0.75';
         }
         const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
-        if (statusEl) statusEl.innerText = '✨ AI Polishing speech...';
+        if (statusEl) statusEl.innerText = '✨ AI Polishing speech in context...';
       });
 
-      showToast('✨ Polishing speech with Gemini AI...');
+      showToast('✨ Polishing speech with contextual AI...');
+
+      // Extract active project/chat title and surrounding conversation turns
+      let activeChatName = '';
+      docs.forEach(doc => {
+        if (!activeChatName) {
+          const el = Document.prototype.getElementById.call(doc, 'draftTargetChatName') ||
+                     Document.prototype.getElementById.call(doc, 'activeChatTitleText');
+          if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Orb') {
+            activeChatName = el.innerText.trim();
+          }
+        }
+      });
+      if (!activeChatName) activeChatName = 'Orb AI Assistant';
+
+      let recentDialogueSummary = '';
+      if (Array.isArray(lastRenderedMessages) && lastRenderedMessages.length > 0) {
+        const recentTurns = lastRenderedMessages.slice(-6);
+        recentDialogueSummary = recentTurns.map(m => {
+          const role = m.role === 'user' ? 'User' : 'Assistant';
+          const text = (m.text || '').replace(/\s+/g, ' ').trim();
+          return `${role}: ${text.length > 280 ? text.slice(0, 280) + '...' : text}`;
+        }).join('\n');
+      } else if (Array.isArray(knownAITexts) && knownAITexts.length > 0) {
+        const lastAIText = knownAITexts[knownAITexts.length - 1];
+        if (lastAIText) {
+          recentDialogueSummary = `Assistant: ${lastAIText.slice(0, 300)}`;
+        }
+      }
+
+      let contextBlock = '';
+      if (recentDialogueSummary || (activeChatName && activeChatName !== 'Orb AI Assistant')) {
+        contextBlock = `CURRENT CONVERSATION CONTEXT:\nProject / Chat: ${activeChatName}\n${recentDialogueSummary ? 'Recent Dialogue:\n' + recentDialogueSummary + '\n\n' : ''}`;
+      }
 
       async function fetchPolish(text) {
-        // 1. Direct Google Gemini 3.5 Flash API call (Ultra-fast ~300ms, Google Gmail / Gemini style)
+        // 1. Direct Google Gemini 3.5 Flash API call (Ultra-fast ~300ms with full contextual understanding)
         try {
           const defaultKey = atob("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=");
           const gemKey = localStorage.getItem('gemini_api_key') || window.__GEMINI_KEY__ || defaultKey;
           if (gemKey) {
             const modelsToTry = ["gemini-3.5-flash", "gemini-3.5-flash-lite"];
+            const systemPrompt = "You are an elite, context-aware AI Speech Polishing & Thought Articulation Engine (like Google Gemini / Gmail 'Help Me Write' / Grammarly Go / Whisper Accent-Aware Engine). Actively REWRITE and ELEVATE the user's spoken thoughts into crisp, articulate, high-impact, professional, and natural English while seamlessly maintaining the context of the ongoing conversation.\n\nACCENT & PHONETIC RECOGNITION RULES:\n1. Interpret diverse regional accents (British, Irish, Scottish, Northern English, American, Canadian, Australian, etc.).\n2. Intelligently rectify common Speech-To-Text phonetic blurs, homophones, and misheard technical/development terms based on the conversational context (e.g. misheard 'versal' -> 'Vercel', 'German I' -> 'Gemini', 'sans better' -> 'send button', 'oil budget' / 'all budget' -> 'Orb widget', 'for spots' -> 'voice box', 'trapped' -> 'chat', 'dex builder' -> 'dexBuilder', 'apk s' -> 'APKs', 'tax' -> 'text', 'massage' -> 'message', 'policy Jesus' -> 'polish feature', 'lassa version' -> 'lesser version', 'balance chic' -> 'balance sheet').\n\nCONVERSATIONAL CONTEXT INTELLIGENCE:\n1. Analyze the surrounding conversation context (active project/chat topic, recent assistant messages, recent user turns) to understand what the user is referring to.\n2. Seamlessly resolve pronouns and references (e.g. 'it', 'that', 'the second one', 'the button') into precise, contextually clear phrasing.\n3. Streamline rambling phrases, eliminate filler words ('like', 'you know', 'um', 'ah', 'basically', 'so yeah'), and enhance vocabulary and structure while preserving the user's core intent.\n4. Return ONLY the polished rewrite with no quotes, explanations, or preamble.";
+
+            const contentText = contextBlock
+              ? `${contextBlock}USER'S SPOKEN DRAFT TO REWRITE & POLISH:\n"${text}"`
+              : text;
+
             const gemBody = {
               system_instruction: {
-                parts: [{ text: "You are an expert AI Speech Writer & Polishing Engine (like Google Gemini / Gmail 'Help Me Write' / Grammarly Go). Actively REWRITE and ELEVATE the user's spoken thoughts into crisp, articulate, high-impact, professional, and natural English. Streamline rambling phrases, eliminate filler words, enhance vocabulary and structure, and make the communication sharp and compelling while preserving the core intent. Return ONLY the polished rewrite with no quotes, explanations, or preamble." }]
+                parts: [{ text: systemPrompt }]
               },
               contents: [{
-                parts: [{ text: text }]
+                parts: [{ text: contentText }]
               }],
               generationConfig: {
                 maxOutputTokens: 2048,
@@ -2306,15 +2345,20 @@
           console.warn('[POLISH-GEMINI-DIRECT-ERR]', e);
         }
 
-        // 2. Try server endpoint (/api/polish_text)
+        // 2. Try server endpoint (/api/polish_text) with rich contextual payload
         try {
           const endpoints = ['/api/polish_text', 'http://127.0.0.1:8766/api/polish_text'];
+          const payload = {
+            text: text,
+            context: contextBlock,
+            chat_title: activeChatName
+          };
           for (const ep of endpoints) {
             try {
               const r = await fetch(ep, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify(payload)
               });
               const d = await r.json();
               if (d && d.polished && d.polished !== text) return d.polished;
@@ -2346,7 +2390,7 @@
             }
           });
 
-          showToast('✨ Polished with Gemini AI!');
+          showToast('✨ Polished in conversation context!');
         }
       } catch (err) {
         console.error('Polish error:', err);
