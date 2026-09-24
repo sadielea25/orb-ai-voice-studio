@@ -1119,6 +1119,11 @@
 
         updateRateLabel();
         updatePitchLabel();
+
+        if (data && data.gemini_api_key) {
+          localStorage.setItem('gemini_api_key', data.gemini_api_key);
+          window.__GEMINI_KEY__ = data.gemini_api_key;
+        }
       } catch (e) {}
     }
 
@@ -2234,7 +2239,51 @@
       showToast('✨ Polishing speech with AI...');
 
       async function fetchPolish(text) {
-        // 1. Try local server endpoint (/api/polish_text)
+        // 1. Direct Google Gemini 3.5 Flash API call (Ultra-fast ~300ms, Google Gmail / Gemini style)
+        try {
+          const gemKey = localStorage.getItem('gemini_api_key') || window.__GEMINI_KEY__ || '';
+          if (gemKey) {
+            const modelsToTry = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"];
+            const gemBody = {
+              system_instruction: {
+                parts: [{ text: "You are an expert AI Speech Polisher (Google Gemini / Gmail Help-me-write style). Transform raw, messy, or rambling spoken voice transcripts into clear, articulate, natural, well-phrased English. Fix speech errors, misheard words, filler words, and awkward grammar while strictly keeping the speaker's original meaning and voice. Return ONLY the final polished text with no surrounding quotes, no markdown explanations, and no preamble." }]
+              },
+              contents: [{
+                parts: [{ text: text }]
+              }],
+              generationConfig: {
+                maxOutputTokens: 2048,
+                temperature: 0.2
+              }
+            };
+
+            for (const m of modelsToTry) {
+              try {
+                const gemUrl = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${gemKey}`;
+                const gRes = await fetch(gemUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(gemBody)
+                });
+                const gData = await gRes.json();
+                const cand = gData?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                if (cand) {
+                  let clean = cand;
+                  if ((clean.startsWith('"') && clean.endsWith('"')) || (clean.startsWith("'") && clean.endsWith("'"))) {
+                    clean = clean.slice(1, -1).trim();
+                  }
+                  if (clean) return clean;
+                }
+              } catch (errM) {
+                console.warn(`[GEMINI-${m}-FAIL]`, errM);
+              }
+            }
+          }
+        } catch(e) {
+          console.warn('[POLISH-GEMINI-DIRECT-ERR]', e);
+        }
+
+        // 2. Try server endpoint (/api/polish_text)
         try {
           const endpoints = ['http://127.0.0.1:8766/api/polish_text', '/api/polish_text'];
           for (const ep of endpoints) {
@@ -2249,42 +2298,6 @@
             } catch(e) {}
           }
         } catch(e) {}
-
-        // 2. Direct Google Gemini Flash API call if key is saved in browser localStorage
-        try {
-          const gemKey = localStorage.getItem('gemini_api_key');
-          if (gemKey) {
-            const gemUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${gemKey}`;
-            const gemBody = {
-              system_instruction: {
-                parts: [{ text: "You are an expert AI Speech Polisher (Gemini / TextBlaze style). Transform raw, messy, or rambling spoken voice transcripts into clear, articulate, natural, well-phrased English. Fix speech errors, misheard words, filler words, and awkward grammar while strictly keeping the speaker's original meaning and voice. Return ONLY the final polished text with no surrounding quotes, no markdown explanations, and no preamble." }]
-              },
-              contents: [{
-                parts: [{ text: text }]
-              }],
-              generationConfig: {
-                maxOutputTokens: 2048,
-                temperature: 0.2
-              }
-            };
-            const gRes = await fetch(gemUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(gemBody)
-            });
-            const gData = await gRes.json();
-            const cand = gData?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-            if (cand) {
-              let clean = cand;
-              if ((clean.startsWith('"') && clean.endsWith('"')) || (clean.startsWith("'") && clean.endsWith("'"))) {
-                clean = clean.slice(1, -1).trim();
-              }
-              if (clean) return clean;
-            }
-          }
-        } catch(e) {
-          console.warn('[POLISH-GEMINI-DIRECT-ERR]', e);
-        }
 
         // 3. Fallback to offline phonetic & accent adapter
         return adaptSpeechText(text);
