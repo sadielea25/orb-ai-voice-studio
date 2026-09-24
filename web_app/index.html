@@ -1907,6 +1907,37 @@
       let text = rawText.trim();
 
       const phoneticRules = [
+        // Regional Dialect & Accent Phonetic Normalization
+        [/\bversal\s+length\b/gi, "Vercel link"],
+        [/\bversal\s+link\b/gi, "Vercel link"],
+        [/\bversal\b/gi, "Vercel"],
+        [/\bgerman\s+i\b/gi, "Gemini"],
+        [/\bgerman\s+eye\b/gi, "Gemini"],
+        [/\bgermany\b/gi, "Gemini"],
+        [/\boil\s+budget\b/gi, "Orb widget"],
+        [/\ball\s+budget\b/gi, "Orb widget"],
+        [/\borb\s+budget\b/gi, "Orb widget"],
+        [/\bpolicy\s+jesus\b/gi, "Polish feature"],
+        [/\bthe\s+policy\b/gi, "the Polish"],
+        [/\blassa\s+version\b/gi, "lighter version"],
+        [/\bsans\s+better\b/gi, "send button"],
+        [/\bsans\s+button\b/gi, "send button"],
+        [/\bsand\s+button\b/gi, "send button"],
+        [/\bfor\s+spots\b/gi, "voice box"],
+        [/\bfor\s+a\s+spots\b/gi, "voice box"],
+        [/\bthem\s+for\s+a\s+spots\b/gi, "the voice box"],
+        [/\bvoice\s+box\s+type\b/gi, "voice box"],
+        [/\blunch\s+pack\b/gi, "launchpad"],
+        [/\blunch\s+pad\b/gi, "launchpad"],
+        [/\bdex\s+builder\b/gi, "dexBuilder"],
+        [/\bapk\s+s\b/gi, "APKs"],
+        [/\bapk\.s\b/gi, "APKs"],
+        [/\bsquash\s+is\b/gi, "squashes"],
+        [/\binto\s+the\s+herds\b/gi, "in terms of this"],
+        [/\bautosense\b/gi, "auto-sends"],
+        [/\bauto\s+sense\b/gi, "auto-sends"],
+        [/\bautosending\b/gi, "auto-sending"],
+
         // Voice commands & UI
         [/\bmassage[s]?\s+cute\b/gi, "messages queued"],
         [/\bmassage[s]?\s+queue[d]?\b/gi, "messages queued"],
@@ -1935,6 +1966,8 @@
 
         // UI Visuals & Elements
         [/\bblack\s+tax\b/gi, "black text"],
+        [/\bwhite\s+tax\b/gi, "white text"],
+        [/\btax\s+box\b/gi, "text box"],
         [/\bwhite\s+background\s+black\s+tax\b/gi, "white background black text"],
         [/\bvoice\s+box\s+type\b/gi, "voice box"],
         [/\bthem\s+for\s+a\s+spots\b/gi, "the voice box"],
