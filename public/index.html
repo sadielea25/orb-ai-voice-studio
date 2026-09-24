@@ -2295,17 +2295,22 @@
         if (polished) {
           currentDraft = polished;
           interimText = '';
-          renderDraftDisplay();
 
           docs.forEach(doc => {
             const box = Document.prototype.getElementById.call(doc, 'draftBox');
             if (box) {
+              box.innerHTML = `<span style="color: #000000 !important; font-weight: 700;">${escapeHtml(polished)}</span>`;
               box.style.borderColor = '#10b981';
-              setTimeout(() => { box.style.borderColor = '#3b82f6'; }, 1800);
+              box.style.boxShadow = '0 0 16px rgba(16, 185, 129, 0.4)';
+              box.scrollTop = box.scrollHeight;
+              setTimeout(() => {
+                box.style.borderColor = '#3b82f6';
+                box.style.boxShadow = 'none';
+              }, 2200);
             }
           });
 
-          showToast('✨ Speech polished and ready!');
+          showToast('✨ Polished with Gemini AI!');
         }
       } catch (err) {
         console.error('Polish error:', err);
@@ -2324,7 +2329,6 @@
         });
         isPolishing = false;
       }
-    }
     }
 
     function renderDraftDisplay() {
