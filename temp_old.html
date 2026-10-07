@@ -24,7 +24,7 @@
       --text-muted: #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 20px 14px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    body { background: var(--bg); color: var(--text); padding: 20px 14px; min-height: 100vh; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 680px; padding-bottom: 40px; }
     header { text-align: center; margin-bottom: 18px; }
     h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; background: linear-gradient(135deg, #fff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -526,11 +526,6 @@
         font-size: 12px !important;
       }
     }
-    
-    /* Completely hide download options if the user is already inside the installed PWA */
-    @media all and (display-mode: standalone) {
-      .download-section { display: none !important; }
-    }
   </style>
 </head>
 <body>
@@ -548,23 +543,15 @@
   <div id="pipActivePlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; color: #94a3b8; font-family: system-ui, sans-serif; gap: 14px; padding: 24px;">
     <div style="font-size: 44px; filter: drop-shadow(0 0 16px rgba(124,58,237,0.6));">🎙️</div>
     <div style="font-size: 18px; font-weight: 800; color: #f8fafc;">Orb Voice Floating Widget Active</div>
-    <div style="font-size: 13.5px; max-width: 340px; line-height: 1.5; color: #94a3b8;">Your floating overlay is pinned and running over your screen.</div>
-    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 12px; max-width: 380px; margin: 8px 0;">
-      <div style="font-weight: 800; color: #f87171; font-size: 13px; margin-bottom: 4px;">⚠️ DO NOT MINIMIZE THIS WINDOW</div>
-      <div style="font-size: 12px; color: #fca5a5; line-height: 1.4;">If you minimize this main window to your taskbar, Windows will forcefully minimize the floating widget along with it. Just leave this window open in the background behind your other apps.</div>
-    </div>
-    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
-      <button type="button" onclick="if(window.documentPictureInPicture && window.documentPictureInPicture.window) window.documentPictureInPicture.window.close()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; padding: 9px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Dock Back to Tab</button>
-      <button type="button" onclick="window.toggleMicOnly()" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 9px 20px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer;">🎙️ Start Microphone</button>
-    </div>
+    <div style="font-size: 13.5px; max-width: 340px; line-height: 1.5; color: #94a3b8;">Your floating overlay is pinned and running over your screen. Keep this tab open in the background to sustain live audio.</div>
+    <button onclick="if(window.documentPictureInPicture && window.documentPictureInPicture.window) window.documentPictureInPicture.window.close()" style="margin-top: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; padding: 9px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Dock Back to Tab</button>
   </div>
 
   <div class="container">
     <header>
       <h1>🎙️ Orb AI Live Voice Studio</h1>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-        <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(124,58,237,0.4); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget()">🚀 Launch on your screen</button>
-        <button type="button" id="btnFocusMain" style="display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid #0ea5e9; color: #38bdf8; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; cursor: pointer; align-items: center; gap: 6px;" onclick="window.focus(); showToast('Back on Main Page! Click Start Listening.');">🔙 Go to Main Page</button>
+        <button id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(124,58,237,0.4); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget()">🚀 Launch on your screen</button>
       </div>
     </header>
 
@@ -574,6 +561,34 @@
         <span>💬 Real-Time Speech Stream</span>
         <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
       </div>
+
+      <!-- Active Chat Target Spotlight -->
+      <div id="activeChatHighlight" class="active-chat-highlight" title="Currently active conversation">
+        <span class="active-chat-pulse"></span>
+        <span class="active-chat-icon">🎯</span>
+        <div class="active-chat-meta">
+          <span class="active-chat-label">Active Chat</span>
+          <span id="activeChatTitleText" class="active-chat-title">Detecting active chat...</span>
+        </div>
+      </div>
+
+      <!-- Master Floater Controls: Total Pause, Speak AI Reply, Refresh, Pin to Taskbar -->
+      <div style="margin-top: 10px; margin-bottom: 12px; display: flex; gap: 6px; align-items: stretch; flex-wrap: wrap;">
+        <button id="btnTotalPause" type="button" onclick="toggleTotalPause()" style="flex: 1 1 120px; min-width: 105px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+          <span id="totalPauseIcon">🛑</span>
+          <span id="totalPauseText">Total Pause</span>
+        </button>
+        <button id="btnFloaterSpeakAI" type="button" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1 1 130px; min-width: 115px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span>🗣️</span>
+          <span>Speak AI Reply</span>
+        </button>
+        <button id="btnFloaterRefresh" type="button" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span id="floaterRefreshIcon">🔄</span>
+          <span>Refresh</span>
+        </button>
+        <button id="btnFloaterPinTaskbar" type="button" onclick="pinFloaterToTaskbar()" title="Pin standalone app to Windows Taskbar" style="padding: 10px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span>📌</span>
+          <span>Pin Taskbar</span>
         </button>
       </div>
 
@@ -585,7 +600,7 @@
             <div id="statusSub" class="status-sub">Click Ear or Start Listening below</div>
           </div>
         </div>
-        <button type="button" id="btnMicToggle" type="button" onclick="event.stopPropagation(); toggleMicOnly();" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.2s ease;">🎙️ Start Listening</button>
+        <button id="btnMicToggle" type="button" onclick="event.stopPropagation(); toggleMicOnly();" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.2s ease;">🎙️ Start Listening</button>
       </div>
 
       <!-- Live Draft Display (Placed directly below Listening) -->
@@ -593,7 +608,10 @@
         <div class="draft-label" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <span>📝 Spoken Words</span>
-            
+            <span id="draftTargetTag" style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; background: linear-gradient(135deg, rgba(37,99,235,0.35), rgba(124,58,237,0.35)); border: 1px solid #3b82f6; color: #93c5fd; text-transform: none; letter-spacing: 0;" title="Spoken words will send into this chat">
+              <span>🎯 Sending to:</span>
+              <span id="draftTargetChatName" style="color: #ffffff; font-weight: 900;">Orb</span>
+            </span>
           </div>
           <span id="draftStatus" style="color: #60a5fa; font-size: 11px;">Continuous Listening</span>
         </div>
@@ -604,38 +622,17 @@
 
       <!-- Action Buttons -->
       <div id="actionGrid" class="action-grid" style="margin-bottom: 12px;">
-        <button type="button" id="btnPolish" class="btn-polish" onclick="polishDraft()" title="AI Polish (TextBlaze / Grammarly Style)">
+        <button id="btnPolish" class="btn-polish" onclick="polishDraft()" title="AI Polish (TextBlaze / Grammarly Style)">
           <span id="polishIcon">✨</span> Polish
         </button>
-        <button type="button" class="btn-readback" onclick="readDraftBack()">
+        <button class="btn-readback" onclick="readDraftBack()">
           <span>🔊</span> Read Back
         </button>
-        <button type="button" class="btn-send" onclick="sendDraftNow()">
+        <button class="btn-send" onclick="sendDraftNow()">
           <span>🚀</span> Send Now
         </button>
-        <button type="button" class="btn-clear" onclick="clearDraft(false)">
+        <button class="btn-clear" onclick="clearDraft(false)">
           <span>🗑️</span> Clear
-        </button>
-      </div>
-
-      <!-- AI Controls & Chat Target -->
-      <div style="margin-bottom: 12px; display: flex; gap: 6px; align-items: stretch; flex-wrap: wrap;">
-        <!-- Active Chat Target Spotlight -->
-        <div id="activeChatHighlight" class="active-chat-highlight" style="flex: 1 1 180px; min-width: 160px; margin-bottom: 0;" title="Currently active conversation">
-          <span class="active-chat-pulse"></span>
-          <span class="active-chat-icon">??</span>
-          <div class="active-chat-meta">
-            <span class="active-chat-label">Active Chat</span>
-            <span id="activeChatTitleText" class="active-chat-title">Detecting active chat...</span>
-          </div>
-        </div>
-        <button type="button" id="btnTotalPause" onclick="toggleTotalPause()" style="flex: 1 1 120px; min-width: 105px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-          <span id="totalPauseIcon">??</span>
-          <span id="totalPauseText">Total Pause</span>
-        </button>
-        <button type="button" id="btnFloaterSpeakAI" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1 1 130px; min-width: 115px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-          <span>??</span>
-          <span>Speak AI Reply</span>
         </button>
       </div>
 
@@ -711,7 +708,7 @@
               </div>
             </div>
 
-            <button type="button" type="button" class="btn-test" onclick="testVoicePreview()" style="margin-top: 6px; padding: 9px 12px; font-size: 12px; border-radius: 8px;">🔊 Test Voice Preview</button>
+            <button type="button" class="btn-test" onclick="testVoicePreview()" style="margin-top: 6px; padding: 9px 12px; font-size: 12px; border-radius: 8px;">🔊 Test Voice Preview</button>
           </div>
         </div>
       </div>
@@ -719,31 +716,23 @@
     <div id="toast" class="toast">Notice</div>
   </div>
 
-    <!-- Footer Utilities -->
-  <div style="margin: 20px auto 10px auto; max-width: 600px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-    <button type="button" id="btnFloaterRefresh" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-      <span id="floaterRefreshIcon">??</span>
-      <span>Refresh</span>
-    </button>
-    <button type="button" id="btnFloaterPinTaskbar" onclick="pinFloaterToTaskbar()" title="Pin standalone app to Windows Taskbar" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-      <span>??</span>
-      <span>Pin to Taskbar</span>
-    </button>
-  </div>
-  <div id="downloadSection" class="download-section" style="margin: 30px auto 40px auto; max-width: 600px; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 25px;">
-    <h3 style="margin-top: 0; font-size: 15px; font-weight: 600; color: #f8fafc; margin-bottom: 16px;">Get the App</h3>
-    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-      <button type="button" onclick="window.location.href='/Orb.apk'" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">📱</span> Download for Android
-      </button>
-      <button type="button" onclick="installPWA()" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">💻</span> Install for Windows / Mac
-      </button>
-    </div>
-  </div>
-
   <script>
-// Single-instance coordinator: ensure multiple open tabs never spawn a barrage of conflicting widgets
+    // Cross-window DOM proxy: ensure document.getElementById safely finds elements in main tab or floating PiP window without recursion
+    function getAnyElementById(id) {
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try {
+          const pipDoc = window.documentPictureInPicture.window.document;
+          if (pipDoc) {
+            const pipEl = Document.prototype.getElementById.call(pipDoc, id);
+            if (pipEl) return pipEl;
+          }
+        } catch (e) {}
+      }
+      return Document.prototype.getElementById.call(document, id);
+    }
+    document.getElementById = getAnyElementById;
+
+    // Single-instance coordinator: ensure multiple open tabs never spawn a barrage of conflicting widgets
     const widgetSyncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('orb_voice_widget_sync') : null;
     if (widgetSyncChannel) {
       widgetSyncChannel.onmessage = (ev) => {
@@ -827,14 +816,14 @@
     function updateRateLabel() {
       const val = parseInt(document.getElementById('rangeRate').value);
       const mult = ((100 + val) / 100).toFixed(2);
-      const lr = document.getElementById('labelRate'); if (lr) lr.innerText = mult + 'x';
+      document.getElementById('labelRate').innerText = mult + 'x';
     }
 
     function updatePitchLabel() {
       const val = parseInt(document.getElementById('rangePitch').value);
-      if (val === 0) { const lp = document.getElementById('labelPitch'); if (lp) lp.innerText = 'Normal'; }
-      else if (val > 0) { const lp = document.getElementById('labelPitch'); if (lp) lp.innerText = '+' + val + 'Hz'; }
-      else { const lp = document.getElementById('labelPitch'); if (lp) lp.innerText = val + 'Hz'; }
+      if (val === 0) document.getElementById('labelPitch').innerText = 'Normal';
+      else if (val > 0) document.getElementById('labelPitch').innerText = '+' + val + 'Hz';
+      else document.getElementById('labelPitch').innerText = val + 'Hz';
     }
 
     const PERSONAS = [
@@ -973,47 +962,27 @@
       return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="${bg}"/><circle cx="50" cy="38" r="18" fill="white" opacity="0.9"/><path d="M22 84 C22 64 36 58 50 58 C64 58 78 64 78 84 Z" fill="white" opacity="0.9"/></svg>`;
     }
 
-            function updateVoicePersonaUI(voiceId) {
-      if (!voiceId) return;
-      const p = voicePersonas.find(v => v.id === voiceId);
-      if (!p) return;
-      
+    function updateVoicePersonaUI(voiceId) {
+      const p = PERSONAS.find(x => x.id === voiceId) || PERSONAS[0];
+      selectedAccent = p.accent;
+
       const avatarImg = document.getElementById('voiceAvatarImg');
       const avatarFlag = document.getElementById('voiceAvatarFlag');
       const nameEl = document.getElementById('activePersonName');
       const select = document.getElementById('selectVoice');
-      
+
       if (avatarImg) {
         avatarImg.src = p.avatar;
-        avatarImg.onerror = () => { avatarImg.src = getAvatarFallback(p.id); }
-
-;
+        avatarImg.onerror = () => { avatarImg.src = getAvatarFallback(p.id); };
       }
       if (avatarFlag) avatarFlag.innerText = p.flag;
       if (nameEl) nameEl.innerText = p.name;
       if (select && select.value !== p.id) select.value = p.id;
-      
-      const pCards = document.querySelectorAll('.persona-card');
-      pCards.forEach(c => {
-        if (c.getAttribute('data-id') === voiceId) {
-          c.classList.add('active');
-        } else {
-          c.classList.remove('active');
-        }
-      });
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        const pipCards = window.documentPictureInPicture.window.document.querySelectorAll('.persona-card');
-        pipCards.forEach(c => {
-          if (c.getAttribute('data-id') === voiceId) {
-            c.classList.add('active');
-          } else {
-            c.classList.remove('active');
-          }
-        });
-      }
+
+      render2StepVoicePicker();
     }
 
-function render2StepVoicePicker() {
+    function render2StepVoicePicker() {
       const docs = [document];
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
         try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
@@ -1126,7 +1095,6 @@ function render2StepVoicePicker() {
       saveVoiceSettings();
     }
 
-    
     function onVoiceSelected() {
       const select = document.getElementById('selectVoice');
       if (select) {
@@ -1140,14 +1108,14 @@ function render2StepVoicePicker() {
         const res = await fetch('/api/settings');
         const data = await res.json();
         const voiceId = data.voice || 'en-GB-LibbyNeural';
-        const sv = document.getElementById('selectVoice'); if (sv) sv.value = voiceId;
+        document.getElementById('selectVoice').value = voiceId;
         updateVoicePersonaUI(voiceId);
         
         const rateVal = parseInt(String(data.rate || '0').replace('%', '').replace('+', '')) || 0;
-        const rr = document.getElementById('rangeRate'); if (rr) rr.value = rateVal;
+        document.getElementById('rangeRate').value = rateVal;
         
         const pitchVal = parseInt(String(data.pitch || '0').replace('Hz', '').replace('+', '')) || 0;
-        const rp = document.getElementById('rangePitch'); if (rp) rp.value = pitchVal;
+        document.getElementById('rangePitch').value = pitchVal;
 
         updateRateLabel();
         updatePitchLabel();
@@ -1181,8 +1149,8 @@ function render2StepVoicePicker() {
       } catch (e) {}
     }
 
-    async function popOutFloatingWidget(silentFail = false) {
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+    async function popOutFloatingWidget() {
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
         window.documentPictureInPicture.window.close();
         return;
       }
@@ -1193,11 +1161,10 @@ function render2StepVoicePicker() {
 
       if ('documentPictureInPicture' in window) {
         try {
-          const pipWindow = await window.documentPictureInPicture.requestWindow();
-          
-          try {
-            pipWindow.resizeTo(470, 720);
-          } catch (e) {}
+          const pipWindow = await window.documentPictureInPicture.requestWindow({
+            width: 470,
+            height: 720,
+          });
 
           pipWindow.document.title = "🎙️ Orb AI Live Voice Studio";
 
@@ -1251,11 +1218,6 @@ function render2StepVoicePicker() {
           const overlay = document.getElementById('immediateLaunchOverlay');
           if (overlay) overlay.style.display = 'none';
 
-          const mainBtn = document.getElementById('btnPipFloat');
-          if (mainBtn) mainBtn.style.display = 'none';
-          const focusBtn = document.getElementById('btnFocusMain');
-          if (focusBtn) focusBtn.style.display = 'inline-flex';
-
           pipWindow.addEventListener('pagehide', () => {
             const placeholder = document.getElementById('pipActivePlaceholder');
             if (placeholder) placeholder.style.display = 'none';
@@ -1270,14 +1232,11 @@ function render2StepVoicePicker() {
               mainBtn.innerText = '🚀 Launch on your screen';
               mainBtn.style.background = 'linear-gradient(135deg, #2563eb, #7c3aed)';
             }
-            const focusBtn = document.getElementById('btnFocusMain');
-            if (focusBtn) focusBtn.style.display = 'none';
           });
 
           showToast('🚀 Launched on your screen!');
         } catch (err) {
           console.error('PiP Error:', err);
-          showToast('⚠️ Pop-up Error: ' + err.message);
           throw err;
         }
       } else {
@@ -1287,6 +1246,8 @@ function render2StepVoicePicker() {
 
     function bindPipControls(pipWindow) {
       if (!pipWindow || !pipWindow.document) return;
+      pipWindow.document.getElementById = getAnyElementById;
+
       const bridgeFns = [
         'toggleTotalPause', 'updateTotalPauseUI', 'toggleMicOnly', 'handleOrbClick',
         'toggleOrb', 'pauseAI', 'toggleMic', 'startMic', 'stopMic', 'readDraftBack', 'sendDraftNow', 'clearDraft',
@@ -1331,11 +1292,6 @@ function render2StepVoicePicker() {
       const pipClearBtn = pipWindow.document.querySelector('.btn-clear');
       if (pipClearBtn) {
         pipClearBtn.onclick = () => window.clearDraft(false);
-      }
-
-            const pipTotalPauseBtn = pipWindow.document.getElementById('btnTotalPause');
-      if (pipTotalPauseBtn) {
-        pipTotalPauseBtn.onclick = () => window.toggleTotalPause();
       }
 
       const pipSpeakBtn = pipWindow.document.getElementById('btnFloaterSpeakAI');
@@ -1462,7 +1418,8 @@ function render2StepVoicePicker() {
           showToast('🔍 Scanned chats — no unread reply found.');
         } else {
           setOrbState('speaking');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'AI Speaking...';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'AI Speaking...';
         }
       } catch (e) {
         showToast('⚠️ Could not play AI speech.');
@@ -1471,10 +1428,10 @@ function render2StepVoicePicker() {
 
     async function attemptAutoLaunch() {
       if (!('documentPictureInPicture' in window)) return;
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) return;
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window) return;
 
       try {
-        await popOutFloatingWidget(true);
+        await popOutFloatingWidget();
         console.log('[AUTO-LAUNCH] Floating overlay opened on start.');
       } catch (err) {
         console.log('[AUTO-LAUNCH] Browser requires single gesture to float window:', err);
@@ -1491,7 +1448,7 @@ function render2StepVoicePicker() {
         window.removeEventListener('keydown', trigger);
         window.removeEventListener('pointerdown', trigger);
         try {
-          await popOutFloatingWidget(true);
+          await popOutFloatingWidget();
           if (overlay) overlay.style.display = 'none';
         } catch (e) {
           console.error('Launch failed:', e);
@@ -1654,7 +1611,7 @@ function render2StepVoicePicker() {
       }
 
       isAISpeaking = false;
-      lastAISpeechEndTime = Date.now();
+      lastAISpeechEndTime = 0;
 
       const payload = JSON.stringify({ stop: true });
       const headers = { 'Content-Type': 'application/json' };
@@ -1674,47 +1631,12 @@ function render2StepVoicePicker() {
 
     let isMicActive = false;
     let isStartingMic = false;
-    let isAISpeaking = false;
-    let lastAISpeechEndTime = 0;
-    let currentAISpeakingText = '';
-    let lastAISpeakingText = '';
-
-    // Robust Echo Shield: Prevent AI's own voice from transcribing into the draft
-    function isEchoOfAI(heardText) {
-      if (!heardText) return false;
-      
-      const recentlySpoken = (Date.now() - lastAISpeechEndTime) < 3000;
-      if (!isAISpeaking && !recentlySpoken) return false;
-      
-      const textToCompare = (currentAISpeakingText || lastAISpeakingText || '').toLowerCase().replace(/[^\w\s]/g, '').trim();
-      const cleanHeard = heardText.toLowerCase().replace(/[^\w\s]/g, '').trim();
-      
-      if (!cleanHeard || !textToCompare) return false;
-
-      if (textToCompare === cleanHeard) return true;
-
-      // Only allow raw substring matching if it makes up a substantial chunk of the speech (>= 50%)
-      // This prevents short user replies (like "send it now") from being blocked if the AI just said them.
-      if (textToCompare.length > 15 && cleanHeard.length > 10) {
-        if (textToCompare.includes(cleanHeard)) {
-          if (cleanHeard.length >= textToCompare.length * 0.5) return true;
-        }
-        if (cleanHeard.includes(textToCompare)) {
-          if (textToCompare.length >= cleanHeard.length * 0.5) return true;
-        }
-      }
-
-      return false;
-    }
 
     function getOrCreateSpeechRecognition() {
       if (recognition) return recognition;
 
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        showToast('⚠️ Your browser does not support Voice Recognition. Please use Chrome or Edge.');
-        return null;
-      }
+      if (!SpeechRecognition) return null;
 
       const rec = new SpeechRecognition();
       rec.continuous = true;
@@ -1767,7 +1689,8 @@ function render2StepVoicePicker() {
 
         interimText = currentInterim;
         setOrbState('hearing');
-        const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Hearing Speech...';
+        const title = document.getElementById('statusTitle');
+        if (title) title.innerText = 'Hearing Speech...';
 
         if (latestFinal) {
           processUtterance(latestFinal);
@@ -1781,12 +1704,10 @@ function render2StepVoicePicker() {
         console.log('STT Event:', e.error);
         isStartingMic = false;
         if (e.error === 'not-allowed') {
-          alert('Microphone blocked or permission denied.\n\n1. Click the lock icon in the address bar and select "Allow" for Microphone.\n\n2. If you are using the Floating Pop-Up Window, you MUST click "Start Listening" on the main website window first, as browsers block microphones from starting inside pop-ups.');
+          alert('Microphone permission was denied. Please click the lock icon in your address bar and allow Microphone.');
           stopMic();
         } else if (e.error === 'network' || e.error === 'audio-capture') {
           showToast('⚠️ Mic warning: ' + e.error);
-        } else if (e.error !== 'no-speech' && e.error !== 'aborted') {
-          showToast('⚠️ Mic error: ' + e.error);
         }
       };
 
@@ -1801,16 +1722,6 @@ function render2StepVoicePicker() {
                 rec.start();
               } catch (e) {
                 isStartingMic = false;
-                isConnected = false;
-                if (!isAISpeaking) setOrbState('paused');
-                const docs = [document];
-                if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-                  try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
-                }
-                docs.forEach(doc => {
-                  const statusTitle = Document.prototype.getElementById.call(doc, 'statusTitle');
-                  if (statusTitle) statusTitle.innerText = 'Microphone Paused';
-                });
               }
             }
           }, 40);
@@ -1828,9 +1739,6 @@ function render2StepVoicePicker() {
         showToast('System is in Total Pause. Click Resume to enable.');
         return;
       }
-      if (isConnected && !isMicActive && !isStartingMic) {
-        isConnected = false;
-      }
       if (isConnected) {
         stopMic();
         showToast('⏹️ Microphone stopped.');
@@ -1843,9 +1751,6 @@ function render2StepVoicePicker() {
       if (isTotalPaused) {
         toggleTotalPause();
         return;
-      }
-      if (isConnected && !isMicActive && !isStartingMic) {
-        isConnected = false;
       }
       if (!isConnected) {
         startMic();
@@ -1931,37 +1836,6 @@ function render2StepVoicePicker() {
         showToast('System is in Total Pause. Click Resume to enable.');
         return;
       }
-
-      // Hard Reset: If the user manually clicks Start, destroy the old instance to clear any corrupted browser state
-      if (recognition) {
-        try { recognition.abort(); } catch(e){}
-        recognition = null;
-        isMicActive = false;
-        isStartingMic = false;
-      }
-
-      const rec = getOrCreateSpeechRecognition();
-      if (rec && !isMicActive && !isStartingMic) {
-        try {
-          isStartingMic = true;
-          rec.start();
-        } catch (e) {
-          isStartingMic = false;
-          isConnected = false;
-          setOrbState('paused');
-          const docs = [document];
-          if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-            try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
-          }
-          docs.forEach(doc => {
-            const statusTitle = Document.prototype.getElementById.call(doc, 'statusTitle');
-            if (statusTitle) statusTitle.innerText = 'Microphone Paused';
-          });
-          showToast('⚠️ Mic start failed. Please click again.');
-          return;
-        }
-      }
-
       stopSpeech();
       isManualPaused = false;
       isConnected = true;
@@ -1978,13 +1852,22 @@ function render2StepVoicePicker() {
         if (statusSub) statusSub.innerText = 'Talk naturally • Click Stop Mic when done';
       });
       setOrbState('listening');
+
+      const rec = getOrCreateSpeechRecognition();
+      if (rec && !isMicActive && !isStartingMic) {
+        try {
+          isStartingMic = true;
+          rec.start();
+        } catch (e) {
+          isStartingMic = false;
+        }
+      }
       showToast('👂 Listening to room! Speak freely.');
     }
 
     function stopMic() {
       isConnected = false;
       isStartingMic = false;
-      isMicActive = false;
       if (silenceTimer) {
         clearTimeout(silenceTimer);
         silenceTimer = null;
@@ -1994,9 +1877,10 @@ function render2StepVoicePicker() {
         silenceCountdownInterval = null;
       }
 
-      if (recognition) {
-        try { recognition.abort(); } catch (e) {}
-        try { recognition.stop(); } catch (e) {}
+      if (recognition && isMicActive) {
+        try {
+          recognition.stop();
+        } catch (e) {}
       }
 
       setOrbState('paused');
@@ -2413,7 +2297,7 @@ function render2StepVoicePicker() {
       let activeChatName = '';
       docs.forEach(doc => {
         if (!activeChatName) {
-          const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText') ||
+          const el = Document.prototype.getElementById.call(doc, 'draftTargetChatName') ||
                      Document.prototype.getElementById.call(doc, 'activeChatTitleText');
           if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Orb') {
             activeChatName = el.innerText.trim();
@@ -2608,8 +2492,8 @@ function render2StepVoicePicker() {
         silenceCountdownInterval = null;
       }
       const rawText = getDraftText();
-      const fullText = isDraftPolished ? rawText : adaptSpeechText(rawText);
-      if (!fullText || !fullText.trim()) {
+      const fullText = adaptSpeechText(rawText);
+      if (!fullText) {
         showToast('Draft is empty. Speak or type something first!');
         return;
       }
@@ -2631,15 +2515,7 @@ function render2StepVoicePicker() {
         if (orb) orb.className = 'orb';
       });
 
-      let activeChatName = '';
-      docs.forEach(doc => {
-        if (!activeChatName) {
-          const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-          if (el && el.innerText && el.innerText.trim() !== 'Orb') activeChatName = el.innerText.trim();
-        }
-      });
-
-      const payload = JSON.stringify({ text: fullText, auto_send: true, source: 'app', chat_title: activeChatName });
+      const payload = JSON.stringify({ text: fullText, auto_send: true, source: 'app' });
       const headers = { 'Content-Type': 'application/json' };
 
       // Dispatch to local relay server (127.0.0.1:8766) which triggers Windows keystroke injection
@@ -2720,7 +2596,7 @@ function render2StepVoicePicker() {
 
     function speakAudio(text) {
       setOrbState('speaking');
-      const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Speaking Readout...';
+      document.getElementById('statusTitle').innerText = 'Speaking Readout...';
 
       fetch('/api/test', {
         method: 'POST',
@@ -2729,13 +2605,15 @@ function render2StepVoicePicker() {
       }).then(() => {
         setTimeout(() => {
           setOrbState(isConnected ? 'listening' : 'paused');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+          document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
         }, 3500);
       }).catch(() => {
         setOrbState(isConnected ? 'listening' : 'paused');
       });
     }
 
+    let isAISpeaking = false;
+    let lastAISpeechEndTime = 0;
 
     async function pollLiveState() {
       try {
@@ -2769,22 +2647,9 @@ function render2StepVoicePicker() {
               chatEl.innerText = state.active_chat_title;
               chatEl.title = 'Active Chat: ' + state.active_chat_title;
             }
-            const draftTagEl = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
+            const draftTagEl = Document.prototype.getElementById.call(doc, 'draftTargetChatName');
             if (draftTagEl && draftTagEl.innerText !== state.active_chat_title) {
               draftTagEl.innerText = state.active_chat_title;
-              
-              // Flash animation for visual feedback
-              draftTagEl.style.transition = 'none';
-              draftTagEl.style.background = '#10b981'; // Green flash
-              draftTagEl.style.color = '#ffffff';
-              draftTagEl.style.transform = 'scale(1.08)';
-              
-              setTimeout(() => {
-                draftTagEl.style.transition = 'all 0.6s ease';
-                draftTagEl.style.background = 'rgba(56, 189, 248, 0.1)';
-                draftTagEl.style.color = '#38bdf8';
-                draftTagEl.style.transform = 'scale(1)';
-              }, 400);
             }
           });
         }
@@ -2810,9 +2675,6 @@ function render2StepVoicePicker() {
         const wasSpeaking = isAISpeaking;
         isAISpeaking = !!state.is_speaking;
         currentAISpeakingText = state.current_text || '';
-        if (currentAISpeakingText) {
-          lastAISpeakingText = currentAISpeakingText;
-        }
         if (wasSpeaking && !isAISpeaking) {
           lastAISpeechEndTime = Date.now();
         }
@@ -2822,8 +2684,10 @@ function render2StepVoicePicker() {
 
         if (isAISpeaking && !isManualPaused) {
           setOrbState('speaking');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'AI Speaking...';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Click Ear or speak to talk';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'AI Speaking...';
+          const sub = document.getElementById('statusSub');
+          if (sub) sub.innerText = 'Click Ear or speak to talk';
           if (silenceTimer) {
             clearTimeout(silenceTimer);
             silenceTimer = null;
@@ -2834,35 +2698,23 @@ function render2StepVoicePicker() {
           }
         } else if (isConnected && !isManualPaused) {
           setOrbState('listening');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Listening for Voice...';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Talk naturally anywhere in the room';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'Listening for Voice...';
+          const sub = document.getElementById('statusSub');
+          if (sub) sub.innerText = 'Talk naturally anywhere in the room';
         } else {
           setOrbState('paused');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Microphone Idle';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Click Start Listening to talk';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'Microphone Idle';
+          const sub = document.getElementById('statusSub');
+          if (sub) sub.innerText = 'Click Start Listening to talk';
         }
       } catch (e) { isAISpeaking = false; }
     }
 
     async function pollConversation() {
       try {
-        let activeChatName = '';
-        const docs = [document];
-        if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
-          try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
-        }
-        docs.forEach(doc => {
-          if (!activeChatName) {
-            const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-            if (el && el.innerText && el.innerText.trim() !== 'Orb') activeChatName = el.innerText.trim();
-          }
-        });
-        
-        let url = '/api/conversation';
-        if (activeChatName) {
-          url += '?chat_title=' + encodeURIComponent(activeChatName);
-        }
-        const res = await fetch(url);
+        const res = await fetch('/api/conversation');
         const data = await res.json();
         const messages = data.messages || [];
 
@@ -2873,11 +2725,32 @@ function render2StepVoicePicker() {
       } catch (e) {}
     }
 
-        function renderChatStream(messages) {
+    function renderChatStream(messages) {
       knownAITexts = (messages || [])
         .filter(m => m.role === 'assistant' && m.text)
         .slice(-15)
         .map(m => m.text);
+
+      const stream = document.getElementById('chatStream');
+      if (!messages || messages.length === 0) {
+        stream.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Listening for messages... Speak out loud to chat!</div>';
+        return;
+      }
+
+      let html = '';
+      messages.forEach(m => {
+        const isUser = m.role === 'user';
+        const roleLabel = isUser ? '👤 You (Sadie)' : '🎙️ Orb AI Assistant';
+        const cssClass = isUser ? 'user' : 'assistant';
+        html += `
+          <div class="chat-bubble ${cssClass}">
+            <div class="bubble-meta">${roleLabel} • ${m.time || ''}</div>
+            <div>${escapeHtml(m.text)}</div>
+          </div>
+        `;
+      });
+      stream.innerHTML = html;
+      stream.scrollTop = stream.scrollHeight;
     }
 
     function escapeHtml(str) {
@@ -2959,22 +2832,6 @@ function render2StepVoicePicker() {
           album: 'Orb Voice Studio'
         });
 
-        // Browsers drop MediaSession key bindings if no media is actively playing.
-        // Play a silent 1-second WAV loop to keep the earbud hooks securely alive.
-        const silentWav = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
-        const silentPlayer = new Audio(silentWav);
-        silentPlayer.loop = true;
-        silentPlayer.volume = 0.01;
-        
-        // Ensure it starts when user interacts
-        const startSilent = () => {
-          silentPlayer.play().catch(()=>{});
-          window.removeEventListener('click', startSilent);
-          window.removeEventListener('pointerdown', startSilent);
-        };
-        window.addEventListener('click', startSilent);
-        window.addEventListener('pointerdown', startSilent);
-
         const handleDoubleTapResume = () => {
           if (isTotalPaused) {
             showToast('🎧 Earbud Double-Tap: Resuming playback from Total Pause...');
@@ -3048,14 +2905,6 @@ function render2StepVoicePicker() {
 
       render2StepVoicePicker(document);
       loadSettings();
-      
-      try {
-        if (sessionStorage.getItem('reopen_pip_after_reload') === 'true') {
-          sessionStorage.removeItem('reopen_pip_after_reload');
-          enableImmediateLaunchOverlay();
-        }
-      } catch (e) {}
-
       pollConversation();
       pollLiveState();
       setInterval(pollConversation, 1500);
@@ -3068,52 +2917,11 @@ function render2StepVoicePicker() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
       }
+
+      attemptAutoLaunch();
     };
-
-    // Cross-window DOM proxy: ensure document.getElementById safely finds elements in main tab or floating PiP window without recursion
-    function getAnyElementById(id) {
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        try {
-          const pipDoc = window.documentPictureInPicture.window.document;
-          if (pipDoc) {
-            const pipEl = Document.prototype.getElementById.call(pipDoc, id);
-            if (pipEl) return pipEl;
-          }
-        } catch (e) {}
-      }
-      return Document.prototype.getElementById.call(document, id);
-    }
-    document.getElementById = getAnyElementById;
-
-</script>
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

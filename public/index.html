@@ -985,7 +985,9 @@
       
       if (avatarImg) {
         avatarImg.src = p.avatar;
-        avatarImg.onerror = () => { avatarImg.src = getAvatarFallback(p.id); };
+        avatarImg.onerror = () => { avatarImg.src = getAvatarFallback(p.id); }
+
+;
       }
       if (avatarFlag) avatarFlag.innerText = p.flag;
       if (nameEl) nameEl.innerText = p.name;
@@ -1011,7 +1013,121 @@
       }
     }
 
-function onVoiceSelected() {
+function render2StepVoicePicker() {
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      docs.forEach(doc => {
+        renderAccentPills(doc);
+        renderPersonaGallery(doc);
+      });
+    }
+
+    function renderAccentPills(targetDoc = document) {
+      if (!targetDoc) return;
+      const container = targetDoc.getElementById('accentPills');
+      if (!container) return;
+
+      let html = '';
+      ACCENTS.forEach(acc => {
+        const isActive = acc.id === selectedAccent ? 'active' : '';
+        html += `
+          <button type="button" class="accent-pill ${isActive}" onclick="selectAccent('${acc.id}')">
+            <span>${acc.flag}</span> <span>${acc.name}</span>
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function selectAccent(accentId) {
+      selectedAccent = accentId;
+
+      // If current selected voice is not under this accent, select the first persona of this accent
+      const currentVoice = document.getElementById('selectVoice')?.value;
+      const currentPersona = PERSONAS.find(p => p.id === currentVoice);
+      if (!currentPersona || currentPersona.accent !== accentId) {
+        const firstInAccent = PERSONAS.find(p => p.accent === accentId);
+        if (firstInAccent) {
+          selectPersona(firstInAccent.id);
+          return;
+        }
+      }
+      render2StepVoicePicker();
+    }
+
+    function handleAvatarError(img, voiceId) {
+      if (!img) return;
+      img.onerror = null;
+      img.src = getAvatarFallback(voiceId);
+    }
+
+    function renderPersonaGallery(targetDoc = document) {
+      if (!targetDoc) return;
+      const gallery = targetDoc.getElementById('voiceAvatarGallery');
+      if (!gallery) return;
+      const select = targetDoc.getElementById('selectVoice');
+      const currentVoice = (select && select.value) ? select.value : 'en-GB-SoniaNeural';
+
+      const filtered = PERSONAS.filter(p => p.accent === selectedAccent);
+      let html = '';
+      filtered.forEach(p => {
+        const isActive = p.id === currentVoice ? 'active' : '';
+        html += `
+          <div class="persona-card ${isActive}" data-voice="${p.id}" onclick="selectPersona('${p.id}')">
+            <div class="persona-img-wrap">
+              <img class="persona-card-img" src="${p.avatar}" alt="${p.name}" onerror="handleAvatarError(this, '${p.id}')">
+              <button type="button" class="persona-play-btn" onclick="event.stopPropagation(); previewPersonaVoice('${p.id}', '${p.name}');">▶</button>
+            </div>
+            <div class="persona-card-name">${p.name}</div>
+          </div>
+        `;
+      });
+      gallery.innerHTML = html;
+    }
+
+    let currentPreviewAudio = null;
+
+    function previewPersonaVoice(voiceId, name) {
+      selectPersona(voiceId);
+
+      if (currentPreviewAudio) {
+        try { currentPreviewAudio.pause(); currentPreviewAudio.currentTime = 0; } catch (e) {}
+      }
+
+      setOrbState('speaking');
+      document.getElementById('statusTitle').innerText = 'Speaking Readout...';
+
+      currentPreviewAudio = new Audio('/api/voice_preview_audio?voice=' + encodeURIComponent(voiceId));
+      currentPreviewAudio.play().then(() => {
+        currentPreviewAudio.onended = () => {
+          setOrbState(isConnected ? 'listening' : 'paused');
+          document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+        };
+      }).catch(() => {
+        fetch('/api/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: `Hello Sadie! I'm ${name}.`, voice: voiceId })
+        }).finally(() => {
+          setTimeout(() => {
+            setOrbState(isConnected ? 'listening' : 'paused');
+            document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+          }, 2000);
+        });
+      });
+    }
+
+    function selectPersona(voiceId) {
+      const select = document.getElementById('selectVoice');
+      if (select) select.value = voiceId;
+      updateVoicePersonaUI(voiceId);
+      saveVoiceSettings();
+    }
+
+    
+    function onVoiceSelected() {
       const select = document.getElementById('selectVoice');
       if (select) {
         updateVoicePersonaUI(select.value);
@@ -2972,6 +3088,7 @@ function onVoiceSelected() {
 </script>
 </body>
 </html>
+
 
 
 
