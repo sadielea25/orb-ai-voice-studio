@@ -1,5 +1,15 @@
 [
   {
+    "text": "From Spook Studio. I've completely ripped out the browser's default robotic \"smooth scroll\" snap, and replaced it with a custom physics-based animation! Now, when the tease triggers, it uses a quartic ease-out curve over 1.5 seconds. This perfectly mimics the physical friction of a heavy wheel being spun\u2014it starts with a confident push and very gradually glides to a silky stop. And just like before, if you tap or grab it while it's still gliding, it instantly stops exactly where your finger catches it! Give it a spin!",
+    "voice": "Spook Studio (en-GB-SoniaNeural)",
+    "time": "17:40:58"
+  },
+  {
+    "text": "From Orb. Done. I've engineered it as a Dual-Mode Architecture so you don't lose your local powerhouse. I've just committed and pushed the changes to GitHub, which means Vercel is building and deploying the Public App right now! Here is how the new magical architecture works: Local Mode (For You): When you use the app on your Desktop PC, it detects your local Python engine (127.0.0.1). It bypasses the cloud entirely, acting as a physical remote control to type into your Antigravity IDE and read its logs exactly as it did before. Cloud Assistant Mode (For The Public): When a random person (or you on your phone out in the city) opens the exact same link ( the app realizes there is no local engine attached. It seamlessly switches into \"Cloud Mode\", routing the user's speech securely to a new Python Serverless AI brain we just built on Vercel (powered by Gemini), and responds out loud instantly using their browser's built-in Native Voice Synthesis. It even tracks their conversation history in memory! It operates as a hybrid app seamlessly under one roof. In about 30 seconds, Vercel will finish deploying the update. Try opening the link on your smartphone (which forces Cloud Mode since it has no python desktop engine) and talk to it to test the Public Voice Assistant out!",
+    "voice": "Orb (en-GB-SoniaNeural)",
+    "time": "17:38:34"
+  },
+  {
     "text": "From Spook Studio. Ah, good catch! I had previously set it up so that if you ever touched the collage, it permanently deactivated the tease. I've just removed that permanent block! Now, every single time you scroll away from the collage and scroll back to it, it will faithfully perform that 150px slide exactly 0.2 seconds after entering the screen\u2014guaranteeing the user always knows they can swipe it, regardless of if they've swiped it before. (It tracks your finger/mouse now, so it will still be smart enough not to fire the tease if you are actively holding it when it comes into view). It should feel completely consistent now!",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
     "time": "17:37:16"
@@ -113,15 +123,5 @@
     "text": "From Spook Studio. Got it! I've updated the button inside the location pop-up so it now says \"Book Your Halloween Makeup\" instead of just \"Book Now\". That way, the call-to-action text is always consistent no matter where they click it!",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
     "time": "17:03:52"
-  },
-  {
-    "text": "From Orb. Are you currently using the Local link ( or the Vercel link ( in your browser? If you are using the Vercel link, it's highly likely your browser (or an adblocker) is silently blocking the website from talking to your local desktop injector. The Vercel version receives the message, says \"Sent!\", but because it's stuck in the cloud, it can't physically type the keys into your Antigravity window. Please open the Local Network link directly: Try speaking a message there and clicking [ Send Now ]. Let me know if that instantly types it into the chat box!",
-    "voice": "Orb (en-GB-SoniaNeural)",
-    "time": "17:03:10"
-  },
-  {
-    "text": "From Spook Studio. Done! The location pop-up now correctly says \"Inside Fuel Rock Club\" under the title. Let me know what you'd like to adjust or build next!",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "17:02:50"
   }
 ]

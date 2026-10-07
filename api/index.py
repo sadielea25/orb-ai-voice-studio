@@ -6,6 +6,9 @@ Vercel Serverless Function for Orb AI Live Voice Studio Cloud API.
 from http.server import BaseHTTPRequestHandler
 import os
 import json
+import asyncio
+import edge_tts
+import urllib.parse
 import time
 
 VOICE_SETTINGS = {
@@ -90,6 +93,36 @@ class handler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
             return
+
+        elif path == "/api/tts":
+            parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            text = parsed_q.get("text", [""])[0].strip()
+            voice = parsed_q.get("voice", ["en-GB-SoniaNeural"])[0].strip()
+            if not text:
+                self._set_headers(400)
+                self.wfile.write(b"No text provided")
+                return
+
+            async def gen_audio(t, v):
+                communicate = edge_tts.Communicate(t, v)
+                audio_data = b''
+                async for chunk in communicate.stream():
+                    if chunk['type'] == 'audio':
+                        audio_data += chunk['data']
+                return audio_data
+
+            try:
+                audio_bytes = asyncio.run(gen_audio(text, voice))
+                self.send_response(200)
+                self.send_header("Content-Type", "audio/mpeg")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(audio_bytes)
+            except Exception as e:
+                self._set_headers(500)
+                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
+            return
+
         elif path == "/api/status":
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "online", "mode": "cloud-v1.0"}).encode("utf-8"))

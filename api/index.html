@@ -2752,40 +2752,34 @@ function render2StepVoicePicker() {
     }
 
     
-    function playCloudAudio(text) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        const select = document.getElementById('selectVoice');
-        let lang = 'en-US';
-        if (select && select.value.includes('GB')) lang = 'en-GB';
-        if (select && select.value.includes('IE')) lang = 'en-IE';
-        if (select && select.value.includes('AU')) lang = 'en-AU';
-        
-        utterance.lang = lang;
-        utterance.rate = 1.05;
-        
-        setOrbState('speaking');
-        const docs = [document];
-        if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
-            try { docs.push(window.documentPictureInPicture.window.document); } catch(e){}
-        }
+function playCloudAudio(text) {
+      const select = document.getElementById('selectVoice');
+      const voice = select ? select.value : 'en-GB-SoniaNeural';
+      
+      setOrbState('speaking');
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
+          try { docs.push(window.documentPictureInPicture.window.document); } catch(e){}
+      }
+      docs.forEach(d => {
+          const t = Document.prototype.getElementById.call(d, 'statusTitle');
+          if (t) t.innerText = 'Speaking Response...';
+      });
+      
+      const audio = new Audio('/api/tts?text=' + encodeURIComponent(text) + '&voice=' + encodeURIComponent(voice));
+      audio.onended = () => {
+        setOrbState(isConnected ? 'listening' : 'paused');
         docs.forEach(d => {
             const t = Document.prototype.getElementById.call(d, 'statusTitle');
-            if (t) t.innerText = 'Speaking Response...';
+            if (t) t.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
         });
-        
-        utterance.onend = () => {
-          setOrbState(isConnected ? 'listening' : 'paused');
-          docs.forEach(d => {
-              const t = Document.prototype.getElementById.call(d, 'statusTitle');
-              if (t) t.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
-          });
-        };
-        
-        window.speechSynthesis.speak(utterance);
-      }
+      };
+      audio.play().catch(e => {
+        console.error("Audio play failed:", e);
+        setOrbState(isConnected ? 'listening' : 'paused');
+      });
     }
+
 
     function speakAudio(text) {
       setOrbState('speaking');
