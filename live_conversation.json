@@ -1,202 +1,202 @@
 [
   {
     "role": "user",
-    "text": "see you except transactions made up to 12 months ago so you'll be missing a few months if that's the case",
-    "time": "18:11"
+    "text": "On desktop, let's make the image strip collage full-width so there are no margins or outer edges on the collage section.",
+    "time": "18:01"
   },
   {
     "role": "user",
-    "text": "the one that was in this you've been able to download this historical transactions yeah I'm getting really confused I was seriously",
+    "text": "It's too dark like I can't see any backgrounds at all now",
+    "time": "18:02"
+  },
+  {
+    "role": "user",
+    "text": "Let's focus on the web app's pop-out functionality for now, rather than packaging it as a full desktop application. I want to prioritize the pop-outs we can launch directly from the web version.",
+    "time": "18:03"
+  },
+  {
+    "role": "user",
+    "text": "Ok so the web page is not currently big enough to see the scroll of the different image so just add an extra section called where are we based and add a Google Maps for fuel on Wallaby Street in Cardiff just so I can see the different background coming in",
+    "time": "18:05"
+  },
+  {
+    "role": "user",
+    "text": "I've noticed that sometimes when I click the pop-out and then hit send, the text disappears.",
+    "time": "18:06"
+  },
+  {
+    "role": "user",
+    "text": "Polish",
+    "time": "18:06"
+  },
+  {
+    "role": "user",
+    "text": "So I still can't see like a secondary background image is just still when image so maybe add a demo section underneath where are we base just so you know it can actually do it or maybe make make a bit of a strap so when people won the image Scrolls maybe it doesn't need to be like the full vertical image just go like the bass part of it and then it Scrolls into the next one",
+    "time": "18:08"
+  },
+  {
+    "role": "user",
+    "text": "Sometimes the text field doesn't automatically clear.",
+    "time": "18:09"
+  },
+  {
+    "role": "user",
+    "text": "That works perfectly. Instead of a sharp line between the background images, could we implement a black gradient fade? This will create a smoother transition between the sections and prevent any harsh visual splits.",
+    "time": "18:10"
+  },
+  {
+    "role": "user",
+    "text": "Also, let's ensure that all background images across the website are positioned to center on the faces. We want to avoid awkward crops\u2014like randomly zooming in on a forehead or a jacket\u2014and keep the full face visible. Additionally, let's slightly reduce the overlay opacity towards the center of the background images, creating a subtle radial fade so the details of the image can glimmer through more clearly.",
     "time": "18:12"
   },
   {
     "role": "user",
-    "text": "I'm getting really confused I was seriously try to like download zip file and",
-    "time": "18:12"
-  },
-  {
-    "role": "user",
-    "text": "yeah what what you",
-    "time": "18:12"
-  },
-  {
-    "role": "user",
-    "text": "use last art to be honest like Mary I'm gonna like I've sent I love them to do anymore on it like I'm just going to sit in my content and answer his questions",
+    "text": "Let's ensure we avoid any awkward cropping on the background images by keeping the faces perfectly centered within each section strip.",
     "time": "18:13"
   },
   {
     "role": "user",
-    "text": "like I don't know I I'm so I handed it over so much I literally just",
-    "time": "18:13"
-  },
-  {
-    "role": "user",
-    "text": "asked me but I'm sure I did send him or Addy this is the film",
+    "text": "I just ran into the issue again: after using the polish feature, some of the text disappears when clicking the send button. Additionally, it isn't fully capturing the current chat context, only the most recent message.",
     "time": "18:14"
   },
   {
     "role": "user",
-    "text": "but like there was basically I've got about million drop boxes accounts I have sent him million email addresses like it's literally should all over the place like I did send in my old account I did all this now",
-    "time": "18:15"
+    "text": "Let's slightly increase the vertical height of the section strips to ensure none of the faces in the background images get cropped or cut off.",
+    "time": "18:14"
   },
   {
     "role": "user",
-    "text": "I don't I can't remember where which email addresses look there don't know what I've cut and to get my head around it a bit I think I just need to sit with them and be like",
+    "text": "Make sure no faces are getting cut off",
     "time": "18:16"
   },
   {
     "role": "user",
-    "text": "Rosa I just need to set with them and be like what exactly do you need because you need to like got him to track his email folder and stuff and go back because like I don't know but I don't I did all that and that's",
+    "text": "Make sure no faces are getting cut off",
     "time": "18:16"
   },
   {
     "role": "user",
-    "text": "two previous business bank account I don't know if it exists or not there might exists might not creativity that I they emailed me like all the",
+    "text": "From spook studio",
     "time": "18:17"
   },
   {
     "role": "user",
-    "text": "transactions",
+    "text": "If a background image requires more vertical space to keep the face fully visible, let's dynamically adjust the section strip height to accommodate it.",
     "time": "18:17"
   },
   {
     "role": "user",
-    "text": "and lastly or someone like didn't like them in the garage box folder and stuff I can't remember if I emailed it by rapidly or if I just Dropbox is like",
-    "time": "18:18"
+    "text": "We should focus strictly on framing the faces. Currently, some of the taller background images are stretching the sections too much, resulting in unnecessary vertical space that displays clothing, like long jackets.",
+    "time": "18:20"
   },
   {
     "role": "user",
-    "text": "I don't care if they have like whatever I just the like they I this is like cabins so cancer but they're just not they're just",
-    "time": "18:18"
+    "text": "There seems to be a glitch in Spook Studio where clicking the \"Polish\" button just opens the website instead of sending the message into that specific chat.",
+    "time": "18:20"
   },
   {
     "role": "user",
-    "text": "they I this is like cabins so cancer but they're just not they're just",
-    "time": "18:18"
+    "text": "For the location section, I'd like to feature an image of a Hollywood mirror, which I'll send over shortly. We should include the full address of Fuel Rock Club, but I want to make sure the focus remains on our brand rather than just the venue itself. Let's frame the copy to say something like: \"You'll find us at this venue, Fuel Rock Club, where we will be hosting our pop-up studio.\" Below that, we should list our dates and times, and include a call-to-action encouraging visitors to book online to guarantee a slot for their group and receive a free drink with their booking.",
+    "time": "18:29"
   },
   {
     "role": "user",
-    "text": "flying by and I keep thinking around there",
-    "time": "18:19"
+    "text": "I don't want the Google reviews for Fuel Rock Club linked to the website. Instead, let's use a clean, static map graphic that doesn't link out to external reviews. On this map, I'd like to feature a prominent Spook Studio logo with an arrow pointing directly to the Fuel Rock Club location to keep the focus on our brand.",
+    "time": "18:30"
   },
   {
     "role": "user",
-    "text": "because",
-    "time": "18:19"
+    "text": "On the booking form, let's add a prominent, bold white title that reads: \"Book Online to Receive a Complimentary Drink with Your Makeup Slot.\" Below that, include a brief note explaining group bookings: \"Booking as a group? Simply select the same time slot as your friends so you can all get ready together.\" Finally, add a clear call to action: \"Book now to avoid disappointment!\"",
+    "time": "18:42"
   },
   {
     "role": "user",
-    "text": "yeah signs it to that zero but it's like I don't miss nothing",
-    "time": "18:19"
+    "text": "Let's add a price list section featuring selectable tiers at \u00a315, \u00a325, \u00a335, \u00a345, \u00a365, and \u00a385. We also need to include \"on-the-day\" add-ons, such as contact lenses or extra patches. For now, please keep this layout strictly text-based with no images. You can use the following placeholder descriptions, which I will finalize later: * **\u00a315:** Various options (e.g., eye designs, quarter-face designs) * **\u00a325:** Half-face and neck * **\u00a335:** Half-face or full-face * **\u00a345, \u00a365, \u00a385:** [Placeholder text]",
+    "time": "18:44"
   },
   {
     "role": "user",
-    "text": "one listening I need it to be like a big flashing ear because the button looks too similar",
-    "time": "12:15"
+    "text": "Let's also keep the color scheme strictly black and white with purple accents to avoid introducing too much color and to maintain that clean, dark \"Mac-style\" aesthetic. Additionally, let's integrate the available time slots directly into the location and dates section of the booking form, ensuring they are mirrored correctly throughout the form. are you a student just show your student card on arrival and you'll get an additional free shot with your book in",
+    "time": "18:45"
   },
   {
     "role": "user",
-    "text": "testing",
-    "time": "12:52"
+    "text": "I actually preferred when \"Die For\" in the title was styled in a different color from the rest of the text, so please revert to that look.",
+    "time": "18:50"
   },
   {
     "role": "user",
-    "text": "can you make the orbai like floating widget",
-    "time": "09:15"
+    "text": "For the dates, let's organize them into \"Halloween Weekend Wave 1\" and \"Halloween Weekend Wave 2.\" Let's also make sure Saturday, which is Halloween itself, is highlighted so that it stands out the most.",
+    "time": "18:51"
   },
   {
     "role": "user",
-    "text": "so",
-    "time": "09:15"
+    "text": "There seems to be a failed to execute note upon launching the app",
+    "time": "18:52"
   },
   {
     "role": "user",
-    "text": "I like the ear that's working but we're it says listening and click to pause and the green box listening to room thus void now you can Gary of that as I don't need bow",
-    "time": "11:51"
+    "text": "Actually, I preferred it when only the \"Die For\" text was styled in that raspberry pink color, with the rest of the title remaining in the standard color scheme.",
+    "time": "18:53"
   },
   {
     "role": "user",
-    "text": "Ok I'm just testing",
-    "time": "14:35"
+    "text": "I'd like the \"Die For\" text to be styled in its original color, which was a vibrant reddish-pink.",
+    "time": "18:53"
   },
   {
     "role": "user",
-    "text": "Can you confirm you fix the problem where if I've got multiple widgets open it doesn't you know garage of other widgets",
-    "time": "14:36"
+    "text": "The background rendering is currently a bit glitchy. Let's ensure the scrolling performance is completely smooth and seamless.",
+    "time": "18:54"
   },
   {
     "role": "user",
-    "text": "Can you also highlight the chat I'm currently in inside the widget",
-    "time": "14:37"
+    "text": "When I try to send, even though I have the correct option selected, it indicates that it is sending to other apps. How can we streamline this process to make the destination more focused and direct?",
+    "time": "12:12"
   },
   {
     "role": "user",
-    "text": "And also announced which chat the replies coming from in case I'm talking with multiple chats at the same time though",
-    "time": "14:37"
+    "text": "I have the app downloaded but it doesn't seem to have updated to the latest version yet.",
+    "time": "12:14"
   },
   {
     "role": "user",
-    "text": "Can you allow the oil budget to be minimized on onto somewhere so I don't have to access it",
-    "time": "14:38"
+    "text": "Why did you send me a link to the timber builds?",
+    "time": "12:17"
   },
   {
     "role": "user",
-    "text": "Can you specify V1 V2 V3 etc in the app bundle also so that it was matches the live versal length and can you include the v in that actual link",
-    "time": "10:51"
+    "text": "The mobile layout has some overlapping issues. First, the app header is clashing with the phone's status bar, causing the system icons (time, battery, and Wi-Fi) to overlap with our header. We need to adjust the header spacing to push it down. Additionally, the in-app voice feature is currently broken and needs to be fixed. Finally, the footer is too close to the bottom of the screen and needs a better margin. We should implement a global safe-area solution for both the header and footer to prevent them from overlapping with the device's system UI.",
+    "time": "12:22"
   },
   {
     "role": "user",
-    "text": "There's a big glitch here and it totally took over my screen and didn't allow me to skip or Preston and also it was just stuck on loads in a task",
-    "time": "10:52"
+    "text": "Can we make the Orb panel pop up so that I can expand it to full screen? Currently, it restricts me from dragging it vertically when I want to align it flush with another tab.",
+    "time": "12:23"
   },
   {
     "role": "user",
-    "text": "The spoken words in needs to be and placed directly Below The Listening section",
-    "time": "10:53"
+    "text": "Could you run a test launch of the full-screen panel feature to ensure there are no bugs?",
+    "time": "12:25"
   },
   {
     "role": "user",
-    "text": "The live spoken words also needs to be above the speaking voice tab",
-    "time": "10:54"
+    "text": "That works well, but when I start a new conversation or switch to a chat that hasn't been accessed yet during the current session, the system fails to recognize the new chat.",
+    "time": "12:26"
   },
   {
     "role": "user",
-    "text": "Okay so there's a few things for so for up I need the chat that it's going to be sent through to be in the title or as a tag on the spoken words box to make sure it's not going to be sub-through to the wrong trapped",
-    "time": "11:02"
+    "text": "Launch this app",
+    "time": "12:29"
   },
   {
     "role": "user",
-    "text": "There's a few things voice box type should stretch with the amount of speakers and so I can always see the full massage so if I speak for a long period of time it always shows there I want them for a spots to be white background black tax so it stands out more I can see the voice box already structures so that's fine I need the autocorrect text in the within the contacts of the voice but to be done in typing because it's still sometimes picking up on the wrong words because of my accent and then send in a massive with like weirding so do I need to integrate AI or an API key for it to do there",
-    "time": "11:08"
+    "text": "Regarding the side panel layout, the controls for \"Pin to Taskbar\", \"Refresh\", \"Speak\", \"AI Reply\", and \"Pause\" should be positioned underneath the \"Polish\", \"Read Back\", and \"Send Now\" buttons, as the current setup pushes content too far down the screen. Additionally, we don't need two redundant tabs specifying the active chat, since the spoken words section already indicates \"sending to the chat.\" Instead, let's keep the active chat indicator next to the \"AI Speak\", \"AI Reply\", and \"Pause\" controls, and move \"Refresh\" and \"Pin to Taskbar\" to the footer to break up the layout better.",
+    "time": "12:31"
   },
   {
     "role": "user",
-    "text": "So I did the full screen override to not have the small description box tax as you're not really going to read it and it makes it more busy for their reason",
-    "time": "11:11"
-  },
-  {
-    "role": "user",
-    "text": "Yes but regarding the IP API key is it using a lassa version of AI would it be stronger if I integrated an API key so it could actually link to Google better or will it not make a difference",
-    "time": "11:14"
-  },
-  {
-    "role": "user",
-    "text": "The speaker message out loud text is still white so I can't see what it's saying as I speak girl",
-    "time": "11:15"
-  },
-  {
-    "role": "user",
-    "text": "Ok now there's a few things which I'm going to tell you in one",
-    "time": "11:17"
-  },
-  {
-    "role": "user",
-    "text": "So I was speaking man and I wasn't finished and it said the mass Edge and then AI interrupted what I was saying",
-    "time": "11:18"
-  },
-  {
-    "role": "user",
-    "text": "So I'm just testing the Polish and what I want to get a cross really is when the AI is speaking I what I don't need it to show up in any box only when I'm speaking and the Polish button isn't working",
-    "time": "11:32"
+    "text": "There is a bug where the speech-to-text engine is picking up the AI's own voice output and transcribing it back into the input field.",
+    "time": "12:32"
   }
 ]

@@ -1,0 +1,28 @@
+
+      <!-- Active Chat Target Spotlight -->
+      <div id="activeChatHighlight" class="active-chat-highlight" title="Currently active conversation">
+        <span class="active-chat-pulse"></span>
+        <span class="active-chat-icon">🎯</span>
+        <div class="active-chat-meta">
+          <span class="active-chat-label">Active Chat</span>
+          <span id="activeChatTitleText" class="active-chat-title">Detecting active chat...</span>
+        </div>
+      </div>
+
+      <!-- Master Floater Controls: Total Pause, Speak AI Reply, Refresh, Pin to Taskbar -->
+      <div style="margin-top: 10px; margin-bottom: 12px; display: flex; gap: 6px; align-items: stretch; flex-wrap: wrap;">
+        <button type="button" id="btnTotalPause" type="button" onclick="toggleTotalPause()" style="flex: 1 1 120px; min-width: 105px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+          <span id="totalPauseIcon">🛑</span>
+          <span id="totalPauseText">Total Pause</span>
+        </button>
+        <button type="button" id="btnFloaterSpeakAI" type="button" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1 1 130px; min-width: 115px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span>🗣️</span>
+          <span>Speak AI Reply</span>
+        </button>
+        <button type="button" id="btnFloaterRefresh" type="button" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span id="floaterRefreshIcon">🔄</span>
+          <span>Refresh</span>
+        </button>
+        <button type="button" id="btnFloaterPinTaskbar" type="button" onclick="pinFloaterToTaskbar()" title="Pin standalone app to Windows Taskbar" style="padding: 10px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span>📌</span>
+          <span>Pin Taskbar</span>

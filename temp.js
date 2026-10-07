@@ -1,749 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orb AI - Live Two-Way Voice Studio</title>
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#3b82f6">
-  <link rel="icon" href="https://img.icons8.com/fluency/96/microphone.png" type="image/png">
-  <style>
-    :root {
-      --bg: #090d16;
-      --card: #131b2e;
-      --card-inner: #1e2942;
-      --border: #2a3b5c;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --accent: #10b981;
-      --accent-hover: #059669;
-      --purple: #a855f7;
-      --gold: #f59e0b;
-      --danger: #ef4444;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 20px 14px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-    .container { width: 100%; max-width: 680px; padding-bottom: 40px; }
-    header { text-align: center; margin-bottom: 18px; }
-    h1 { font-size: 26px; font-weight: 800; margin-bottom: 4px; background: linear-gradient(135deg, #fff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .subtitle { color: var(--text-muted); font-size: 13px; }
 
-    /* Connect Banner */
-    .mic-banner { background: #1e2942; border: 2px solid var(--primary); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; transition: 0.3s; }
-    .mic-banner.active { border-color: var(--accent); background: rgba(16, 185, 129, 0.12); }
-    .btn-connect { background: var(--accent); color: #fff; border: none; padding: 12px 26px; border-radius: 30px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; white-space: nowrap; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
-    .btn-connect:hover { background: var(--accent-hover); }
-
-    /* Cards */
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); text-align: center; }
-    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
-
-    /* Status Orb Row */
-    .orb-row { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 12px 0 18px; }
-    .orb { 
-      width: 90px; 
-      height: 90px; 
-      border-radius: 50%; 
-      background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706 70%); 
-      box-shadow: 0 0 38px rgba(245, 158, 11, 0.65), inset 0 0 16px rgba(255, 255, 255, 0.35); 
-      border: 3px solid #fef08a; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      font-size: 48px; 
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
-      cursor: pointer; 
-      animation: earPulse 1.6s infinite ease-in-out; 
-      user-select: none;
-    }
-    .orb.hearing { 
-      background: radial-gradient(circle at 30% 30%, #fef08a, #ea580c 70%); 
-      box-shadow: 0 0 65px rgba(245, 158, 11, 0.95), inset 0 0 20px rgba(255, 255, 255, 0.5); 
-      border-color: #ffffff; 
-      font-size: 54px; 
-      animation: hearingWave 0.75s infinite ease-in-out; 
-    }
-    .orb.speaking { 
-      background: radial-gradient(circle at 30% 30%, #c084fc, #9333ea 70%); 
-      box-shadow: 0 0 55px rgba(168, 85, 247, 0.85); 
-      border-color: #e9d5ff; 
-      font-size: 44px; 
-      animation: speakingPulse 1.1s infinite ease-in-out; 
-    }
-    .orb.paused { 
-      background: #334155; 
-      box-shadow: none; 
-      border-color: #475569; 
-      font-size: 34px; 
-      animation: none; 
-      opacity: 0.65; 
-    }
-    @keyframes earPulse { 
-      0% { transform: scale(1); box-shadow: 0 0 25px rgba(245, 158, 11, 0.45); } 
-      50% { transform: scale(1.15); box-shadow: 0 0 60px rgba(245, 158, 11, 0.9); } 
-      100% { transform: scale(1); box-shadow: 0 0 25px rgba(245, 158, 11, 0.45); } 
-    }
-    @keyframes hearingWave { 
-      0% { transform: scale(1.1); box-shadow: 0 0 35px rgba(245, 158, 11, 0.75); } 
-      50% { transform: scale(1.26); box-shadow: 0 0 75px rgba(245, 158, 11, 1); } 
-      100% { transform: scale(1.1); box-shadow: 0 0 35px rgba(245, 158, 11, 0.75); } 
-    }
-    @keyframes speakingPulse { 
-      0% { transform: scale(1); } 
-      50% { transform: scale(1.08); } 
-      100% { transform: scale(1); } 
-    }
-
-    .status-text { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-    .status-sub { font-size: 13px; color: var(--text-muted); }
-
-    /* Draft Display */
-    .draft-container { text-align: left; margin-bottom: 14px; }
-    .draft-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; }
-    .draft-box { background: #ffffff !important; border: 2px solid #3b82f6 !important; border-radius: 12px !important; padding: 14px 16px !important; min-height: 95px !important; max-height: 320px !important; overflow-y: auto !important; font-size: 16px !important; font-weight: 700 !important; color: #0f172a !important; line-height: 1.5 !important; word-break: break-word !important; box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important; }
-    .draft-box span { color: #0f172a !important; }
-    .draft-box .placeholder-text { color: #64748b !important; font-weight: 500 !important; }
-    .draft-box .interim-text { color: #1d4ed8 !important; font-style: italic !important; font-weight: 600 !important; }
-    .interim-text { color: #1d4ed8 !important; font-style: italic !important; font-weight: 600 !important; }
-
-    /* Auto-Send Toggle Bar */
-    .mode-bar { background: var(--card-inner); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-    .mode-label { font-size: 13px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
-    .toggle-switch { position: relative; width: 44px; height: 24px; }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .3s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(20px); }
-
-    /* Action Buttons */
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    button { padding: 11px 8px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; }
-    .btn-polish { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; box-shadow: 0 2px 10px rgba(139, 92, 246, 0.35); }
-    .btn-polish:hover { background: linear-gradient(135deg, #7c3aed, #4f46e5); transform: translateY(-1px); }
-    .btn-readback { background: #3b82f6; color: #fff; }
-    .btn-readback:hover { background: #2563eb; }
-    .btn-send { background: var(--accent); color: #fff; }
-    .btn-send:hover { background: var(--accent-hover); }
-    .btn-clear { background: var(--card-inner); color: #f87171; border: 1px solid var(--border); }
-    .btn-clear:hover { background: rgba(239, 68, 68, 0.15); }
-    .btn-test { background: var(--primary); color: #fff; width: 100%; margin-top: 10px; }
-    .btn-test:hover { background: var(--primary-hover); }
-
-    /* Live Conversation Stream Card */
-    .chat-container { max-height: 320px; overflow-y: auto; text-align: left; padding: 8px 4px; display: flex; flex-direction: column; gap: 10px; }
-    .chat-bubble { padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.4; max-width: 90%; word-break: break-word; }
-    .chat-bubble.user { background: #1d4ed8; color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
-    .chat-bubble.assistant { background: var(--card-inner); color: #f1f5f9; border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 2px; }
-    .bubble-meta { font-size: 10px; opacity: 0.7; margin-bottom: 4px; font-weight: 600; }
-
-    /* Voice Customizer Controls */
-    .form-group { text-align: left; margin-bottom: 14px; }
-    label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-    select { width: 100%; padding: 10px 12px; background: var(--card-inner); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; outline: none; }
-    select:focus { border-color: var(--primary); }
-    
-    .slider-container { display: flex; align-items: center; gap: 12px; }
-    input[type="range"] { flex: 1; accent-color: var(--primary); height: 6px; border-radius: 3px; background: var(--card-inner); cursor: pointer; }
-    .slider-val { width: 55px; text-align: right; font-weight: 700; font-size: 13px; color: #60a5fa; }
-
-    /* Commands helper */
-    .commands-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: left; }
-    .cmd-title { font-weight: 700; font-size: 12px; color: var(--gold); margin-bottom: 6px; }
-    .cmd-item { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; line-height: 1.4; }
-
-    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #2563eb; color: #fff; padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.5); z-index: 1000; }
-
-    /* 2-Step Voice Persona Selector (1. Accent -> 2. Person) */
-    .voice-selector-section {
-      margin-bottom: 12px;
-    }
-    .quick-voice-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 12px;
-      margin-bottom: 8px;
-      transition: 0.2s;
-    }
-    .voice-avatar-wrap {
-      position: relative;
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-    }
-    .voice-avatar-img {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #60a5fa;
-      background: #1e293b;
-      box-shadow: 0 0 12px rgba(96, 165, 250, 0.4);
-      display: block;
-    }
-    .voice-avatar-flag {
-      position: absolute;
-      bottom: -2px;
-      right: -2px;
-      font-size: 13px;
-      line-height: 1;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8));
-    }
-    .step-picker-container {
-      background: rgba(15, 23, 42, 0.45);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      margin-bottom: 12px;
-    }
-    .step-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-    .step-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .step-sub {
-      font-size: 10px;
-      color: #60a5fa;
-      font-weight: 600;
-    }
-    .accent-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-    .accent-pill {
-      flex: 1;
-      min-width: 78px;
-      padding: 6px 8px;
-      background: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: #cbd5e1;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      user-select: none;
-    }
-    .accent-pill:hover {
-      border-color: #60a5fa;
-      color: #fff;
-    }
-    .accent-pill.active {
-      background: #2563eb;
-      border-color: #60a5fa;
-      color: #fff;
-      box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
-    }
-    .voice-avatar-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
-      gap: 8px;
-      padding: 2px 0;
-    }
-    .persona-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 8px 4px 6px;
-      background: var(--card-inner);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      text-align: center;
-      user-select: none;
-    }
-    .persona-card:hover {
-      border-color: #60a5fa;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    .persona-card.active {
-      border-color: #38bdf8;
-      background: rgba(56, 189, 248, 0.15);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
-    }
-    .persona-img-wrap {
-      position: relative;
-      width: 44px;
-      height: 44px;
-      margin-bottom: 4px;
-    }
-    .persona-card-img {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
-      border: 1.5px solid #475569;
-    }
-    .persona-card.active .persona-card-img {
-      border-color: #38bdf8;
-    }
-    .persona-play-btn {
-      position: absolute;
-      bottom: -3px;
-      right: -3px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #2563eb;
-      color: #ffffff;
-      border: 1.5px solid #0f172a;
-      font-size: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0 0 0 2px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-      transition: all 0.15s ease;
-    }
-    .persona-play-btn:hover {
-      background: #3b82f6;
-      transform: scale(1.22);
-    }
-    .persona-card-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: #f8fafc;
-      line-height: 1.2;
-    }
-    .persona-card-gender {
-      font-size: 10px;
-      color: #94a3b8;
-      margin-top: 2px;
-    }
-
-    /* Floating Widget & Adaptive Height Styles */
-    .pip-mode header,
-    .pip-container header {
-      display: none !important;
-    }
-    .pip-mode .container,
-    .pip-container {
-      padding-bottom: 6px !important;
-      max-width: 100% !important;
-    }
-
-    /* Active Chat Spotlight Banner */
-    .active-chat-highlight {
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(124, 58, 237, 0.22));
-      border: 1.5px solid #3b82f6;
-      box-shadow: 0 0 14px rgba(59, 130, 246, 0.35);
-      border-radius: 12px;
-      padding: 7px 12px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-align: left;
-      transition: all 0.25s ease;
-    }
-    .active-chat-pulse {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 8px #10b981;
-      flex-shrink: 0;
-      animation: chatPulse 1.8s infinite ease-in-out;
-    }
-    @keyframes chatPulse {
-      0% { transform: scale(0.9); opacity: 0.8; }
-      50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px #34d399; }
-      100% { transform: scale(0.9); opacity: 0.8; }
-    }
-    .active-chat-icon {
-      font-size: 16px;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-    .active-chat-meta {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-    }
-    .active-chat-label {
-      font-size: 9.5px;
-      font-weight: 800;
-      letter-spacing: 0.6px;
-      color: #93c5fd;
-      line-height: 1.1;
-      text-transform: uppercase;
-    }
-    .active-chat-title {
-      font-size: 13.5px;
-      font-weight: 750;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
-    }
-
-    /* Compact Widget Mode (<= 540px height) */
-    .compact-mode #cardVoiceSettings,
-    .compact-mode #cardCommands,
-    .compact-mode #stepPickerContainer,
-    .compact-mode .card-title {
-      display: none !important;
-    }
-
-    @media (max-height: 540px) {
-      header { display: none !important; }
-      body { padding: 6px !important; }
-      .container { padding-bottom: 6px !important; }
-      #cardVoiceSettings, #cardCommands, #stepPickerContainer, .card-title { display: none !important; }
-      .card { padding: 10px 14px; margin-bottom: 8px; border-radius: 12px; }
-      .orb-row { margin: 6px 0 10px; gap: 14px; }
-      .orb { width: 68px; height: 68px; font-size: 34px; }
-      .draft-container { margin-bottom: 8px; }
-      .draft-box { min-height: 48px; max-height: 75px; overflow-y: auto; padding: 10px; font-size: 14px; }
-      .action-grid button { padding: 7px 6px; font-size: 12px; }
-    }
-
-    /* Bare Minimum Mode (<= 340px height) - Always shows Ear Orb (Speak & Pause) and Voice Selector */
-    .bare-minimum header,
-    .bare-minimum #cardVoiceSettings,
-    .bare-minimum #cardCommands,
-    .bare-minimum #stepPickerContainer,
-    .bare-minimum #draftContainer,
-    .bare-minimum #actionGrid,
-    .bare-minimum .card-title {
-      display: none !important;
-    }
-    .bare-minimum #cardSpeech {
-      padding: 4px 8px !important;
-      margin: 0 !important;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
-    .bare-minimum .orb-row {
-      margin: 2px 0 0 !important;
-      gap: 12px !important;
-      padding: 0 !important;
-    }
-    .bare-minimum .orb {
-      width: 52px !important;
-      height: 52px !important;
-      font-size: 26px !important;
-    }
-    .bare-minimum .status-text {
-      font-size: 14px !important;
-      margin-bottom: 1px !important;
-    }
-    .bare-minimum .status-sub {
-      font-size: 11px !important;
-    }
-    .bare-minimum .active-chat-highlight {
-      padding: 3px 8px !important;
-      margin-bottom: 4px !important;
-      border-radius: 8px !important;
-    }
-    .bare-minimum .active-chat-label {
-      display: none !important;
-    }
-    .bare-minimum .active-chat-title {
-      font-size: 11px !important;
-    }
-
-    @media (max-height: 340px) {
-      header,
-      #cardVoiceSettings,
-      #cardCommands,
-      #draftContainer,
-      #actionGrid,
-      .card-title {
-        display: none !important;
+    // Cross-window DOM proxy: ensure document.getElementById safely finds elements in main tab or floating PiP window without recursion
+    function getAnyElementById(id) {
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try {
+          const pipDoc = window.documentPictureInPicture.window.document;
+          if (pipDoc) {
+            const pipEl = Document.prototype.getElementById.call(pipDoc, id);
+            if (pipEl) return pipEl;
+          }
+        } catch (e) {}
       }
-      body { padding: 4px !important; }
-      .container { padding: 0 !important; padding-bottom: 0 !important; }
-      #cardSpeech {
-        padding: 4px 8px !important;
-        margin: 0 !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-      }
-      .orb-row {
-        margin: 2px 0 0 !important;
-        gap: 12px !important;
-        padding: 0 !important;
-      }
-      .orb {
-        width: 52px !important;
-        height: 52px !important;
-        font-size: 26px !important;
-      }
-      .status-text {
-        font-size: 14px !important;
-        margin-bottom: 1px !important;
-      }
-      .status-sub {
-        font-size: 11px !important;
-      }
-      .active-chat-highlight {
-        padding: 3px 8px !important;
-        margin-bottom: 4px !important;
-        border-radius: 8px !important;
-      }
-      .active-chat-label {
-        display: none !important;
-      }
-      .active-chat-title {
-        font-size: 11px !important;
-      }
-      .quick-voice-bar {
-        padding: 4px 8px !important;
-        margin-bottom: 4px !important;
-        border-radius: 8px !important;
-      }
-      .quick-voice-select {
-        padding: 4px 6px !important;
-        font-size: 12px !important;
-      }
+      return Document.prototype.getElementById.call(document, id);
     }
-    
-    /* Completely hide download options if the user is already inside the installed PWA */
-    @media all and (display-mode: standalone) {
-      .download-section { display: none !important; }
-    }
-  </style>
-</head>
-<body>
-  <!-- 1-Click / Auto Launch Overlay -->
-  <div id="immediateLaunchOverlay" style="display: none; position: fixed; inset: 0; background: rgba(9, 13, 22, 0.96); z-index: 999999; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center; padding: 24px;">
-    <div style="font-size: 56px; margin-bottom: 12px; filter: drop-shadow(0 0 24px rgba(96,165,250,0.8));">🚀</div>
-    <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">Tap Anywhere to Pop Out Floating Widget</h2>
-    <p style="font-size: 13.5px; color: #94a3b8; max-width: 340px; line-height: 1.5; margin-bottom: 20px;">Click anywhere on screen to float the always-on-top voice widget directly over your desktop.</p>
-    <div style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff; padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 700; box-shadow: 0 4px 20px rgba(124,58,237,0.5); border: 1px solid #60a5fa; pointer-events: none;">
-      ⚡ Pop Out Now
-    </div>
-  </div>
+    document.getElementById = getAnyElementById;
 
-  <!-- Placeholder shown in parent tab while floating window is active -->
-  <div id="pipActivePlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; color: #94a3b8; font-family: system-ui, sans-serif; gap: 14px; padding: 24px;">
-    <div style="font-size: 44px; filter: drop-shadow(0 0 16px rgba(124,58,237,0.6));">🎙️</div>
-    <div style="font-size: 18px; font-weight: 800; color: #f8fafc;">Orb Voice Floating Widget Active</div>
-    <div style="font-size: 13.5px; max-width: 340px; line-height: 1.5; color: #94a3b8;">Your floating overlay is pinned and running over your screen.</div>
-    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 12px; max-width: 380px; margin: 8px 0;">
-      <div style="font-weight: 800; color: #f87171; font-size: 13px; margin-bottom: 4px;">⚠️ DO NOT MINIMIZE THIS WINDOW</div>
-      <div style="font-size: 12px; color: #fca5a5; line-height: 1.4;">If you minimize this main window to your taskbar, Windows will forcefully minimize the floating widget along with it. Just leave this window open in the background behind your other apps.</div>
-    </div>
-    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
-      <button type="button" onclick="if(window.documentPictureInPicture && window.documentPictureInPicture.window) window.documentPictureInPicture.window.close()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; padding: 9px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Dock Back to Tab</button>
-      <button type="button" onclick="window.toggleMicOnly()" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 9px 20px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer;">🎙️ Start Microphone</button>
-    </div>
-  </div>
-
-  <div class="container">
-    <header>
-      <h1>🎙️ Orb AI Live Voice Studio</h1>
-      <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-        <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(124,58,237,0.4); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget()">🚀 Launch on your screen</button>
-        <button type="button" id="btnFocusMain" style="display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid #0ea5e9; color: #38bdf8; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; cursor: pointer; align-items: center; gap: 6px;" onclick="window.focus(); showToast('Back on Main Page! Click Start Listening.');">🔙 Go to Main Page</button>
-      </div>
-    </header>
-
-    <!-- Section 1: Live Voice Soundboard & Syllable Stream -->
-    <div id="cardSpeech" class="card">
-      <div class="card-title">
-        <span>💬 Real-Time Speech Stream</span>
-        <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-      </div>
-        </button>
-      </div>
-
-      <div id="orbRow" class="orb-row" onclick="handleOrbClick()" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px;" title="Click Ear to toggle listening">
-        <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
-          <div id="orbEl" class="orb paused" onclick="event.stopPropagation(); handleOrbClick();" title="Click Ear to toggle listening">👂</div>
-          <div style="text-align: left; min-width: 0;">
-            <div id="statusTitle" class="status-text">Microphone Paused</div>
-            <div id="statusSub" class="status-sub">Click Ear or Start Listening below</div>
-          </div>
-        </div>
-        <button type="button" id="btnMicToggle" type="button" onclick="event.stopPropagation(); toggleMicOnly();" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.2s ease;">🎙️ Start Listening</button>
-      </div>
-
-      <!-- Live Draft Display (Placed directly below Listening) -->
-      <div id="draftContainer" class="draft-container" style="margin-top: 10px;">
-        <div class="draft-label" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <span>📝 Spoken Words</span>
-            
-          </div>
-          <span id="draftStatus" style="color: #60a5fa; font-size: 11px;">Continuous Listening</span>
-        </div>
-        <div id="draftBox" class="draft-box" contenteditable="true" oninput="handleDraftBoxInput(this)" onkeydown="handleDraftBoxKey(event)" spellcheck="false">
-          <span class="placeholder-text" style="color: #64748b !important; font-weight: 500;">Speak your message out loud...</span>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div id="actionGrid" class="action-grid" style="margin-bottom: 12px;">
-        <button type="button" id="btnPolish" class="btn-polish" onclick="polishDraft()" title="AI Polish (TextBlaze / Grammarly Style)">
-          <span id="polishIcon">✨</span> Polish
-        </button>
-        <button type="button" class="btn-readback" onclick="readDraftBack()">
-          <span>🔊</span> Read Back
-        </button>
-        <button type="button" class="btn-send" onclick="sendDraftNow()">
-          <span>🚀</span> Send Now
-        </button>
-        <button type="button" class="btn-clear" onclick="clearDraft(false)">
-          <span>🗑️</span> Clear
-        </button>
-      </div>
-
-      <!-- AI Controls & Chat Target -->
-      <div style="margin-bottom: 12px; display: flex; gap: 6px; align-items: stretch; flex-wrap: wrap;">
-        <!-- Active Chat Target Spotlight -->
-        <div id="activeChatHighlight" class="active-chat-highlight" style="flex: 1 1 180px; min-width: 160px; margin-bottom: 0;" title="Currently active conversation">
-          <span class="active-chat-pulse"></span>
-          <span class="active-chat-icon">??</span>
-          <div class="active-chat-meta">
-            <span class="active-chat-label">Active Chat</span>
-            <span id="activeChatTitleText" class="active-chat-title">Detecting active chat...</span>
-          </div>
-        </div>
-        <button type="button" id="btnTotalPause" onclick="toggleTotalPause()" style="flex: 1 1 120px; min-width: 105px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-          <span id="totalPauseIcon">??</span>
-          <span id="totalPauseText">Total Pause</span>
-        </button>
-        <button type="button" id="btnFloaterSpeakAI" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1 1 130px; min-width: 115px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-          <span>??</span>
-          <span>Speak AI Reply</span>
-        </button>
-      </div>
-
-      <!-- 2-Step Voice Persona Selector (1. Accent -> 2. Person) -->
-      <div id="voiceSelectorSection" class="voice-selector-section">
-        <!-- Currently Active Persona Header Bar -->
-        <div id="quickVoiceBar" class="quick-voice-bar">
-          <div class="voice-avatar-wrap">
-            <img id="voiceAvatarImg" class="voice-avatar-img" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=160&auto=format&fit=crop&q=80" alt="Persona Avatar">
-            <span id="voiceAvatarFlag" class="voice-avatar-flag">🇬🇧</span>
-          </div>
-          <div style="flex: 1; min-width: 0; text-align: left;">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Speaking Voice</div>
-            <div style="display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;">
-              <span id="activePersonName" style="font-size: 16px; font-weight: 800; color: #fff;">Libby</span>
-            </div>
-          </div>
-          <select id="selectVoice" onchange="onVoiceSelected()" style="display: none;">
-            <option value="en-GB-LibbyNeural" selected>Libby</option>
-            <option value="en-GB-SoniaNeural">Sonia</option>
-            <option value="en-GB-RyanNeural">Ryan</option>
-            <option value="en-GB-ThomasNeural">Thomas</option>
-            <option value="en-US-AvaNeural">Ava</option>
-            <option value="en-US-BrianNeural">Brian</option>
-            <option value="en-US-JennyNeural">Jenny</option>
-            <option value="en-US-GuyNeural">Guy</option>
-            <option value="en-US-ChristopherNeural">Christopher</option>
-            <option value="en-US-AriaNeural">Aria</option>
-            <option value="en-IE-EmilyNeural">Emily</option>
-            <option value="en-AU-NatashaNeural">Natasha</option>
-            <option value="en-CA-LiamNeural">Liam</option>
-          </select>
-        </div>
-
-        <div id="stepPickerContainer" class="step-picker-container">
-          <!-- Step 1: Choose Accent -->
-          <div class="step-header">
-            <span class="step-title">1. Choose Your Accent</span>
-          </div>
-          <div id="accentPills" class="accent-pills">
-            <!-- Rendered dynamically -->
-          </div>
-
-          <!-- Step 2: Choose Person -->
-          <div class="step-header" style="margin-top: 6px;">
-            <span class="step-title">2. Choose Your Person</span>
-          </div>
-          <div id="voiceAvatarGallery" class="voice-avatar-gallery">
-            <!-- Person avatar cards for chosen accent -->
-          </div>
-
-          <!-- Unified Voice Tone, Speed & Test Preview -->
-          <div id="voiceTuningBox" style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);">
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <div class="form-group" style="flex: 1; min-width: 130px; margin-bottom: 6px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <label style="margin: 0; font-size: 11px;">Speaking Speed</label>
-                  <span id="labelRate" class="slider-val" style="font-size: 12px; width: auto;">1.00x</span>
-                </div>
-                <div class="slider-container">
-                  <input type="range" id="rangeRate" min="-30" max="60" step="5" value="0" oninput="updateRateLabel()" onchange="saveVoiceSettings()">
-                </div>
-              </div>
-
-              <div class="form-group" style="flex: 1; min-width: 130px; margin-bottom: 6px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                  <label style="margin: 0; font-size: 11px;">Tone Pitch</label>
-                  <span id="labelPitch" class="slider-val" style="font-size: 12px; width: auto;">Normal</span>
-                </div>
-                <div class="slider-container">
-                  <input type="range" id="rangePitch" min="-20" max="20" step="2" value="0" oninput="updatePitchLabel()" onchange="saveVoiceSettings()">
-                </div>
-              </div>
-            </div>
-
-            <button type="button" type="button" class="btn-test" onclick="testVoicePreview()" style="margin-top: 6px; padding: 9px 12px; font-size: 12px; border-radius: 8px;">🔊 Test Voice Preview</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="toast" class="toast">Notice</div>
-  </div>
-
-    <!-- Footer Utilities -->
-  <div style="margin: 20px auto 10px auto; max-width: 600px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-    <button type="button" id="btnFloaterRefresh" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-      <span id="floaterRefreshIcon">??</span>
-      <span>Refresh</span>
-    </button>
-    <button type="button" id="btnFloaterPinTaskbar" onclick="pinFloaterToTaskbar()" title="Pin standalone app to Windows Taskbar" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-      <span>??</span>
-      <span>Pin to Taskbar</span>
-    </button>
-  </div>
-  <div id="downloadSection" class="download-section" style="margin: 30px auto 40px auto; max-width: 600px; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 25px;">
-    <h3 style="margin-top: 0; font-size: 15px; font-weight: 600; color: #f8fafc; margin-bottom: 16px;">Get the App</h3>
-    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-      <button type="button" onclick="window.location.href='/Orb.apk'" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">📱</span> Download for Android
-      </button>
-      <button type="button" onclick="installPWA()" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">💻</span> Install for Windows / Mac
-      </button>
-    </div>
-  </div>
-
-  <script>
-// Single-instance coordinator: ensure multiple open tabs never spawn a barrage of conflicting widgets
+    // Single-instance coordinator: ensure multiple open tabs never spawn a barrage of conflicting widgets
     const widgetSyncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('orb_voice_widget_sync') : null;
     if (widgetSyncChannel) {
       widgetSyncChannel.onmessage = (ev) => {
@@ -827,14 +98,14 @@
     function updateRateLabel() {
       const val = parseInt(document.getElementById('rangeRate').value);
       const mult = ((100 + val) / 100).toFixed(2);
-      const lr = document.getElementById('labelRate'); if (lr) lr.innerText = mult + 'x';
+      document.getElementById('labelRate').innerText = mult + 'x';
     }
 
     function updatePitchLabel() {
       const val = parseInt(document.getElementById('rangePitch').value);
-      if (val === 0) { const lp = document.getElementById('labelPitch'); if (lp) lp.innerText = 'Normal'; }
-      else if (val > 0) { const lp = document.getElementById('labelPitch'); if (lp) lp.innerText = '+' + val + 'Hz'; }
-      else { const lp = document.getElementById('labelPitch'); if (lp) lp.innerText = val + 'Hz'; }
+      if (val === 0) document.getElementById('labelPitch').innerText = 'Normal';
+      else if (val > 0) document.getElementById('labelPitch').innerText = '+' + val + 'Hz';
+      else document.getElementById('labelPitch').innerText = val + 'Hz';
     }
 
     const PERSONAS = [
@@ -973,16 +244,15 @@
       return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="${bg}"/><circle cx="50" cy="38" r="18" fill="white" opacity="0.9"/><path d="M22 84 C22 64 36 58 50 58 C64 58 78 64 78 84 Z" fill="white" opacity="0.9"/></svg>`;
     }
 
-            function updateVoicePersonaUI(voiceId) {
-      if (!voiceId) return;
-      const p = voicePersonas.find(v => v.id === voiceId);
-      if (!p) return;
-      
+    function updateVoicePersonaUI(voiceId) {
+      const p = PERSONAS.find(x => x.id === voiceId) || PERSONAS[0];
+      selectedAccent = p.accent;
+
       const avatarImg = document.getElementById('voiceAvatarImg');
       const avatarFlag = document.getElementById('voiceAvatarFlag');
       const nameEl = document.getElementById('activePersonName');
       const select = document.getElementById('selectVoice');
-      
+
       if (avatarImg) {
         avatarImg.src = p.avatar;
         avatarImg.onerror = () => { avatarImg.src = getAvatarFallback(p.id); };
@@ -990,28 +260,124 @@
       if (avatarFlag) avatarFlag.innerText = p.flag;
       if (nameEl) nameEl.innerText = p.name;
       if (select && select.value !== p.id) select.value = p.id;
-      
-      const pCards = document.querySelectorAll('.persona-card');
-      pCards.forEach(c => {
-        if (c.getAttribute('data-id') === voiceId) {
-          c.classList.add('active');
-        } else {
-          c.classList.remove('active');
-        }
-      });
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        const pipCards = window.documentPictureInPicture.window.document.querySelectorAll('.persona-card');
-        pipCards.forEach(c => {
-          if (c.getAttribute('data-id') === voiceId) {
-            c.classList.add('active');
-          } else {
-            c.classList.remove('active');
-          }
-        });
-      }
+
+      render2StepVoicePicker();
     }
 
-function onVoiceSelected() {
+    function render2StepVoicePicker() {
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      docs.forEach(doc => {
+        renderAccentPills(doc);
+        renderPersonaGallery(doc);
+      });
+    }
+
+    function renderAccentPills(targetDoc = document) {
+      if (!targetDoc) return;
+      const container = targetDoc.getElementById('accentPills');
+      if (!container) return;
+
+      let html = '';
+      ACCENTS.forEach(acc => {
+        const isActive = acc.id === selectedAccent ? 'active' : '';
+        html += `
+          <button type="button" class="accent-pill ${isActive}" onclick="selectAccent('${acc.id}')">
+            <span>${acc.flag}</span> <span>${acc.name}</span>
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function selectAccent(accentId) {
+      selectedAccent = accentId;
+
+      // If current selected voice is not under this accent, select the first persona of this accent
+      const currentVoice = document.getElementById('selectVoice')?.value;
+      const currentPersona = PERSONAS.find(p => p.id === currentVoice);
+      if (!currentPersona || currentPersona.accent !== accentId) {
+        const firstInAccent = PERSONAS.find(p => p.accent === accentId);
+        if (firstInAccent) {
+          selectPersona(firstInAccent.id);
+          return;
+        }
+      }
+      render2StepVoicePicker();
+    }
+
+    function handleAvatarError(img, voiceId) {
+      if (!img) return;
+      img.onerror = null;
+      img.src = getAvatarFallback(voiceId);
+    }
+
+    function renderPersonaGallery(targetDoc = document) {
+      if (!targetDoc) return;
+      const gallery = targetDoc.getElementById('voiceAvatarGallery');
+      if (!gallery) return;
+      const select = targetDoc.getElementById('selectVoice');
+      const currentVoice = (select && select.value) ? select.value : 'en-GB-SoniaNeural';
+
+      const filtered = PERSONAS.filter(p => p.accent === selectedAccent);
+      let html = '';
+      filtered.forEach(p => {
+        const isActive = p.id === currentVoice ? 'active' : '';
+        html += `
+          <div class="persona-card ${isActive}" data-voice="${p.id}" onclick="selectPersona('${p.id}')">
+            <div class="persona-img-wrap">
+              <img class="persona-card-img" src="${p.avatar}" alt="${p.name}" onerror="handleAvatarError(this, '${p.id}')">
+              <button type="button" class="persona-play-btn" onclick="event.stopPropagation(); previewPersonaVoice('${p.id}', '${p.name}');">▶</button>
+            </div>
+            <div class="persona-card-name">${p.name}</div>
+          </div>
+        `;
+      });
+      gallery.innerHTML = html;
+    }
+
+    let currentPreviewAudio = null;
+
+    function previewPersonaVoice(voiceId, name) {
+      selectPersona(voiceId);
+
+      if (currentPreviewAudio) {
+        try { currentPreviewAudio.pause(); currentPreviewAudio.currentTime = 0; } catch (e) {}
+      }
+
+      setOrbState('speaking');
+      document.getElementById('statusTitle').innerText = 'Speaking Readout...';
+
+      currentPreviewAudio = new Audio('/api/voice_preview_audio?voice=' + encodeURIComponent(voiceId));
+      currentPreviewAudio.play().then(() => {
+        currentPreviewAudio.onended = () => {
+          setOrbState(isConnected ? 'listening' : 'paused');
+          document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+        };
+      }).catch(() => {
+        fetch('/api/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: `Hello Sadie! I'm ${name}.`, voice: voiceId })
+        }).finally(() => {
+          setTimeout(() => {
+            setOrbState(isConnected ? 'listening' : 'paused');
+            document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+          }, 2000);
+        });
+      });
+    }
+
+    function selectPersona(voiceId) {
+      const select = document.getElementById('selectVoice');
+      if (select) select.value = voiceId;
+      updateVoicePersonaUI(voiceId);
+      saveVoiceSettings();
+    }
+
+    function onVoiceSelected() {
       const select = document.getElementById('selectVoice');
       if (select) {
         updateVoicePersonaUI(select.value);
@@ -1024,14 +390,14 @@ function onVoiceSelected() {
         const res = await fetch('/api/settings');
         const data = await res.json();
         const voiceId = data.voice || 'en-GB-LibbyNeural';
-        const sv = document.getElementById('selectVoice'); if (sv) sv.value = voiceId;
+        document.getElementById('selectVoice').value = voiceId;
         updateVoicePersonaUI(voiceId);
         
         const rateVal = parseInt(String(data.rate || '0').replace('%', '').replace('+', '')) || 0;
-        const rr = document.getElementById('rangeRate'); if (rr) rr.value = rateVal;
+        document.getElementById('rangeRate').value = rateVal;
         
         const pitchVal = parseInt(String(data.pitch || '0').replace('Hz', '').replace('+', '')) || 0;
-        const rp = document.getElementById('rangePitch'); if (rp) rp.value = pitchVal;
+        document.getElementById('rangePitch').value = pitchVal;
 
         updateRateLabel();
         updatePitchLabel();
@@ -1065,8 +431,8 @@ function onVoiceSelected() {
       } catch (e) {}
     }
 
-    async function popOutFloatingWidget(silentFail = false) {
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+    async function popOutFloatingWidget() {
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
         window.documentPictureInPicture.window.close();
         return;
       }
@@ -1077,11 +443,10 @@ function onVoiceSelected() {
 
       if ('documentPictureInPicture' in window) {
         try {
-          const pipWindow = await window.documentPictureInPicture.requestWindow();
-          
-          try {
-            pipWindow.resizeTo(470, 720);
-          } catch (e) {}
+          const pipWindow = await window.documentPictureInPicture.requestWindow({
+            width: 470,
+            height: 720,
+          });
 
           pipWindow.document.title = "🎙️ Orb AI Live Voice Studio";
 
@@ -1161,7 +526,6 @@ function onVoiceSelected() {
           showToast('🚀 Launched on your screen!');
         } catch (err) {
           console.error('PiP Error:', err);
-          showToast('⚠️ Pop-up Error: ' + err.message);
           throw err;
         }
       } else {
@@ -1171,6 +535,8 @@ function onVoiceSelected() {
 
     function bindPipControls(pipWindow) {
       if (!pipWindow || !pipWindow.document) return;
+      pipWindow.document.getElementById = getAnyElementById;
+
       const bridgeFns = [
         'toggleTotalPause', 'updateTotalPauseUI', 'toggleMicOnly', 'handleOrbClick',
         'toggleOrb', 'pauseAI', 'toggleMic', 'startMic', 'stopMic', 'readDraftBack', 'sendDraftNow', 'clearDraft',
@@ -1215,11 +581,6 @@ function onVoiceSelected() {
       const pipClearBtn = pipWindow.document.querySelector('.btn-clear');
       if (pipClearBtn) {
         pipClearBtn.onclick = () => window.clearDraft(false);
-      }
-
-            const pipTotalPauseBtn = pipWindow.document.getElementById('btnTotalPause');
-      if (pipTotalPauseBtn) {
-        pipTotalPauseBtn.onclick = () => window.toggleTotalPause();
       }
 
       const pipSpeakBtn = pipWindow.document.getElementById('btnFloaterSpeakAI');
@@ -1346,7 +707,8 @@ function onVoiceSelected() {
           showToast('🔍 Scanned chats — no unread reply found.');
         } else {
           setOrbState('speaking');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'AI Speaking...';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'AI Speaking...';
         }
       } catch (e) {
         showToast('⚠️ Could not play AI speech.');
@@ -1355,10 +717,10 @@ function onVoiceSelected() {
 
     async function attemptAutoLaunch() {
       if (!('documentPictureInPicture' in window)) return;
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) return;
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window) return;
 
       try {
-        await popOutFloatingWidget(true);
+        await popOutFloatingWidget();
         console.log('[AUTO-LAUNCH] Floating overlay opened on start.');
       } catch (err) {
         console.log('[AUTO-LAUNCH] Browser requires single gesture to float window:', err);
@@ -1375,7 +737,7 @@ function onVoiceSelected() {
         window.removeEventListener('keydown', trigger);
         window.removeEventListener('pointerdown', trigger);
         try {
-          await popOutFloatingWidget(true);
+          await popOutFloatingWidget();
           if (overlay) overlay.style.display = 'none';
         } catch (e) {
           console.error('Launch failed:', e);
@@ -1651,7 +1013,8 @@ function onVoiceSelected() {
 
         interimText = currentInterim;
         setOrbState('hearing');
-        const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Hearing Speech...';
+        const title = document.getElementById('statusTitle');
+        if (title) title.innerText = 'Hearing Speech...';
 
         if (latestFinal) {
           processUtterance(latestFinal);
@@ -1669,7 +1032,7 @@ function onVoiceSelected() {
           stopMic();
         } else if (e.error === 'network' || e.error === 'audio-capture') {
           showToast('⚠️ Mic warning: ' + e.error);
-        } else if (e.error !== 'no-speech' && e.error !== 'aborted') {
+        } else if (e.error !== 'no-speech') {
           showToast('⚠️ Mic error: ' + e.error);
         }
       };
@@ -2297,7 +1660,7 @@ function onVoiceSelected() {
       let activeChatName = '';
       docs.forEach(doc => {
         if (!activeChatName) {
-          const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText') ||
+          const el = Document.prototype.getElementById.call(doc, 'draftTargetChatName') ||
                      Document.prototype.getElementById.call(doc, 'activeChatTitleText');
           if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Orb') {
             activeChatName = el.innerText.trim();
@@ -2492,8 +1855,8 @@ function onVoiceSelected() {
         silenceCountdownInterval = null;
       }
       const rawText = getDraftText();
-      const fullText = isDraftPolished ? rawText : adaptSpeechText(rawText);
-      if (!fullText || !fullText.trim()) {
+      const fullText = adaptSpeechText(rawText);
+      if (!fullText) {
         showToast('Draft is empty. Speak or type something first!');
         return;
       }
@@ -2515,15 +1878,7 @@ function onVoiceSelected() {
         if (orb) orb.className = 'orb';
       });
 
-      let activeChatName = '';
-      docs.forEach(doc => {
-        if (!activeChatName) {
-          const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-          if (el && el.innerText && el.innerText.trim() !== 'Orb') activeChatName = el.innerText.trim();
-        }
-      });
-
-      const payload = JSON.stringify({ text: fullText, auto_send: true, source: 'app', chat_title: activeChatName });
+      const payload = JSON.stringify({ text: fullText, auto_send: true, source: 'app' });
       const headers = { 'Content-Type': 'application/json' };
 
       // Dispatch to local relay server (127.0.0.1:8766) which triggers Windows keystroke injection
@@ -2604,7 +1959,7 @@ function onVoiceSelected() {
 
     function speakAudio(text) {
       setOrbState('speaking');
-      const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Speaking Readout...';
+      document.getElementById('statusTitle').innerText = 'Speaking Readout...';
 
       fetch('/api/test', {
         method: 'POST',
@@ -2613,7 +1968,7 @@ function onVoiceSelected() {
       }).then(() => {
         setTimeout(() => {
           setOrbState(isConnected ? 'listening' : 'paused');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+          document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
         }, 3500);
       }).catch(() => {
         setOrbState(isConnected ? 'listening' : 'paused');
@@ -2653,22 +2008,9 @@ function onVoiceSelected() {
               chatEl.innerText = state.active_chat_title;
               chatEl.title = 'Active Chat: ' + state.active_chat_title;
             }
-            const draftTagEl = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
+            const draftTagEl = Document.prototype.getElementById.call(doc, 'draftTargetChatName');
             if (draftTagEl && draftTagEl.innerText !== state.active_chat_title) {
               draftTagEl.innerText = state.active_chat_title;
-              
-              // Flash animation for visual feedback
-              draftTagEl.style.transition = 'none';
-              draftTagEl.style.background = '#10b981'; // Green flash
-              draftTagEl.style.color = '#ffffff';
-              draftTagEl.style.transform = 'scale(1.08)';
-              
-              setTimeout(() => {
-                draftTagEl.style.transition = 'all 0.6s ease';
-                draftTagEl.style.background = 'rgba(56, 189, 248, 0.1)';
-                draftTagEl.style.color = '#38bdf8';
-                draftTagEl.style.transform = 'scale(1)';
-              }, 400);
             }
           });
         }
@@ -2706,8 +2048,10 @@ function onVoiceSelected() {
 
         if (isAISpeaking && !isManualPaused) {
           setOrbState('speaking');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'AI Speaking...';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Click Ear or speak to talk';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'AI Speaking...';
+          const sub = document.getElementById('statusSub');
+          if (sub) sub.innerText = 'Click Ear or speak to talk';
           if (silenceTimer) {
             clearTimeout(silenceTimer);
             silenceTimer = null;
@@ -2718,35 +2062,23 @@ function onVoiceSelected() {
           }
         } else if (isConnected && !isManualPaused) {
           setOrbState('listening');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Listening for Voice...';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Talk naturally anywhere in the room';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'Listening for Voice...';
+          const sub = document.getElementById('statusSub');
+          if (sub) sub.innerText = 'Talk naturally anywhere in the room';
         } else {
           setOrbState('paused');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Microphone Idle';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Click Start Listening to talk';
+          const title = document.getElementById('statusTitle');
+          if (title) title.innerText = 'Microphone Idle';
+          const sub = document.getElementById('statusSub');
+          if (sub) sub.innerText = 'Click Start Listening to talk';
         }
       } catch (e) { isAISpeaking = false; }
     }
 
     async function pollConversation() {
       try {
-        let activeChatName = '';
-        const docs = [document];
-        if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
-          try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
-        }
-        docs.forEach(doc => {
-          if (!activeChatName) {
-            const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-            if (el && el.innerText && el.innerText.trim() !== 'Orb') activeChatName = el.innerText.trim();
-          }
-        });
-        
-        let url = '/api/conversation';
-        if (activeChatName) {
-          url += '?chat_title=' + encodeURIComponent(activeChatName);
-        }
-        const res = await fetch(url);
+        const res = await fetch('/api/conversation');
         const data = await res.json();
         const messages = data.messages || [];
 
@@ -2757,11 +2089,32 @@ function onVoiceSelected() {
       } catch (e) {}
     }
 
-        function renderChatStream(messages) {
+    function renderChatStream(messages) {
       knownAITexts = (messages || [])
         .filter(m => m.role === 'assistant' && m.text)
         .slice(-15)
         .map(m => m.text);
+
+      const stream = document.getElementById('chatStream');
+      if (!messages || messages.length === 0) {
+        stream.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 20px;">Listening for messages... Speak out loud to chat!</div>';
+        return;
+      }
+
+      let html = '';
+      messages.forEach(m => {
+        const isUser = m.role === 'user';
+        const roleLabel = isUser ? '👤 You (Sadie)' : '🎙️ Orb AI Assistant';
+        const cssClass = isUser ? 'user' : 'assistant';
+        html += `
+          <div class="chat-bubble ${cssClass}">
+            <div class="bubble-meta">${roleLabel} • ${m.time || ''}</div>
+            <div>${escapeHtml(m.text)}</div>
+          </div>
+        `;
+      });
+      stream.innerHTML = html;
+      stream.scrollTop = stream.scrollHeight;
     }
 
     function escapeHtml(str) {
@@ -2843,22 +2196,6 @@ function onVoiceSelected() {
           album: 'Orb Voice Studio'
         });
 
-        // Browsers drop MediaSession key bindings if no media is actively playing.
-        // Play a silent 1-second WAV loop to keep the earbud hooks securely alive.
-        const silentWav = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
-        const silentPlayer = new Audio(silentWav);
-        silentPlayer.loop = true;
-        silentPlayer.volume = 0.01;
-        
-        // Ensure it starts when user interacts
-        const startSilent = () => {
-          silentPlayer.play().catch(()=>{});
-          window.removeEventListener('click', startSilent);
-          window.removeEventListener('pointerdown', startSilent);
-        };
-        window.addEventListener('click', startSilent);
-        window.addEventListener('pointerdown', startSilent);
-
         const handleDoubleTapResume = () => {
           if (isTotalPaused) {
             showToast('🎧 Earbud Double-Tap: Resuming playback from Total Pause...');
@@ -2932,14 +2269,6 @@ function onVoiceSelected() {
 
       render2StepVoicePicker(document);
       loadSettings();
-      
-      try {
-        if (sessionStorage.getItem('reopen_pip_after_reload') === 'true') {
-          sessionStorage.removeItem('reopen_pip_after_reload');
-          enableImmediateLaunchOverlay();
-        }
-      } catch (e) {}
-
       pollConversation();
       pollLiveState();
       setInterval(pollConversation, 1500);
@@ -2952,51 +2281,7 @@ function onVoiceSelected() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
       }
+
+      attemptAutoLaunch();
     };
-
-    // Cross-window DOM proxy: ensure document.getElementById safely finds elements in main tab or floating PiP window without recursion
-    function getAnyElementById(id) {
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        try {
-          const pipDoc = window.documentPictureInPicture.window.document;
-          if (pipDoc) {
-            const pipEl = Document.prototype.getElementById.call(pipDoc, id);
-            if (pipEl) return pipEl;
-          }
-        } catch (e) {}
-      }
-      return Document.prototype.getElementById.call(document, id);
-    }
-    document.getElementById = getAnyElementById;
-
-</script>
-</body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  

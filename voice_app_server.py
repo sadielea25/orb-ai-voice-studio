@@ -196,8 +196,45 @@ def extract_chat_title(transcript_path):
     return "Coremarket Goods Accounting"
 
 
-def get_active_chat_title_and_transcript():
+def find_matching_transcript(search_title, transcripts):
+    if not search_title or search_title.strip() == "Orb AI Project": return None
+    clean_search = re.sub(r'[^a-zA-Z0-9 ]', '', search_title.lower()).strip()
+    search_words = set(clean_search.split())
+    if not search_words: return None
+    
+    for p in transcripts:
+        pt = extract_chat_title(p)
+        if pt:
+            pt_clean = re.sub(r'[^a-zA-Z0-9 ]', '', pt.lower()).strip()
+            pt_words = set(pt_clean.split())
+            if len(search_words.intersection(pt_words)) >= min(2, len(search_words)):
+                return p
+                
+    for p in transcripts:
+        try:
+            with open(p, "r", encoding="utf-8", errors="ignore") as f:
+                for _ in range(50):
+                    line = f.readline()
+                    if not line: break
+                    d = json.loads(line)
+                    cnt = re.sub(r'[^a-zA-Z0-9 ]', '', d.get("content", "").lower())
+                    cnt_words = set(cnt.split())
+                    if len(search_words.intersection(cnt_words)) >= min(2, len(search_words)):
+                        return p
+        except Exception:
+            pass
+    return None
+
+def get_active_chat_title_and_transcript(target_title=""):
     try:
+        transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
+        transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+
+        if target_title and target_title.strip() != "Orb AI Project":
+            matched_p = find_matching_transcript(target_title, transcripts)
+            if matched_p:
+                return target_title, matched_p
+
         u32 = ctypes.windll.user32
         k32 = ctypes.windll.kernel32
         h_desk = u32.OpenDesktopW("Default", 0, False, 0x01FF)
@@ -231,27 +268,14 @@ def get_active_chat_title_and_transcript():
         u32.EnumWindows(cb, 0)
 
         window_title = title_box[0]
-        transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
-        transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
 
         if window_title and window_title.lower() not in ("antigravity", "antigravity.exe", "cursor", "cursor.exe", "code", "code.exe", "visual studio code"):
-            clean_win = re.sub(r'[^a-zA-Z0-9 ]', '', window_title.lower()).strip()
-            win_words = set(clean_win.split())
-            if win_words:
-                for p in transcripts:
-                    try:
-                        with open(p, "r", encoding="utf-8", errors="ignore") as f:
-                            for _ in range(50):
-                                line = f.readline()
-                                if not line: break
-                                d = json.loads(line)
-                                cnt = re.sub(r'[^a-zA-Z0-9 ]', '', d.get("content", "").lower())
-                                cnt_words = set(cnt.split())
-                                if len(win_words.intersection(cnt_words)) >= min(2, len(win_words)):
-                                    proj_title = extract_chat_title(p)
-                                    return proj_title, p
-                    except Exception:
-                        pass
+            display_title = window_title.split("-")[0].strip() if "-" in window_title else window_title
+            matched_p = find_matching_transcript(window_title, transcripts)
+            if matched_p:
+                return display_title, matched_p
+                
+            return display_title, transcripts[0] if transcripts else FALLBACK_LOG
 
         if transcripts:
             friendly_title = extract_chat_title(transcripts[0])
@@ -261,8 +285,8 @@ def get_active_chat_title_and_transcript():
     return "Orb AI Project", FALLBACK_LOG
 
 
-def get_latest_transcript_path():
-    _, path = get_active_chat_title_and_transcript()
+def get_latest_transcript_path(target_title=""):
+    _, path = get_active_chat_title_and_transcript(target_title)
     return path
 
 winmm = ctypes.windll.winmm
@@ -394,9 +418,9 @@ def strip_ai_echo(text):
     return cleaned
 
 
-def get_conversation_history(limit=100):
+def get_conversation_history(limit=100, target_title=""):
     messages = []
-    log_path = get_latest_transcript_path()
+    log_path = get_latest_transcript_path(target_title)
     if os.path.exists(log_path):
         try:
             with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
@@ -431,7 +455,7 @@ def get_conversation_history(limit=100):
                             "text": clean_cnt,
                             "time": t_str
                         })
-                    elif src == "MODEL" and typ == "PLANNER_RESPONSE" and not d.get("tool_calls"):
+                    elif src == "MODEL" and typ == "PLANNER_RESPONSE":
                         t_str = d.get("created_at", "")
                         if "T" in t_str:
                             t_str = t_str.split("T")[1].split(".")[0][:5]
@@ -657,14 +681,17 @@ class PWAHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"version": int(mtime * 1000)}).encode("utf-8"))
         elif url_path == "/api/conversation":
             limit = 100
+            target_title = ""
             if "?" in self.path:
                 try:
                     parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
                     if "limit" in parsed_q:
                         limit = int(parsed_q["limit"][0])
+                    if "chat_title" in parsed_q:
+                        target_title = parsed_q["chat_title"][0]
                 except Exception:
                     pass
-            conv = get_conversation_history(limit)
+            conv = get_conversation_history(limit, target_title=target_title)
             self._set_headers(200)
             self.wfile.write(json.dumps({"messages": conv}).encode("utf-8"))
         elif url_path == "/api/chat_voices":
@@ -793,7 +820,8 @@ class PWAHandler(BaseHTTPRequestHandler):
                 if source != "room_mic":
                     try:
                         import desktop_injector
-                        desktop_injector.type_text_into_antigravity(text)
+                        chat_title = data.get("chat_title", "")
+                        desktop_injector.type_text_into_antigravity(text, target_title=chat_title)
                     except Exception as e:
                         print(f"[VOICE-RELAY-ERR]: {e}", flush=True)
 
@@ -1175,7 +1203,7 @@ def handle_earbud_resume_gesture():
 def run():
     threading.Thread(target=keep_orb_pinned_loop, daemon=True).start()
     threading.Thread(target=earbud_gesture_listener_loop, daemon=True).start()
-    server_address = ("127.0.0.1", PORT)
+    server_address = ("0.0.0.0", PORT)
     while True:
         try:
             httpd = HTTPServer(server_address, PWAHandler)
