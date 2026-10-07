@@ -1106,22 +1106,19 @@ function render2StepVoicePicker() {
           document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
         };
       }).catch(() => {
-        fetch('http://127.0.0.1:8766/api/test', {
+fetch('http://127.0.0.1:8766/api/test', {
           method: 'POST',
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: `Hello Sadie! I'm ${name}.`, voice: voiceId })
+        }).then(res => {
+           if(!res.ok) throw new Error("local failed");
+           setTimeout(() => {
+              setOrbState(isConnected ? 'listening' : 'paused');
+              document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+           }, 2000);
         }).catch(() => {
-          return fetch('/api/test', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: `Hello Sadie! I'm ${name}.`, voice: voiceId })
-          });
-        }).finally(() => {
-          setTimeout(() => {
-            setOrbState(isConnected ? 'listening' : 'paused');
-            document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
-          }, 2000);
+          playCloudAudio(`Hello Sadie! I'm ${name}.`);
         });
       });
     }
