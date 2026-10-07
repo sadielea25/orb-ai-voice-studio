@@ -198,7 +198,7 @@ def type_text_into_antigravity(text, target_title=""):
     except Exception as e:
         print(f"[DESKTOP-INJECTOR] Focus error: {e}", flush=True)
 
-    time.sleep(0.35) # Give the chat box plenty of time to fully receive cursor focus
+    time.sleep(0.15) # Give the chat box plenty of time to fully receive cursor focus
 
     # 3. Paste (Ctrl + V)
     try:
@@ -208,7 +208,7 @@ def type_text_into_antigravity(text, target_title=""):
         time.sleep(0.08)
         u32.keybd_event(VK_V, 0, KEYEVENTF_KEYUP, 0)
         u32.keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0)
-        time.sleep(0.45) # Give the UI plenty of time to register the pasted text before hitting Enter (prevents failure to clear on large blocks)
+        time.sleep(0.20) # Give the UI plenty of time to register the pasted text before hitting Enter (prevents failure to clear on large blocks)
 
         # Enter
         u32.keybd_event(VK_RETURN, 0, 0, 0)

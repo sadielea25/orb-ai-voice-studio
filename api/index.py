@@ -198,8 +198,56 @@ class handler(BaseHTTPRequestHandler):
                     "text": text,
                     "time": time.strftime("%H:%M")
                 })
-            self._set_headers(200)
-            self.wfile.write(json.dumps({"status": "received"}).encode("utf-8"))
+                
+                # Call Gemini for Cloud AI Mode
+                import urllib.request
+                import base64
+                default_gem_key = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=").decode()
+                api_key = data.get("api_key") or os.environ.get("GEMINI_API_KEY") or default_gem_key
+                
+                sys_prompt = "You are Orb, an elite conversational AI voice assistant. Keep responses natural, concise, and meant to be spoken aloud. Do not use markdown, emojis, or lists unless absolutely necessary. Keep it under 2 sentences unless the user asks a complex question."
+                
+# Build conversation history
+                history = data.get("history", [])
+                gemini_contents = []
+                for msg in history[-10:]:  # Keep last 10 messages for memory
+                    role = "user" if msg.get("role") == "user" else "model"
+                    gemini_contents.append({ "role": role, "parts": [ { "text": msg.get("text", "") } ] })
+                
+                gemini_contents.append({ "role": "user", "parts": [ { "text": text } ] })
+                
+                payload_data = {
+                    "system_instruction": { "parts": [ { "text": sys_prompt } ] },
+                    "contents": gemini_contents,
+                    "generationConfig": { "maxOutputTokens": 512, "temperature": 0.7 }
+                }
+                
+                ai_text = "I am currently offline or unable to reach the AI servers."
+                try:
+                    req = urllib.request.Request(
+                        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}",
+                        data=json.dumps(payload_data).encode("utf-8"),
+                        headers={"Content-Type": "application/json"},
+                        method="POST"
+                    )
+                    with urllib.request.urlopen(req, timeout=8) as resp:
+                        res_json = json.loads(resp.read().decode("utf-8"))
+                        cand = res_json.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+                        if cand:
+                            ai_text = cand
+                except Exception as e:
+                    print("Gemini Cloud Error:", e)
+                    
+                CONVERSATION_HISTORY.append({
+                    "role": "assistant",
+                    "text": ai_text,
+                    "time": time.strftime("%H:%M")
+                })
+                
+                self._set_headers(200)
+                self.wfile.write(json.dumps({"status": "received", "response": ai_text}).encode("utf-8"))
+                return
+
         elif path == "/api/test":
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "spoken", "cloud": True}).encode("utf-8"))

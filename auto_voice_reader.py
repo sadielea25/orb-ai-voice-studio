@@ -143,6 +143,7 @@ def update_live_state(is_speaking=False, current_text="", stop_requested=False, 
 
 
 def check_stop_requested(playback_start_time=0):
+    global global_muted
     try:
         if not load_settings().get("enabled", True):
             return True
@@ -154,6 +155,7 @@ def check_stop_requested(playback_start_time=0):
             with open(STATE_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if data.get("stop_requested", False) or data.get("user_talking", False):
+                    global_muted = True
                     return True
         except Exception:
             pass
@@ -550,6 +552,7 @@ def get_or_assign_chat_voice(cid, transcript_path):
 speech_queue = collections.deque()
 queue_lock = threading.Lock()
 last_spoken_cid = None
+global_muted = False
 
 
 def queue_speech(cid, text, transcript_path):
@@ -846,6 +849,10 @@ def monitor_and_read():
                             except Exception:
                                 continue
 
+                            # If user talks, cancel the global mute block
+                            if data.get("source") == "USER_EXPLICIT" or data.get("type") == "USER_INPUT":
+                                global_muted = False
+
                             is_model = data.get("source") == "MODEL"
                             is_response = data.get("type") == "PLANNER_RESPONSE"
                             has_tools = bool(data.get("tool_calls"))
@@ -853,7 +860,7 @@ def monitor_and_read():
 
                             if is_model and is_response and not has_tools and content:
                                 live_cfg = load_settings()
-                                if not live_cfg.get("enabled", True):
+                                if not live_cfg.get("enabled", True) or global_muted:
                                     continue
                                 msg_hash = hash(content[:150])
                                 if msg_hash not in seen_hashes:

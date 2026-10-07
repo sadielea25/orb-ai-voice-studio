@@ -1106,10 +1106,17 @@ function render2StepVoicePicker() {
           document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
         };
       }).catch(() => {
-        fetch('/api/test', {
+        fetch('http://127.0.0.1:8766/api/test', {
           method: 'POST',
+          mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: `Hello Sadie! I'm ${name}.`, voice: voiceId })
+        }).catch(() => {
+          return fetch('/api/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: `Hello Sadie! I'm ${name}.`, voice: voiceId })
+          });
         }).finally(() => {
           setTimeout(() => {
             setOrbState(isConnected ? 'listening' : 'paused');
@@ -1137,7 +1144,13 @@ function render2StepVoicePicker() {
 
     async function loadSettings() {
       try {
-        const res = await fetch('/api/settings');
+        let res;
+        try {
+          res = await fetch('http://127.0.0.1:8766/api/settings');
+          if (!res.ok) throw new Error('local failed');
+        } catch (err) {
+          res = await fetch('/api/settings');
+        }
         const data = await res.json();
         const voiceId = data.voice || 'en-GB-LibbyNeural';
         const sv = document.getElementById('selectVoice'); if (sv) sv.value = voiceId;
@@ -1172,10 +1185,14 @@ function render2StepVoicePicker() {
       };
 
       try {
-        await fetch('/api/settings', {
+        const headers = { 'Content-Type': 'application/json' };
+        fetch('http://127.0.0.1:8766/api/settings', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
+          headers: headers,
           body: JSON.stringify(payload)
+        }).catch(() => {
+          fetch('/api/settings', { method: 'POST', headers: headers, body: JSON.stringify(payload) });
         });
         showToast('Voice settings saved live!');
       } catch (e) {}
@@ -2251,8 +2268,8 @@ function render2StepVoicePicker() {
         return;
       }
 
-      // Hands-free mode: Generous 12-second pause buffer with live countdown
-      let secondsLeft = 12;
+      // Hands-free mode: Quick 5-second pause buffer with live countdown
+      let secondsLeft = 5;
       const docs = [document];
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
         try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
@@ -2296,7 +2313,7 @@ function render2StepVoicePicker() {
         } else {
           updateDraftStatus('Continuous Listening');
         }
-      }, 12000);
+      }, 5000);
     }
 
     function getDraftText() {
@@ -2657,17 +2674,33 @@ function render2StepVoicePicker() {
         });
       }).catch((err) => {
         // Fallback to relative URL
+
         return fetch('/api/speech_input', {
           method: 'POST',
           headers: headers,
           body: payload
-        }).then(res => {
-          if (!res.ok) throw new Error('Status ' + res.status);
-          showToast('✅ Sent directly into Antigravity chat!');
+        }).then(res => res.json()).then(data => {
+          showToast('☁️ Cloud AI Replied!');
           docs.forEach(doc => {
             const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
-            if (statusEl) statusEl.innerText = '✅ Relayed to Chat!';
+            if (statusEl) statusEl.innerText = '☁️ Cloud AI Replied!';
           });
+          if (data && data.response) {
+             playCloudAudio(data.response);
+             // Render the chat locally since pollConversation might be slow
+             if (typeof lastRenderedMessages !== "undefined") {
+                 lastRenderedMessages.push({ role: "user", text: fullText });
+                 lastRenderedMessages.push({ role: "assistant", text: data.response });
+                 renderChatStream(lastRenderedMessages);
+             }
+          }
+        }).catch(finalErr => {
+          showToast('❌ Relay error: Unable to connect to local or cloud server');
+          docs.forEach(doc => {
+            const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+            if (statusEl) statusEl.innerText = '❌ Failed to connect';
+          });
+        });
         }).catch(finalErr => {
           showToast('❌ Relay error: Unable to connect to local server on port 8766');
           docs.forEach(doc => {
@@ -2718,14 +2751,57 @@ function render2StepVoicePicker() {
       previewPersonaVoice(voiceId, p.name);
     }
 
+    
+    function playCloudAudio(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const select = document.getElementById('selectVoice');
+        let lang = 'en-US';
+        if (select && select.value.includes('GB')) lang = 'en-GB';
+        if (select && select.value.includes('IE')) lang = 'en-IE';
+        if (select && select.value.includes('AU')) lang = 'en-AU';
+        
+        utterance.lang = lang;
+        utterance.rate = 1.05;
+        
+        setOrbState('speaking');
+        const docs = [document];
+        if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
+            try { docs.push(window.documentPictureInPicture.window.document); } catch(e){}
+        }
+        docs.forEach(d => {
+            const t = Document.prototype.getElementById.call(d, 'statusTitle');
+            if (t) t.innerText = 'Speaking Response...';
+        });
+        
+        utterance.onend = () => {
+          setOrbState(isConnected ? 'listening' : 'paused');
+          docs.forEach(d => {
+              const t = Document.prototype.getElementById.call(d, 'statusTitle');
+              if (t) t.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
+          });
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
     function speakAudio(text) {
       setOrbState('speaking');
       const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Speaking Readout...';
 
-      fetch('/api/test', {
+      fetch('http://127.0.0.1:8766/api/test', {
         method: 'POST',
+        mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text })
+      }).catch(() => {
+        return fetch('/api/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text })
+        });
       }).then(() => {
         setTimeout(() => {
           setOrbState(isConnected ? 'listening' : 'paused');
