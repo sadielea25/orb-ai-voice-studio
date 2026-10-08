@@ -89,12 +89,12 @@ class handler(BaseHTTPRequestHandler):
                     self._set_headers(200, "application/javascript")
                     self.wfile.write(content.encode("utf-8"))
                     return
-        elif path == "/api/settings":
+        elif "settings" in path:
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
             return
 
-        elif path == "/api/tts":
+        elif "tts" in path:
             parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
             text = parsed_q.get("text", [""])[0].strip()
             voice = parsed_q.get("voice", ["en-GB-SoniaNeural"])[0].strip()
@@ -123,11 +123,11 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
             return
 
-        elif path == "/api/status":
+        elif "status" in path:
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "online", "mode": "cloud-v1.0"}).encode("utf-8"))
             return
-        elif path == "/api/conversation":
+        elif "conversation" in path:
             self._set_headers(200)
             self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
             return
@@ -219,11 +219,11 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "ok", "polished": polished}).encode("utf-8"))
             return
 
-        elif path == "/api/settings":
+        elif "settings" in path:
             VOICE_SETTINGS.update(data)
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "saved", "settings": VOICE_SETTINGS}).encode("utf-8"))
-        elif path == "/api/speech_input":
+        elif "speech_input" in path:
             text = data.get("text", "").strip()
             if text:
                 CONVERSATION_HISTORY.append({
@@ -281,7 +281,7 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"status": "received", "response": ai_text}).encode("utf-8"))
                 return
 
-        elif path == "/api/test":
+        elif "test" in path:
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "spoken", "cloud": True}).encode("utf-8"))
         else:
