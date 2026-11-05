@@ -243,7 +243,11 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
     events_summary = []
     for ev in active_events[:6]:
         sm = ev.get("summary", "Event")
-        st = ev.get("start", {}).get("dateTime") or ev.get("start", {}).get("date") or ev.get("start", "")
+        start_obj = ev.get("start")
+        if isinstance(start_obj, dict):
+            st = start_obj.get("dateTime") or start_obj.get("date") or ""
+        else:
+            st = str(start_obj or "")
         loc = ev.get("location", "")
         loc_str = f" at {loc}" if loc else ""
         events_summary.append(f"- {sm} ({st}{loc_str})")
