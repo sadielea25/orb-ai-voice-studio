@@ -39,16 +39,29 @@ DEFAULT_GEM_KEY = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNO
 
 
 def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
-    """
-    Synthesizes speech to MP3 bytes.
-    Tries edge-tts first; falls back smoothly to gTTS (Google Translate TTS)
-    with native British (co.uk) or Irish (ie) accent if edge-tts is blocked on cloud datacenter IPs.
-    """
     clean_text = text.strip()
     if not clean_text:
         return b""
 
-    # Attempt 1: Edge-TTS
+    # Attempt 1: High-reliability Google TTS (gTTS) - 100% reliable on cloud datacenter IPs
+    try:
+        from gtts import gTTS
+        tld = "co.uk"
+        v_low = voice_id.lower()
+        if "ie" in v_low or "emily" in v_low or "connor" in v_low:
+            tld = "ie"
+        elif "us" in v_low or "ava" in v_low or "brian" in v_low:
+            tld = "com"
+        tts = gTTS(text=clean_text, lang="en", tld=tld)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        data = fp.getvalue()
+        if data and len(data) > 100:
+            return data
+    except Exception:
+        pass
+
+    # Attempt 2: Edge-TTS
     try:
         import edge_tts
         async def _edge():
@@ -64,26 +77,10 @@ def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
     except Exception:
         pass
 
-    # Attempt 2: High-reliability Google TTS (gTTS)
-    try:
-        from gtts import gTTS
-        tld = "co.uk"
-        v_low = voice_id.lower()
-        if "ie" in v_low or "emily" in v_low or "connor" in v_low:
-            tld = "ie"
-        elif "us" in v_low or "ava" in v_low or "brian" in v_low:
-            tld = "com"
-        tts = gTTS(text=clean_text, lang="en", tld=tld)
-        fp = io.BytesIO()
-        tts.write_to_fp(fp)
-        return fp.getvalue()
-    except Exception as e:
-        print("[TTS-ERROR]:", e, flush=True)
-        return b""
+    return b""
 
 
 def query_gemini(prompt, history=None, context=None):
-    """Queries Google Gemini model with conversational instructions."""
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
     models = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-2.5-flash-lite"]
 
@@ -148,20 +145,31 @@ class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self._set_headers(204)
 
-    def do_GET(self):
+    def resolve_target(self):
         parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
         q = urllib.parse.parse_qs(parsed.query)
+        matched = self.headers.get("x-matched-path", "")
+        subpath = q.get("__path", [""])[0]
+        
+        target = parsed.path
+        if subpath:
+            target = "/" + subpath.lstrip("/")
+        elif matched:
+            target = matched.split("?")[0]
+        return target.lower(), q
+
+    def do_GET(self):
+        target, q = self.resolve_target()
+        raw = self.path.lower()
 
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         api_dir = os.path.dirname(os.path.abspath(__file__))
 
-        if path in ("/", "/index.html"):
+        if target in ("/", "/index.html") and "status" not in raw and "tts" not in raw and "settings" not in raw:
             for candidate in [
                 os.path.join(base_dir, "public", "index.html"),
                 os.path.join(base_dir, "web_app", "index.html"),
-                os.path.join(api_dir, "index.html"),
-                os.path.join(os.getcwd(), "public", "index.html")
+                os.path.join(api_dir, "index.html")
             ]:
                 if os.path.exists(candidate):
                     with open(candidate, "r", encoding="utf-8") as f:
@@ -170,11 +178,10 @@ class handler(BaseHTTPRequestHandler):
                     self.wfile.write(content.encode("utf-8"))
                     return
 
-        elif path == "/manifest.json":
+        elif "manifest.json" in target or "manifest.json" in raw:
             for candidate in [
                 os.path.join(base_dir, "public", "manifest.json"),
-                os.path.join(base_dir, "web_app", "manifest.json"),
-                os.path.join(api_dir, "manifest.json")
+                os.path.join(base_dir, "web_app", "manifest.json")
             ]:
                 if os.path.exists(candidate):
                     with open(candidate, "r", encoding="utf-8") as f:
@@ -183,11 +190,10 @@ class handler(BaseHTTPRequestHandler):
                     self.wfile.write(content.encode("utf-8"))
                     return
 
-        elif path == "/sw.js":
+        elif "sw.js" in target or "sw.js" in raw:
             for candidate in [
                 os.path.join(base_dir, "public", "sw.js"),
-                os.path.join(base_dir, "web_app", "sw.js"),
-                os.path.join(api_dir, "sw.js")
+                os.path.join(base_dir, "web_app", "sw.js")
             ]:
                 if os.path.exists(candidate):
                     with open(candidate, "r", encoding="utf-8") as f:
@@ -196,7 +202,7 @@ class handler(BaseHTTPRequestHandler):
                     self.wfile.write(content.encode("utf-8"))
                     return
 
-        elif path in ("/api/status", "/status"):
+        elif "status" in target or "status" in raw:
             state = {
                 "status": "online",
                 "mode": "cloud",
@@ -210,37 +216,7 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(state).encode("utf-8"))
             return
 
-        elif path in ("/api/settings", "/settings"):
-            self._set_headers(200)
-            self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
-            return
-
-        elif path in ("/api/conversation", "/conversation"):
-            self._set_headers(200)
-            self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
-            return
-
-        elif path in ("/api/tts", "/tts"):
-            text = q.get("text", [""])[0].strip()
-            voice = q.get("voice", [VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")])[0].strip()
-            if not text:
-                self._set_headers(400)
-                self.wfile.write(b'{"error": "No text provided"}')
-                return
-            audio_bytes = generate_audio_bytes(text, voice)
-            if audio_bytes:
-                self.send_response(200)
-                self.send_header("Content-Type", "audio/mpeg")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Cache-Control", "public, max-age=3600")
-                self.end_headers()
-                self.wfile.write(audio_bytes)
-            else:
-                self._set_headers(500)
-                self.wfile.write(b'{"error": "Audio generation failed"}')
-            return
-
-        elif path in ("/api/voice_preview_audio", "/voice_preview_audio"):
+        elif "voice_preview" in target or "voice_preview" in raw:
             voice = q.get("voice", ["en-GB-SoniaNeural"])[0].strip()
             preview_text = "Hello Sadie, this is your British voice preview."
             if "IE" in voice or "Emily" in voice or "Connor" in voice:
@@ -260,6 +236,36 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"error": "Voice preview failed"}')
             return
 
+        elif "tts" in target or "tts" in raw:
+            text = q.get("text", [""])[0].strip()
+            voice = q.get("voice", [VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")])[0].strip()
+            if not text:
+                self._set_headers(400)
+                self.wfile.write(b'{"error": "No text provided"}')
+                return
+            audio_bytes = generate_audio_bytes(text, voice)
+            if audio_bytes:
+                self.send_response(200)
+                self.send_header("Content-Type", "audio/mpeg")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Cache-Control", "public, max-age=3600")
+                self.end_headers()
+                self.wfile.write(audio_bytes)
+            else:
+                self._set_headers(500)
+                self.wfile.write(b'{"error": "Audio generation failed"}')
+            return
+
+        elif "settings" in target or "settings" in raw:
+            self._set_headers(200)
+            self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
+            return
+
+        elif "conversation" in target or "conversation" in raw:
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
+            return
+
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
@@ -269,6 +275,9 @@ class handler(BaseHTTPRequestHandler):
         }).encode("utf-8"))
 
     def do_POST(self):
+        target, q = self.resolve_target()
+        raw = self.path.lower()
+
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
         try:
@@ -276,9 +285,7 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             data = {}
 
-        path = self.path.split("?")[0]
-
-        if path in ("/api/speech_input", "/speech_input"):
+        if "speech_input" in target or "speech_input" in raw:
             user_text = data.get("text", "").strip()
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             if not user_text:
@@ -308,7 +315,7 @@ class handler(BaseHTTPRequestHandler):
             }).encode("utf-8"))
             return
 
-        elif path in ("/api/read_ai_reply", "/api/speak_last", "/read_ai_reply", "/speak_last"):
+        elif "read_ai_reply" in target or "speak_last" in target or "read_ai_reply" in raw or "speak_last" in raw:
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             last_reply = ""
             for msg in reversed(CONVERSATION_HISTORY):
@@ -327,7 +334,7 @@ class handler(BaseHTTPRequestHandler):
             }).encode("utf-8"))
             return
 
-        elif path in ("/api/polish_text", "/polish_text"):
+        elif "polish" in target or "polish" in raw:
             raw_text = data.get("text", "").strip()
             if not raw_text:
                 self._set_headers(200)
@@ -342,13 +349,13 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "ok", "polished": polished}).encode("utf-8"))
             return
 
-        elif path in ("/api/settings", "/settings"):
+        elif "settings" in target or "settings" in raw:
             VOICE_SETTINGS.update(data)
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "saved", "settings": VOICE_SETTINGS}).encode("utf-8"))
             return
 
-        elif path in ("/api/pause_total", "/pause_total"):
+        elif "pause_total" in target or "pause_total" in raw:
             total_pause = data.get("total_pause", True)
             VOICE_SETTINGS["enabled"] = not total_pause
             self._set_headers(200)
@@ -359,12 +366,12 @@ class handler(BaseHTTPRequestHandler):
             }).encode("utf-8"))
             return
 
-        elif path in ("/api/stop", "/stop"):
+        elif "stop" in target or "stop" in raw:
             self._set_headers(200)
             self.wfile.write(b'{"status": "stopped"}')
             return
 
-        elif path in ("/api/dostuff_break", "/dostuff_break"):
+        elif "dostuff_break" in target or "dostuff_break" in raw:
             task_title = data.get("title", "Take a 60 second movement break").strip()
             mins = data.get("minutes", 5)
             spoken = f"DoStuff {mins} minute reset. {task_title}."
