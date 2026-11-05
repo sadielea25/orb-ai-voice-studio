@@ -748,7 +748,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v4.1</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v4.2</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Instant cloud sync between desktop and phone" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #10b981; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -767,7 +767,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.1</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.2</span>
         </div>
       </div>
 
@@ -777,7 +777,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.1</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.2</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -4659,35 +4659,29 @@
         dostuffState.activeCategoryId = dostuffState.categories[0] ? dostuffState.categories[0].id : 'accounts';
       }
 
-      // 3. Load Focus Tasks
+      // 3. Load Focus Tasks from local cache without overwriting with defaults
       try {
         const saved = localStorage.getItem('orb_dostuff_focus_tasks');
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             dostuffState.focusTasks = parsed;
           }
         }
       } catch (e) {}
 
-      // Ensure every task has category and priority
-      if (dostuffState.focusTasks && dostuffState.focusTasks.length > 0) {
+      if (!Array.isArray(dostuffState.focusTasks)) {
+        dostuffState.focusTasks = [];
+      }
+
+      // Ensure every task has valid properties
+      if (dostuffState.focusTasks.length > 0) {
         dostuffState.focusTasks.forEach((t, idx) => {
           if (!t.category) t.category = 'accounts';
           if (!t.priority) t.priority = 'normal';
           if (!t.location) t.location = 'laptop';
           if (typeof t.order !== 'number') t.order = idx;
         });
-      } else {
-        // Seed default high-priority accounting, app & admin tasks
-        dostuffState.focusTasks = [
-          { id: 'f-1', title: 'Bank feed and transaction reconciliation', category: 'accounts', priority: 'high', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-2', title: 'Sort incoming invoices and VAT receipts', category: 'accounts', priority: 'high', order: 1, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-3', title: 'HMRC Confirmation Statement and tax review', category: 'admin', priority: 'high', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-4', title: 'Test Android Option B live updates over the air', category: 'app', priority: 'high', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-5', title: 'Update monthly balance spreadsheet', category: 'accounts', priority: 'normal', order: 2, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-6', title: 'Clear pending client correspondence', category: 'client_work', priority: 'normal', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' }
-        ];
       }
 
       // 4. Load Assistant Delegated Tasks
@@ -4701,12 +4695,8 @@
         }
       } catch (e) {}
 
-      if (!dostuffState.assistantTasks || dostuffState.assistantTasks.length === 0) {
-        dostuffState.assistantTasks = [
-          { id: 'ast-1', title: 'Draft overdue invoice reminder email for client', category: 'accounts', status: 'in_progress', notes: 'Drafting polite British reminder with payment links and VAT breakdown.', createdAt: Date.now() },
-          { id: 'ast-2', title: 'Organise top 3 priorities for Sadie today', category: 'admin', status: 'completed', notes: 'Prioritised: 1. Bank Reconciliation, 2. Confirmation Statement, 3. App testing.', createdAt: Date.now() - 3600000 },
-          { id: 'ast-3', title: 'Calculate quarterly VAT output estimate', category: 'accounts', status: 'queued', notes: 'Queued to review as soon as bank reconciliation finishes.', createdAt: Date.now() }
-        ];
+      if (!Array.isArray(dostuffState.assistantTasks)) {
+        dostuffState.assistantTasks = [];
       }
 
       const savedActiveId = localStorage.getItem('orb_dostuff_active_task_id');
@@ -4716,8 +4706,12 @@
         const firstActive = dostuffState.focusTasks.find(t => !t.completed);
         dostuffState.activeFocusTaskId = firstActive ? firstActive.id : (dostuffState.focusTasks[0] ? dostuffState.focusTasks[0].id : null);
       }
-      saveDoStuffFocusTasks();
-      setTimeout(() => { if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false); }, 150);
+
+      // Do NOT push defaults to cloud on initialization!
+      // Immediately pull latest authoritative cloud state from Vercel Blob
+      setTimeout(() => {
+        if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false);
+      }, 100);
     }
 
     let isSyncingWithCloud = false;
@@ -4742,6 +4736,7 @@
       for (const ep of endpoints) {
         try {
           if (forcePush) {
+            const editTimestamp = parseInt(localStorage.getItem('orb_dostuff_last_edit_time') || Date.now().toString(), 10);
             const payload = {
               state: {
                 focus_tasks: dostuffState.focusTasks || [],
@@ -4752,24 +4747,9 @@
                 planning: dostuffState.planning || {},
                 calendar_events: (cachedCalendarEvents || []),
                 midday_call_active: (typeof middayCallActive !== 'undefined') ? middayCallActive : true,
-                updated_at: Date.now()
+                updated_at: editTimestamp
               }
             };
-
-    // Auto-sync tasks and workspace between Desktop and Android
-    setInterval(() => {
-      if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false);
-    }, 12000);
-
-    window.addEventListener('focus', () => {
-      if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false);
-    });
-
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && typeof window.syncWithCloud === 'function') {
-        window.syncWithCloud(false);
-      }
-    });
             const res = await fetch(ep, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -4794,19 +4774,30 @@
       }
 
       if (success && remoteState) {
-        lastCloudSyncTimestamp = remoteState.updated_at || Date.now();
+        const localEditTime = parseInt(localStorage.getItem('orb_dostuff_last_edit_time') || '0', 10);
+        const remoteTime = parseInt(remoteState.updated_at || '0', 10);
 
-        if (Array.isArray(remoteState.focus_tasks) && remoteState.focus_tasks.length > 0) {
+        // If local client made edits that are newer than remote cloud state, push local state instead of overwriting
+        if (!forcePush && localEditTime > (remoteTime + 2000)) {
+          isSyncingWithCloud = false;
+          window.syncWithCloud(true);
+          return;
+        }
+
+        lastCloudSyncTimestamp = remoteTime || Date.now();
+        localStorage.setItem('orb_dostuff_last_edit_time', lastCloudSyncTimestamp.toString());
+
+        if (Array.isArray(remoteState.focus_tasks)) {
           dostuffState.focusTasks = remoteState.focus_tasks;
         }
         if (Array.isArray(remoteState.categories) && remoteState.categories.length > 0) {
           dostuffState.categories = remoteState.categories;
         }
-        if (Array.isArray(remoteState.assistant_tasks) && remoteState.assistant_tasks.length > 0) {
+        if (Array.isArray(remoteState.assistant_tasks)) {
           dostuffState.assistantTasks = remoteState.assistant_tasks;
         }
         if (remoteState.active_category_id) dostuffState.activeCategoryId = remoteState.active_category_id;
-        if (remoteState.active_focus_task_id) dostuffState.activeFocusTaskId = remoteState.active_focus_task_id;
+        if (remoteState.active_focus_task_id !== undefined) dostuffState.activeFocusTaskId = remoteState.active_focus_task_id;
         if (remoteState.planning) dostuffState.planning = remoteState.planning;
 
         try {
@@ -4838,13 +4829,30 @@
       isSyncingWithCloud = false;
     };
 
+    // Auto-sync tasks and workspace between Desktop and Android every 12 seconds
+    setInterval(() => {
+      if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false);
+    }, 12000);
+
+    window.addEventListener('focus', () => {
+      if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && typeof window.syncWithCloud === 'function') {
+        window.syncWithCloud(false);
+      }
+    });
+
     function saveDoStuffFocusTasks() {
+      const now = Date.now();
       try {
         localStorage.setItem('orb_dostuff_categories', JSON.stringify(dostuffState.categories));
         localStorage.setItem('orb_dostuff_active_cat_id', dostuffState.activeCategoryId || 'accounts');
         localStorage.setItem('orb_dostuff_focus_tasks', JSON.stringify(dostuffState.focusTasks));
         localStorage.setItem('orb_dostuff_active_task_id', dostuffState.activeFocusTaskId || '');
         localStorage.setItem('orb_dostuff_assistant_tasks', JSON.stringify(dostuffState.assistantTasks));
+        localStorage.setItem('orb_dostuff_last_edit_time', now.toString());
       } catch (e) {}
       if (typeof window.syncWithCloud === 'function') {
         window.syncWithCloud(true);

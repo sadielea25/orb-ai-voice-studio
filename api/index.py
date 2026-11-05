@@ -794,10 +794,16 @@ class handler(BaseHTTPRequestHandler):
                 incoming_sync = {"messages": [{"role": "user", "text": user_text, "time": time.strftime("%H:%M")}, {"role": "assistant", "text": reply, "time": time.strftime("%H:%M")}]}
                 if action and action.get("add_my_task"):
                     task_info = action["add_my_task"]
-                    incoming_sync["focus_tasks"] = [{"id": f"t_{int(time.time()*1000)}", "title": task_info.get("title", ""), "category": task_info.get("category", "accounts"), "priority": task_info.get("priority", "high"), "completed": False, "createdAt": int(time.time()*1000)}]
+                    new_task = {"id": f"t_{int(time.time()*1000)}", "title": task_info.get("title", ""), "category": task_info.get("category", "accounts"), "priority": task_info.get("priority", "high"), "completed": False, "createdAt": int(time.time()*1000)}
+                    current_tasks = list(existing.get("focus_tasks", []))
+                    current_tasks.append(new_task)
+                    incoming_sync["focus_tasks"] = current_tasks
                 if action and action.get("delegate_to_assistant"):
                     ast_info = action["delegate_to_assistant"]
-                    incoming_sync["assistant_tasks"] = [{"id": f"ast_{int(time.time()*1000)}", "title": ast_info.get("title", ""), "category": ast_info.get("category", "accounts"), "status": "in_progress", "notes": ast_info.get("notes", ""), "createdAt": int(time.time()*1000)}]
+                    new_ast = {"id": f"ast_{int(time.time()*1000)}", "title": ast_info.get("title", ""), "category": ast_info.get("category", "accounts"), "status": "in_progress", "notes": ast_info.get("notes", ""), "createdAt": int(time.time()*1000)}
+                    current_asts = list(existing.get("assistant_tasks", []))
+                    current_asts.append(new_ast)
+                    incoming_sync["assistant_tasks"] = current_asts
                 merged = merge_sync_states(existing, incoming_sync)
                 save_cloud_sync_state(merged)
             except Exception as se:

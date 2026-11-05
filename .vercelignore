@@ -5,5 +5,15 @@ android
 node_modules/
 .git/
 temp_audio/
+voice_cache/
+Bank_Statements/
+scratch/
+chrome_extension/
+*.mp3
+*.wav
 *.pyc
 __pycache__/
+accounting_hub.html
+temp_old.html
+temp.js
+tab_preview.png
