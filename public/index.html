@@ -637,14 +637,14 @@
 </head>
 <body>
   <div id="immediateLaunchOverlay" style="display: none !important;"></div>
-  <div id="pipActivePlaceholder" style="display: none !important;"></div>
+  <div id="pipActivePlaceholder" style="display: none;"></div>
 
   <div class="container">
     <canvas id="dostuffConfettiCanvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 999999; width: 100%; height: 100%;"></canvas>
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v2.9</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.0</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -658,7 +658,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v2.9</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.0</span>
         </div>
       </div>
 
@@ -668,7 +668,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v2.9</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.0</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -1375,63 +1375,173 @@
     window.addEventListener('resize', updateMainWindowCompactState);
 
     async function popOutFloatingWidget(mode = 'toggle') {
-      // Close any legacy Document Picture-in-Picture child window so there is only ever ONE native window
+      // 1. If a Picture-in-Picture window is already active, close it (toggle behavior)
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        try { window.documentPictureInPicture.window.close(); } catch (e) {}
-      }
-      const placeholder = document.getElementById('pipActivePlaceholder');
-      if (placeholder) placeholder.style.display = 'none';
-
-      const reqMode = (typeof mode === 'string') ? mode : 'toggle';
-      const isLocalServer = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      const urls = isLocalServer
-        ? ['/api/float_window', 'http://127.0.0.1:8766/api/float_window']
-        : ['http://127.0.0.1:8766/api/float_window', '/api/float_window'];
-
-      let handled = false;
-      for (const u of urls) {
         try {
-          const res = await fetch(u, {
+          window.documentPictureInPicture.window.close();
+        } catch (e) {}
+        return;
+      }
+
+      // 2. Modern Document Picture-in-Picture API (Chrome 116+, Edge, Opera, Desktop Chromium)
+      if ('documentPictureInPicture' in window) {
+        try {
+          const pipWindow = await window.documentPictureInPicture.requestWindow({
+            width: 400,
+            height: 290
+          });
+
+          pipWindow.document.title = "🎙️ Orb AI Assistant";
+
+          // Copy all stylesheets to the floating PiP window
+          [...document.styleSheets].forEach((styleSheet) => {
+            try {
+              const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join('');
+              const style = document.createElement('style');
+              style.textContent = cssRules;
+              pipWindow.document.head.appendChild(style);
+            } catch (e) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.type = styleSheet.type || 'text/css';
+              link.href = styleSheet.href;
+              pipWindow.document.head.appendChild(link);
+            }
+          });
+
+          // Extra dedicated style tag to guarantee flawless dark minimal capsule styling
+          const customStyle = document.createElement('style');
+          customStyle.textContent = `
+            html, body {
+              background: #090d16 !important;
+              color: #f8fafc !important;
+              margin: 0 !important;
+              padding: 6px !important;
+              overflow-x: hidden !important;
+              overflow-y: auto !important;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            }
+            .container {
+              max-width: 100% !important;
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+          `;
+          pipWindow.document.head.appendChild(customStyle);
+
+          pipWindow.document.body.classList.add('pip-mode');
+
+          const container = document.querySelector('.container');
+          container.classList.add('pip-container');
+          container.classList.add('bare-minimum');
+          pipWindow.document.body.appendChild(container);
+
+          const updateWidgetCompactState = () => {
+            const h = pipWindow.innerHeight;
+            if (h <= 360) {
+              container.classList.add('bare-minimum');
+              container.classList.remove('compact-mode');
+            } else if (h <= 540) {
+              container.classList.add('compact-mode');
+              container.classList.remove('bare-minimum');
+            } else {
+              container.classList.remove('compact-mode');
+              container.classList.remove('bare-minimum');
+            }
+          };
+
+          pipWindow.addEventListener('resize', updateWidgetCompactState);
+          updateWidgetCompactState();
+
+          bindPipControls(pipWindow);
+
+          const placeholder = document.getElementById('pipActivePlaceholder');
+          if (placeholder) {
+            placeholder.style.display = 'flex';
+            placeholder.innerHTML = `
+              <div style="background: rgba(15,23,42,0.88); border: 1.5px solid rgba(59,130,246,0.35); border-radius: 16px; padding: 22px; text-align: center; max-width: 420px; margin: 30px auto; box-shadow: 0 8px 32px rgba(0,0,0,0.45);">
+                <div style="font-size: 32px; margin-bottom: 8px;">⚡</div>
+                <h2 style="font-size: 17px; color: #60a5fa; margin-bottom: 6px; font-weight: 800;">Pop-Up Widget is Floating on Screen</h2>
+                <p style="font-size: 12.5px; color: #94a3b8; line-height: 1.45; margin-bottom: 14px;">The widget is pinned on top of all your open windows and applications. Talk, pause, or switch voices directly from the floating widget.</p>
+                <button type="button" onclick="if(window.documentPictureInPicture && window.documentPictureInPicture.window) window.documentPictureInPicture.window.close();" style="background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(16,185,129,0.3)); border: 1px solid #3b82f6; color: #93c5fd; padding: 8px 18px; border-radius: 20px; font-weight: 700; cursor: pointer; font-size: 12.5px;">🔙 Return Widget to Page</button>
+              </div>
+            `;
+          }
+
+          pipWindow.addEventListener('pagehide', () => {
+            if (placeholder) placeholder.style.display = 'none';
+            container.classList.remove('pip-container');
+            container.classList.remove('compact-mode');
+            container.classList.remove('bare-minimum');
+            document.body.insertBefore(container, document.body.firstChild);
+            bindOrbHandlers(document);
+            render2StepVoicePicker(document);
+            showToast('Pop-Up Widget returned to main page');
+          });
+
+          showToast('⚡ Pop-Up Widget floating on screen');
+          return;
+        } catch (pipErr) {
+          console.warn('[PIP-ERROR]', pipErr);
+        }
+      }
+
+      // 3. Fallback: If local desktop server is running, trigger OS-level position
+      const isLocalServer = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (isLocalServer) {
+        try {
+          const res = await fetch('/api/float_window', {
             method: 'POST',
-            mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mode: reqMode })
+            body: JSON.stringify({ mode: (typeof mode === 'string') ? mode : 'toggle' })
           });
           if (res && res.ok) {
-            const data = await res.json();
-            if (data && data.mode === 'compact') {
-              showToast('⚡ Pop-Up Widget launched and pinned to corner');
-            } else if (data && data.mode === 'studio') {
-              showToast('🗖 Expanded to Full Studio Mode');
-            } else {
-              showToast('⚡ Master Widget pinned on top');
-            }
-            setTimeout(updateMainWindowCompactState, 120);
-            handled = true;
-            break;
+            showToast('⚡ Native floating window launched');
+            return;
           }
         } catch (e) {}
       }
 
-      if (!handled) {
-        try {
-          const w = 400, h = 290;
-          const left = Math.max(20, (window.screen.availWidth || 1200) - w - 20);
-          const top = Math.max(20, (window.screen.availHeight || 800) - h - 55);
-          const pop = window.open(window.location.href, 'OrbFloatingWidget', `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=no`);
-          if (pop) {
-            pop.focus();
-            showToast('⚡ Pop-Up Widget launched');
-          }
-          setTimeout(updateMainWindowCompactState, 120);
-        } catch (re) {}
+      // 4. Fallback: Dedicated popup window (Chrome popup / Safari / Firefox)
+      try {
+        const w = 400, h = 290;
+        const left = Math.max(20, (window.screen.availWidth || 1200) - w - 20);
+        const top = Math.max(20, (window.screen.availHeight || 800) - h - 55);
+        const pop = window.open(window.location.href, 'OrbFloatingWidget', `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=no`);
+        if (pop) {
+          pop.focus();
+          showToast('⚡ Pop-Up Widget opened');
+          return;
+        }
+      } catch (e) {}
+
+      // 5. Fallback on mobile/tablet: Toggle on-page floating capsule view
+      const container = document.querySelector('.container');
+      if (container) {
+        container.classList.toggle('bare-minimum');
+        showToast(container.classList.contains('bare-minimum') ? '⚡ Switched to compact capsule' : '🗖 Switched to full view');
       }
     }
 
     function bindPipControls(pipWindow) {
       if (!pipWindow || !pipWindow.document) return;
-      bindOrbHandlers(pipWindow.document);
-      render2StepVoicePicker(pipWindow.document);
+      const doc = pipWindow.document;
+      bindOrbHandlers(doc);
+      render2StepVoicePicker(doc);
+
+      const btnSpeakAI = Document.prototype.getElementById.call(doc, 'btnFloaterSpeakAI');
+      if (btnSpeakAI) {
+        btnSpeakAI.onclick = (e) => {
+          if (e) { e.preventDefault(); e.stopPropagation(); }
+          speakLastAIReply();
+        };
+      }
+      const intervalSel = Document.prototype.getElementById.call(doc, 'dostuffIntervalSelect');
+      if (intervalSel) {
+        intervalSel.onchange = (e) => {
+          window.changeDoStuffInterval(intervalSel.value);
+        };
+      }
     }
 
     async function applyHotUpdate(force = false) {
