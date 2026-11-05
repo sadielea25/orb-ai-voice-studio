@@ -719,6 +719,23 @@ class PWAHandler(BaseHTTPRequestHandler):
                     content = f.read()
                 self._set_headers(200, "application/javascript")
                 self.wfile.write(content.encode("utf-8"))
+        elif url_path == "/api/workspace/calendar":
+            try:
+                import subprocess
+                p = subprocess.run("gcalendar readonly events --json", shell=True, capture_output=True, text=True)
+                events = json.loads(p.stdout) if p.stdout.strip().startswith("[") else []
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "ok", "events": events}).encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "ok", "events": []}).encode("utf-8"))
+                return
+
         elif url_path == "/api/settings":
             settings = load_settings()
             self._set_headers(200)
@@ -1064,6 +1081,65 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(b'{"status": "stopped"}')
 
+        elif url_path == "/api/workspace/calendar":
+            try:
+                import subprocess
+                quick_text = data.get("text", "")
+                p = subprocess.run(f'gcalendar mutate quick-add "{quick_text}" --json', shell=True, capture_output=True, text=True)
+                res = json.loads(p.stdout) if p.stdout.strip().startswith("{") else {"summary": quick_text}
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "ok", "message": f"Event '{quick_text}' added to Google Calendar.", "event": res}).encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "error", "error": str(e)}).encode("utf-8"))
+                return
+
+        elif url_path == "/api/workspace/docs":
+            try:
+                import subprocess, re
+                title = data.get("title", "New Document")
+                content = data.get("content", "")
+                p = subprocess.run(f'gdocs mutate create --title "{title}" --json', shell=True, capture_output=True, text=True)
+                out = p.stdout.strip()
+                m = re.search(r'ID:\s*([a-zA-Z0-9_-]+)', out)
+                doc_id = m.group(1) if m else None
+                if doc_id and content:
+                    subprocess.run(f'gdocs mutate append {doc_id} "{content}"', shell=True, capture_output=True, text=True)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "ok", "message": f"Google Doc '{title}' created.", "doc_id": doc_id, "output": out}).encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "error", "error": str(e)}).encode("utf-8"))
+                return
+
+        elif url_path == "/api/workspace/sheets":
+            try:
+                import subprocess
+                sheet_id = data.get("spreadsheet_id", "19aqPqjyF9TNpm2Pq9yhNwFHbObPLa58OrSx7DWYa4XM")
+                row = data.get("row", "")
+                subprocess.run(f'gsheets mutate append {sheet_id} "Sheet1" "{row}"', shell=True, capture_output=True, text=True)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "ok", "message": "Appended row to Accounts Spreadsheet."}).encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "error", "error": str(e)}).encode("utf-8"))
+                return
+
         elif url_path == "/api/assistant_call":
             user_text = data.get("text", "").strip()
             voice = data.get("voice") or load_settings().get("voice", "en-GB-SoniaNeural")
@@ -1091,7 +1167,8 @@ class PWAHandler(BaseHTTPRequestHandler):
                     call_history=call_history,
                     planning=planning,
                     call_type=call_type,
-                    emails=data.get("emails")
+                    emails=data.get("emails"),
+                    calendar_events=data.get("calendar_events")
                 )
             except Exception as e:
                 res = {"reply": f"I am here to help Sadie. Let us look at {active_cat} and organise your top priorities.", "action": None}

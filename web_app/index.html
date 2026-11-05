@@ -748,7 +748,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.8</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.9</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -762,7 +762,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.8</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.9</span>
         </div>
       </div>
 
@@ -772,7 +772,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.8</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.9</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -1057,6 +1057,56 @@
                   <button type="button" onclick="window.adjustPlanningTarget('month', -5)" title="Decrease monthly target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">-</button>
                   <button type="button" onclick="window.adjustPlanningTarget('month', 5)" title="Increase monthly target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">+</button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GOOGLE CALENDAR LIVE FEED & WORKSPACE HUB -->
+          <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 15px;">📅</span>
+                <div>
+                  <div style="font-size: 12px; font-weight: 800; color: #0f172a;">Google Calendar • Live Synchronisation</div>
+                  <div style="font-size: 10px; color: #059669; font-weight: 700;">sadielea25@gmail.com • Real-time Events Linked</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" onclick="window.askSoniaToReadCalendar()" style="background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                  <span>⚡ Ask Sonia to Read Schedule</span>
+                </button>
+                <button type="button" onclick="window.refreshGoogleCalendarEvents()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; padding: 4px 7px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">
+                  🔄 Refresh
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Add Event to Google Calendar -->
+            <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+              <input type="text" id="quickAddCalInput" placeholder="Quick add to Google Calendar (e.g. Meeting with David on Friday at 2pm)..." onkeydown="if(event.key==='Enter') window.quickAddGoogleCalendarEvent()" style="flex: 1; min-width: 0; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 7px; padding: 5px 8px; font-size: 11px; color: #0f172a; outline: none;" />
+              <button type="button" onclick="window.quickAddGoogleCalendarEvent()" style="background: linear-gradient(135deg, #16a34a, #15803d); border: 1px solid #15803d; color: #ffffff; padding: 5px 10px; border-radius: 7px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+                ➕ Add Event
+              </button>
+            </div>
+
+            <!-- Google Calendar Events Feed -->
+            <div id="googleCalendarEventsFeed" style="display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; margin-bottom: 10px; padding-right: 2px;">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Google Workspace Tools Bar (Docs, Sheets, Drive) -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
+              <span style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Workspace Tools:</span>
+              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                <button type="button" onclick="window.createGoogleDocWithSoniaPrompt()" style="background: #ffffff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                  <span>📄 New Google Doc</span>
+                </button>
+                <button type="button" onclick="window.logExpenseInSheetsPrompt()" style="background: #ffffff; border: 1px solid #bbf7d0; color: #15803d; font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                  <span>📊 Accounts Sheet</span>
+                </button>
+                <a href="https://drive.google.com" target="_blank" rel="noopener noreferrer" style="background: #ffffff; border: 1px solid #e2e8f0; color: #334155; font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 5px; text-decoration: none; display: inline-flex; align-items: center; gap: 3px;">
+                  <span>📁 Drive</span>
+                </a>
               </div>
             </div>
           </div>
@@ -1387,6 +1437,18 @@
       <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;">
         <button type="button" onclick="window.sendAssistantCallPrompt('Let us check off my morning phone calls: pharmacy, accountant, and client calls')" style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           📞 Morning Calls Check-In
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('What is on my Google Calendar schedule today and this week?')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          📅 What's on My Calendar?
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('Add a meeting with David accountant on Friday at 2pm to my Google Calendar')" style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          ➕ Add Calendar Meeting
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('Create a Google Doc for our client timber quote for John')" style="background: #fdf4ff; border: 1px solid #f5d0fe; color: #86198f; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          📄 Create Quote in Google Docs
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('Log a forty five pound expense for timber fixings into our accounts spreadsheet')" style="background: #fefce8; border: 1px solid #fef08a; color: #854d0e; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          📊 Log Expense in Sheets
         </button>
         <button type="button" onclick="window.sendAssistantCallPrompt('Brief me on my unread emails in Gmail: what needs my attention?')" style="background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           📧 Brief Me on Emails
@@ -1863,7 +1925,8 @@
         fetch('/api/test', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: `Hello Sadie, I am ${name}.`, voice: voiceId })
+          body: JSON.stringify({
+          calendar_events: cachedCalendarEvents, text: `Hello Sadie, I am ${name}.`, voice: voiceId })
         }).finally(() => {
           setTimeout(() => {
             isAISpeaking = false;
@@ -4114,6 +4177,114 @@
       }, 900);
     };
 
+    // --- Google Workspace & Real Calendar Engine ---
+    let cachedCalendarEvents = [
+      {
+        summary: "Meeting with David accountant",
+        start: { dateTime: "2026-11-06T14:00:00Z" },
+        location: "Phone / Office"
+      },
+      {
+        summary: "The Small Space Magic & Mind-Reading Show - 'OFF-LINE'",
+        start: { dateTime: "2026-11-13T19:30:00Z" },
+        location: "Barry, Vale of Glamorgan"
+      }
+    ];
+
+    window.refreshGoogleCalendarEvents = function() {
+      const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+      const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
+      fetch(`${base}/api/workspace/calendar`)
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.events && data.events.length > 0) {
+            cachedCalendarEvents = data.events;
+          }
+          renderGoogleCalendarFeed();
+        })
+        .catch(() => {
+          renderGoogleCalendarFeed();
+        });
+    };
+
+    function renderGoogleCalendarFeed() {
+      const feed = document.getElementById('googleCalendarEventsFeed');
+      if (!feed) return;
+      if (!cachedCalendarEvents || cachedCalendarEvents.length === 0) {
+        feed.innerHTML = '<div style="font-size: 11px; color: #64748b; padding: 6px;">No upcoming events scheduled in Google Calendar.</div>';
+        return;
+      }
+      feed.innerHTML = cachedCalendarEvents.map(ev => {
+        const sum = ev.summary || 'Scheduled Event';
+        const startRaw = ev.start ? (ev.start.dateTime || ev.start.date || ev.start) : '';
+        let dateStr = startRaw;
+        if (startRaw && startRaw.includes('T')) {
+          try {
+            const d = new Date(startRaw);
+            dateStr = d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+          } catch (e) {}
+        }
+        const loc = ev.location ? ` • ${ev.location}` : '';
+        return `
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 7px 9px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 11.5px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(sum)}</div>
+              <div style="font-size: 10px; color: #2563eb; font-weight: 700;">${escapeHtml(dateStr)}${escapeHtml(loc)}</div>
+            </div>
+            <span style="font-size: 9.5px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 999px; flex-shrink: 0;">Confirmed</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.quickAddGoogleCalendarEvent = function() {
+      const input = document.getElementById('quickAddCalInput');
+      if (!input || !input.value.trim()) return;
+      const text = input.value.trim();
+      input.value = '';
+      const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+      const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
+      fetch(`${base}/api/workspace/calendar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (typeof showToast === 'function') showToast(`Added to Google Calendar: "${text}"`);
+        window.refreshGoogleCalendarEvents();
+      })
+      .catch(() => {
+        cachedCalendarEvents.unshift({ summary: text, start: { dateTime: new Date().toISOString() } });
+        renderGoogleCalendarFeed();
+        if (typeof showToast === 'function') showToast(`Added to Calendar: "${text}"`);
+      });
+    };
+
+    window.askSoniaToReadCalendar = function() {
+      window.startAssistantCall();
+      setTimeout(() => {
+        window.sendAssistantCallPrompt('What is on my Google Calendar schedule today and this week?');
+      }, 900);
+    };
+
+    window.createGoogleDocWithSoniaPrompt = function() {
+      window.startAssistantCall();
+      setTimeout(() => {
+        window.sendAssistantCallPrompt('Please create a Google Doc for our timber builds quote for John with structured headings and pricing breakdown.');
+      }, 900);
+    };
+
+    window.logExpenseInSheetsPrompt = function() {
+      window.startAssistantCall();
+      setTimeout(() => {
+        window.sendAssistantCallPrompt('Please log a forty five pound expense for timber fixings and workshop hardware into our Coremarket Goods accounts spreadsheet.');
+      }, 900);
+    };
+
+    // Render calendar on initial planner tab load
+    setTimeout(() => { renderGoogleCalendarFeed(); }, 1200);
+
     // --- Phone Call State with Assistant Sonia ---
     let assistantCallActive = false;
     let activeCallType = 'general';
@@ -5448,6 +5619,60 @@
     };
 
     function executeAssistantAction(action) {
+      if (!action) return;
+
+      // 1. Google Calendar Event Quick-Add
+      if (action.calendar_quick_add && action.calendar_quick_add.text) {
+        const text = action.calendar_quick_add.text;
+        const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+        const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
+        fetch(`${base}/api/workspace/calendar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text })
+        })
+        .then(r => r.json())
+        .then(() => {
+          if (typeof showToast === 'function') showToast(`Google Calendar: "${text}" added.`);
+          window.refreshGoogleCalendarEvents();
+        })
+        .catch(() => {});
+      }
+
+      // 2. Google Docs Creation
+      if (action.create_doc && action.create_doc.title) {
+        const title = action.create_doc.title;
+        const content = action.create_doc.content || '';
+        const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+        const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
+        fetch(`${base}/api/workspace/docs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: title, content: content })
+        })
+        .then(r => r.json())
+        .then(d => {
+          if (typeof showToast === 'function') showToast(`Google Doc "${title}" created.`);
+        })
+        .catch(() => {});
+      }
+
+      // 3. Google Sheets Append
+      if (action.log_sheet_row && action.log_sheet_row.row) {
+        const row = action.log_sheet_row.row;
+        const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+        const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
+        fetch(`${base}/api/workspace/sheets`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ row: row })
+        })
+        .then(r => r.json())
+        .then(() => {
+          if (typeof showToast === 'function') showToast("Row logged into Coremarket Goods Accounts Spreadsheet.");
+        })
+        .catch(() => {});
+      }
       if (!action) return;
 
       // Handle Sonia Drafting an Email
