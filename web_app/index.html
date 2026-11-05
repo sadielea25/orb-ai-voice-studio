@@ -734,7 +734,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.3</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.4</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -748,7 +748,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.3</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.4</span>
         </div>
       </div>
 
@@ -758,7 +758,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.3</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.4</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -843,13 +843,30 @@
             </div>
           </div>
 
-          <!-- Add Task Form in Current Category -->
-          <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
-            <input type="text" id="dostuffNewTaskInput" placeholder="Add task in this category..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1; min-width: 0; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 6px 9px; font-size: 11.5px; font-weight: 600; color: #0f172a; outline: none;" />
-            <select id="newTaskPrioritySelect" style="width: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 5px 6px; font-size: 11px; font-weight: 700; color: #0f172a; cursor: pointer;">
+          <!-- Bunch by Location Filter Row -->
+          <div style="margin-bottom: 8px; padding: 5px 7px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-size: 9.5px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;">📍 Bunch by Location:</span>
+              <span id="locationFilterCountLabel" style="font-size: 9.5px; color: #2563eb; font-weight: 800;">All Locations</span>
+            </div>
+            <div id="locationFilterPillsRow" style="display: flex; flex-wrap: wrap; gap: 4px;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+          <!-- Add Task Form with Priority & Location Tag -->
+          <div style="display: flex; gap: 5px; margin-bottom: 8px; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="dostuffNewTaskInput" placeholder="Add task in this category..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1 1 140px; min-width: 120px; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 6px 9px; font-size: 11.5px; font-weight: 600; color: #0f172a; outline: none;" />
+            <select id="newTaskPrioritySelect" title="Task Priority Level" style="width: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 5px 6px; font-size: 11px; font-weight: 700; color: #0f172a; cursor: pointer;">
               <option value="high">🔴 High</option>
               <option value="normal" selected>🟡 Normal</option>
               <option value="low">🟢 Low</option>
+            </select>
+            <select id="newTaskLocationSelect" title="Task Location & Context" style="width: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 5px 6px; font-size: 11px; font-weight: 700; color: #0f172a; cursor: pointer;">
+              <option value="laptop" selected>💻 Laptop</option>
+              <option value="home_physical">🏠 Home Physical</option>
+              <option value="out_about">🚗 Out & About</option>
+              <option value="phone">📱 Phone</option>
+              <option value="offline">📝 Pen & Paper</option>
             </select>
             <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;">Add</button>
           </div>
@@ -1120,6 +1137,12 @@
         </button>
         <button type="button" onclick="window.sendAssistantCallPrompt('Can you draft the client invoice reminder for me and put it on your to-do list?')" style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           🤝 Delegate Invoice Task
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('What are all my physical out and about tasks that I need to run today?')" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          🚗 Out & About Tasks
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('What pen and paper or offline tasks can I work on without internet?')" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          📝 Pen & Paper Tasks
         </button>
       </div>
 
@@ -3500,6 +3523,19 @@
       { id: 'ch-5', category: 'chore', icon: '📬', title: 'Sort incoming letters or receipts into one pile', tip: 'Consolidates loose clutter into one clean spot.' }
     ];
 
+    const LOCATION_TAGS = [
+      { id: 'all', name: 'All Locations', icon: '🌍', short: 'All' },
+      { id: 'laptop', name: 'Laptop Task', icon: '💻', short: 'Laptop', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+      { id: 'home_physical', name: 'Physical (Home)', icon: '🏠', short: 'Home Physical', bg: '#fef3c7', color: '#92400e', border: '#fde68a' },
+      { id: 'out_about', name: 'Physical (Out & About)', icon: '🚗', short: 'Out & About', bg: '#ecfdf5', color: '#047857', border: '#a7f3d0' },
+      { id: 'phone', name: 'Phone Task', icon: '📱', short: 'Phone', bg: '#fdf4ff', color: '#86198f', border: '#f5d0fe' },
+      { id: 'offline', name: 'Pen & Paper / No Net', icon: '📝', short: 'Pen & Paper', bg: '#f8fafc', color: '#334155', border: '#cbd5e1' }
+    ];
+
+    function getLocationMeta(locId) {
+      return LOCATION_TAGS.find(l => l.id === locId) || LOCATION_TAGS[1];
+    }
+
     const DEFAULT_TASK_CATEGORIES = [
       { id: 'accounts', name: 'Accounts', icon: '📊', color: '#2563eb' },
       { id: 'app', name: 'ORB App', icon: '⚡', color: '#059669' },
@@ -3520,6 +3556,7 @@
       activeFocusTaskId: null,
       activeCategoryId: 'accounts',
       activeTab: 'my_tasks',
+      activeLocationFilter: 'all',
       categories: DEFAULT_TASK_CATEGORIES,
       focusTasks: [],
       assistantTasks: []
@@ -3569,6 +3606,7 @@
         dostuffState.focusTasks.forEach((t, idx) => {
           if (!t.category) t.category = 'accounts';
           if (!t.priority) t.priority = 'normal';
+          if (!t.location) t.location = 'laptop';
           if (typeof t.order !== 'number') t.order = idx;
         });
       } else {
@@ -3677,6 +3715,7 @@
             window.switchTaskModalTab('my_tasks');
           }
           renderCategoryPills();
+          renderLocationFilterPills();
           renderDoStuffTaskList();
           const input = Document.prototype.getElementById.call(doc, 'dostuffNewTaskInput');
           if (input) setTimeout(() => input.focus(), 60);
@@ -3696,6 +3735,7 @@
       saveDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
     };
 
@@ -3718,6 +3758,7 @@
       saveDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
       showToast("Added category: " + cleanName);
     };
@@ -3731,6 +3772,7 @@
       saveDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
       window.closeDoStuffTaskModal();
       if (task) {
@@ -3741,6 +3783,7 @@
     window.addDoStuffFocusTask = function() {
       let title = '';
       let priority = 'normal';
+      let location = 'laptop';
       getAllDoStuffDocs().forEach(doc => {
         const input = Document.prototype.getElementById.call(doc, 'dostuffNewTaskInput');
         if (input && input.value && input.value.trim()) {
@@ -3748,6 +3791,13 @@
           input.value = '';
         }
         const prioSel = Document.prototype.getElementById.call(doc, 'newTaskPrioritySelect');
+        if (prioSel && prioSel.value) {
+          priority = prioSel.value;
+        }
+        const locSel = Document.prototype.getElementById.call(doc, 'newTaskLocationSelect');
+        if (locSel && locSel.value) {
+          location = locSel.value;
+        }
         if (prioSel && prioSel.value) {
           priority = prioSel.value;
         }
@@ -3759,6 +3809,7 @@
         title: title,
         category: dostuffState.activeCategoryId,
         priority: priority,
+        location: (typeof location !== 'undefined' ? location : 'laptop'),
         order: catTasks.length,
         sessions: 0,
         totalMinutes: 0,
@@ -3771,9 +3822,78 @@
       saveDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
       showToast('🎯 Added & Working On: ' + title);
     };
+
+
+    window.selectLocationFilter = function(locId) {
+      dostuffState.activeLocationFilter = locId;
+      renderLocationFilterPills();
+      renderDoStuffTaskList();
+      const meta = getLocationMeta(locId);
+      if (locId === 'all') {
+        showToast('📍 Showing all tasks in ' + getActiveCategory().name);
+      } else {
+        showToast('📍 Bunched by: ' + meta.icon + ' ' + meta.name);
+      }
+    };
+
+    window.toggleTaskLocation = function(taskId, event) {
+      if (event) event.stopPropagation();
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (!task) return;
+      const order = ['laptop', 'home_physical', 'out_about', 'phone', 'offline'];
+      const curIdx = order.indexOf(task.location || 'laptop');
+      const nextIdx = (curIdx + 1) % order.length;
+      task.location = order[nextIdx];
+      saveDoStuffFocusTasks();
+      renderLocationFilterPills();
+      renderDoStuffTaskList();
+      updateDoStuffUI();
+      const meta = getLocationMeta(task.location);
+      showToast('Location tag set to: ' + meta.icon + ' ' + meta.name);
+    };
+
+    function renderLocationFilterPills() {
+      getAllDoStuffDocs().forEach(doc => {
+        const container = Document.prototype.getElementById.call(doc, 'locationFilterPillsRow');
+        const countLabel = Document.prototype.getElementById.call(doc, 'locationFilterCountLabel');
+        if (!container) return;
+
+        const currentLoc = dostuffState.activeLocationFilter || 'all';
+        if (countLabel) {
+          if (currentLoc === 'all') {
+            countLabel.textContent = 'All Locations';
+          } else {
+            const m = getLocationMeta(currentLoc);
+            const count = dostuffState.focusTasks.filter(t => t.location === currentLoc && !t.completed).length;
+            countLabel.textContent = `${m.icon} ${m.short} (${count} bunched)`;
+          }
+        }
+
+        let html = '';
+        LOCATION_TAGS.forEach(loc => {
+          const isActive = loc.id === currentLoc;
+          let count = 0;
+          if (loc.id === 'all') {
+            count = dostuffState.focusTasks.filter(t => !t.completed).length;
+          } else {
+            count = dostuffState.focusTasks.filter(t => t.location === loc.id && !t.completed).length;
+          }
+
+          html += `
+            <button type="button" onclick="window.selectLocationFilter('${loc.id}')" style="background: ${isActive ? '#0f172a' : (loc.bg || '#f1f5f9')}; border: 1.5px solid ${isActive ? '#0f172a' : (loc.border || '#cbd5e1')}; color: ${isActive ? '#ffffff' : (loc.color || '#334155')}; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s ease; box-shadow: ${isActive ? '0 2px 6px rgba(15,23,42,0.3)' : 'none'};">
+              <span>${loc.icon}</span>
+              <span>${loc.short}</span>
+              <span style="font-size: 8.5px; opacity: 0.85; margin-left: 1px;">(${count})</span>
+            </button>
+          `;
+        });
+        container.innerHTML = html;
+      });
+    }
 
     // Reordering in any priority order: Move Up ▲
     window.moveTaskUp = function(taskId, event) {
@@ -3877,6 +3997,7 @@
       saveDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
     };
 
@@ -3890,6 +4011,7 @@
       saveDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
       showToast('🗑️ Task removed');
     };
@@ -4028,12 +4150,21 @@
         const listEl = Document.prototype.getElementById.call(doc, 'dostuffTasksList');
         if (!listEl) return;
 
-        const filteredTasks = dostuffState.focusTasks.filter(t => t.category === currentCatId);
+        const activeLoc = dostuffState.activeLocationFilter || 'all';
+        let filteredTasks = [];
+        let isBunchedByLocation = activeLoc !== 'all';
+
+        if (isBunchedByLocation) {
+          // Bunch all tasks matching this location tag across categories
+          filteredTasks = dostuffState.focusTasks.filter(t => t.location === activeLoc);
+        } else {
+          filteredTasks = dostuffState.focusTasks.filter(t => t.category === currentCatId);
+        }
 
         if (!filteredTasks || filteredTasks.length === 0) {
           listEl.innerHTML = `
             <div style="text-align: center; padding: 18px 8px; color: #94a3b8; font-size: 11.5px;">
-              No tasks in ${getActiveCategory().name} yet. Type a task above or click Sync To-Do.
+              ${isBunchedByLocation ? 'No tasks bunched under ' + getLocationMeta(activeLoc).name + '. Tap All Locations to view all tasks.' : 'No tasks in ' + getActiveCategory().name + ' yet. Type a task above or click Sync To-Do.'}
             </div>
           `;
           return;
@@ -4074,6 +4205,10 @@
                     <!-- Clickable Priority Badge (Cycles Priority) -->
                     <button type="button" onclick="window.toggleTaskPriority('${task.id}', event)" title="Click to cycle priority (High, Normal, Low)" class="${prioClass}" style="font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 999px; cursor: pointer;">
                       ${prioLabel}
+                    </button>
+                    <!-- Clickable Location Tag Badge -->
+                    <button type="button" onclick="window.toggleTaskLocation('${task.id}', event)" title="Click to cycle location: Laptop, Home Physical, Out & About, Phone, Pen & Paper" style="background: ${getLocationMeta(task.location).bg}; border: 1px solid ${getLocationMeta(task.location).border}; color: ${getLocationMeta(task.location).color}; font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 999px; cursor: pointer; white-space: nowrap;">
+                      ${getLocationMeta(task.location).icon} ${getLocationMeta(task.location).short}
                     </button>
                     <span style="font-size: 9.5px; font-weight: 800; color: #b45309;">🔥 ${task.sessions || 0} • ${(task.totalMinutes || 0)}m</span>
                     ${isActive ? '<span style="font-size: 9px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1px 6px; border-radius: 999px; text-transform: uppercase;">Working On</span>' : ''}
@@ -4463,6 +4598,7 @@
       saveDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
       showToast(importedCount > 0 ? `📋 Synced ${importedCount} tasks from main to-do list` : '📋 All to-do tasks already synced');
     };
@@ -4619,7 +4755,7 @@
 
         const activeTitleEl = Document.prototype.getElementById.call(doc, 'dostuffActiveTaskTitle');
         if (activeTitleEl) {
-          activeTitleEl.textContent = activeFocus ? activeFocus.title : 'Select a focus task...';
+          activeTitleEl.textContent = activeFocus ? (getLocationMeta(activeFocus.location).icon + ' ' + activeFocus.title) : 'Select a focus task...';
           activeTitleEl.title = activeFocus ? activeFocus.title : 'Select a focus task';
         }
 
@@ -4921,6 +5057,7 @@
       initDoStuffFocusTasks();
       updateDoStuffUI();
       renderCategoryPills();
+      renderLocationFilterPills();
       renderDoStuffTaskList();
       renderAssistantTasksList();
 

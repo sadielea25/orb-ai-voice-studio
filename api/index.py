@@ -30,7 +30,7 @@ VOICE_SETTINGS = {
 CONVERSATION_HISTORY = [
     {
         "role": "assistant",
-        "text": "Hello Sadie. Orb AI Voice Studio v3.3 is live and connected in the cloud.",
+        "text": "Hello Sadie. Orb AI Voice Studio v3.4 is live and connected in the cloud.",
         "time": time.strftime("%H:%M")
     }
 ]
@@ -145,7 +145,8 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
             cat = t.get("category", "general")
             prio = t.get("priority", "normal")
             status = "completed" if t.get("completed") else "pending"
-            tasks_summary.append(f"- [{cat.upper()}] {t.get('title', '')} (Priority: {prio}, Status: {status})")
+            loc = t.get("location", "laptop")
+            tasks_summary.append(f"- [{cat.upper()}] {t.get('title', '')} (Priority: {prio}, Location: {loc}, Status: {status})")
     tasks_str = "\n".join(tasks_summary) if tasks_summary else "No tasks logged yet."
 
     ast_summary = []
@@ -159,6 +160,12 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
 Sadie is calling you directly on a live phone call inside the app.
 Your goals:
 1. Help Sadie organise tasks into categories ({cat_summary}).
+2. Organise and bunch tasks by location tags:
+   - laptop: Laptop / Desk Task
+   - home_physical: Physical Task at Home (cleaning, tidying, fixing)
+   - out_about: Physical Task Out & About (errands, shopping, post office, driving)
+   - phone: Phone Call Task
+   - offline: Pen & Paper / No Internet Task (offline planning, sketching, reading)
 2. Help Sadie prioritise tasks in order of importance so she is never overwhelmed (focusing on one task at a time).
 3. Plan Sadie's priority tasks for the day.
 4. Take on tasks delegated to you ("do stuff for Sadie") and track them on your own assistant to-do list.
@@ -182,7 +189,7 @@ Format your output as valid JSON:
   "reply": "Your warm spoken reply to Sadie",
   "action": {{
     "set_focus_task_title": "Task title to set as active Working On (or null)",
-    "add_my_task": {{"title": "Task title", "category": "accounts", "priority": "high"}} (or null),
+    "add_my_task": {{"title": "Task title", "category": "accounts", "priority": "high", "location": "laptop"}} (or null),
     "delegate_to_assistant": {{"title": "Task title to do for Sadie", "category": "accounts", "notes": "Brief note on what you will do"}} (or null),
     "reordered_priorities": [{{"id": "...", "priority": "high"}}] (or null)
   }}
@@ -304,7 +311,7 @@ class handler(BaseHTTPRequestHandler):
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v3.3",
+                "app_version": "v3.4",
                 "active_chat_title": "Orb AI Cloud Studio",
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
@@ -367,7 +374,7 @@ class handler(BaseHTTPRequestHandler):
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "v3.3",
+            "version": "v3.4",
             "status": "online",
             "cloud": True
         }).encode("utf-8"))
