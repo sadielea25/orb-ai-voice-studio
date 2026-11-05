@@ -634,6 +634,20 @@
       .download-section { display: none !important; }
     }
 
+    /* Incoming Call Ringing Modal & Wave Animations */
+    @keyframes incomingCallPop {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes incomingPulseWave {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+    @keyframes pulseRingDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
     /* In-App Virtual Assistant Phone Call Modal */
     #assistantCallModal {
       display: none;
@@ -734,7 +748,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.6</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.7</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -748,7 +762,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.6</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.7</span>
         </div>
       </div>
 
@@ -758,7 +772,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.6</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.7</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -1204,7 +1218,44 @@
         </div>
       </div>
     </div>
-    <!-- VIRTUAL ASSISTANT LIVE IN-APP PHONE CALL OVERLAY -->
+    <!-- INCOMING CALL RINGING MODAL (MIDDAY & SCHEDULED CHECK-INS) -->
+  <div id="incomingCallModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 24px; padding: 24px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.4); animation: incomingCallPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+      
+      <!-- Ringing badge -->
+      <div style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; border: 1.5px solid #a7f3d0; color: #059669; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; margin-bottom: 16px;">
+        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulseRingDot 1.2s infinite;"></span>
+        <span>Incoming Phone Call</span>
+      </div>
+
+      <!-- Caller Avatar with Double Pulse Waves -->
+      <div style="position: relative; width: 96px; height: 96px; margin: 0 auto 16px;">
+        <div style="position: absolute; inset: -10px; border-radius: 50%; border: 2px solid rgba(16, 185, 129, 0.4); animation: incomingPulseWave 1.8s infinite;"></div>
+        <div style="position: absolute; inset: -20px; border-radius: 50%; border: 1.5px solid rgba(59, 130, 246, 0.25); animation: incomingPulseWave 1.8s infinite 0.6s;"></div>
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sonia" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #10b981; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);">
+      </div>
+
+      <!-- Caller Name & Call Title -->
+      <div style="font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">Sonia</div>
+      <div style="font-size: 12px; font-weight: 700; color: #2563eb; margin-bottom: 8px;">Midday Phone Calls & Tasks Check-In</div>
+      <div style="font-size: 11px; color: #475569; line-height: 1.4; margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px;">
+        Scheduled Check-In (Mon - Fri 12:00)<br />
+        <span style="color: #059669; font-weight: 700;">Morning phone calls check-in (Wellness Pharmacy, Accountant, etc.)</span>
+      </div>
+
+      <!-- Action Buttons (Answer / Decline) -->
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button type="button" onclick="window.declineIncomingCall()" style="flex: 1; background: #fef2f2; border: 1.5px solid #fecaca; color: #dc2626; padding: 12px; border-radius: 14px; font-size: 12.5px; font-weight: 700; cursor: pointer;">
+          Decline
+        </button>
+        <button type="button" onclick="window.answerIncomingCall('midday_phone_checkin')" style="flex: 1.6; background: linear-gradient(135deg, #16a34a, #15803d); border: 1.5px solid #15803d; color: #ffffff; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.4);">
+          <span>📞 Answer Call</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIRTUAL ASSISTANT LIVE IN-APP PHONE CALL OVERLAY -->
   <div id="assistantCallModal">
     <div class="call-card">
       <!-- Call Top Header -->
@@ -1243,6 +1294,9 @@
 
       <!-- One-Tap Live Planning Prompt Chips -->
       <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;">
+        <button type="button" onclick="window.sendAssistantCallPrompt('Let us check off my morning phone calls: pharmacy, accountant, and client calls')" style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          📞 Morning Calls Check-In
+        </button>
         <button type="button" onclick="window.sendAssistantCallPrompt('Help me plan my top priority tasks for today')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           📋 Plan My Day
         </button>
@@ -3731,8 +3785,142 @@
       planning: getDefaultPlanningState()
     };
 
+    // --- Web Audio British Ringtone Synthesiser ---
+    let ringtoneAudioCtx = null;
+    let ringtoneInterval = null;
+
+    function playRingtone() {
+      stopRingtone();
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        ringtoneAudioCtx = new AudioContext();
+
+        function ringPulse() {
+          if (!ringtoneAudioCtx) return;
+          const now = ringtoneAudioCtx.currentTime;
+          // Standard UK double-ring cadence: 400Hz + 450Hz
+          // Ring 1: 0.4s
+          playTonePair(400, 450, now, 0.4);
+          // Pause: 0.2s
+          // Ring 2: 0.4s
+          playTonePair(400, 450, now + 0.6, 0.4);
+
+          // Native mobile device vibration
+          if ('vibrate' in navigator) {
+            try { navigator.vibrate([400, 200, 400]); } catch (e) {}
+          }
+        }
+
+        function playTonePair(f1, f2, startTime, duration) {
+          if (!ringtoneAudioCtx) return;
+          const osc1 = ringtoneAudioCtx.createOscillator();
+          const osc2 = ringtoneAudioCtx.createOscillator();
+          const gain = ringtoneAudioCtx.createGain();
+
+          osc1.frequency.value = f1;
+          osc2.frequency.value = f2;
+
+          gain.gain.setValueAtTime(0, startTime);
+          gain.gain.linearRampToValueAtTime(0.18, startTime + 0.04);
+          gain.gain.setValueAtTime(0.18, startTime + duration - 0.04);
+          gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ringtoneAudioCtx.destination);
+
+          osc1.start(startTime);
+          osc2.start(startTime);
+          osc1.stop(startTime + duration);
+          osc2.stop(startTime + duration);
+        }
+
+        ringPulse();
+        ringtoneInterval = setInterval(ringPulse, 3000);
+      } catch (e) {
+        console.warn("Ringtone audio synthesiser error:", e);
+      }
+    }
+
+    function stopRingtone() {
+      if (ringtoneInterval) {
+        clearInterval(ringtoneInterval);
+        ringtoneInterval = null;
+      }
+      if (ringtoneAudioCtx) {
+        try { ringtoneAudioCtx.close(); } catch (e) {}
+        ringtoneAudioCtx = null;
+      }
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(0); } catch (e) {}
+      }
+    }
+
+    // --- Midday Scheduled Calls Engine ---
+    let middayCallActive = true;
+    try {
+      const saved = localStorage.getItem('orb_midday_call_active');
+      if (saved !== null) middayCallActive = (saved === 'true');
+    } catch (e) {}
+
+    window.toggleMiddayCall = function(active) {
+      middayCallActive = active;
+      try { localStorage.setItem('orb_midday_call_active', active ? 'true' : 'false'); } catch (e) {}
+      const badge = document.getElementById('middayCallStatusBadge');
+      if (badge) {
+        badge.textContent = active ? 'Mon - Fri 12:00 Active' : 'Paused';
+        badge.style.color = active ? '#059669' : '#94a3b8';
+        badge.style.background = active ? '#ecfdf5' : '#f1f5f9';
+      }
+    };
+
+    window.triggerIncomingCall = function(callType = 'midday_phone_checkin') {
+      const incModal = document.getElementById('incomingCallModal');
+      if (incModal) {
+        incModal.style.display = 'flex';
+        playRingtone();
+      }
+    };
+
+    window.declineIncomingCall = function() {
+      stopRingtone();
+      const incModal = document.getElementById('incomingCallModal');
+      if (incModal) incModal.style.display = 'none';
+      if (typeof showToast === 'function') {
+        showToast('Call dismissed. Tap the green phone icon anytime to call Sonia.');
+      }
+    };
+
+    window.answerIncomingCall = function(callType = 'midday_phone_checkin') {
+      stopRingtone();
+      const incModal = document.getElementById('incomingCallModal');
+      if (incModal) incModal.style.display = 'none';
+
+      // Start assistant call with midday context
+      window.startAssistantCall(callType);
+    };
+
+    // Scheduled background watcher (checks every 10 seconds)
+    let lastScheduledCheckDate = '';
+    setInterval(() => {
+      if (!middayCallActive) return;
+      const now = new Date();
+      const day = now.getDay(); // 1 = Mon, 5 = Fri
+      if (day >= 1 && day <= 5) {
+        if (now.getHours() === 12 && now.getMinutes() === 0) {
+          const dateStr = now.toDateString();
+          if (lastScheduledCheckDate !== dateStr) {
+            lastScheduledCheckDate = dateStr;
+            try { localStorage.setItem('orb_midday_last_ring', dateStr); } catch (e) {}
+            window.triggerIncomingCall('midday_phone_checkin');
+          }
+        }
+      }
+    }, 10000);
+
     // --- Phone Call State with Assistant Sonia ---
     let assistantCallActive = false;
+    let activeCallType = 'general';
     let assistantCallTimer = null;
     let assistantCallSeconds = 0;
     let assistantCallRecognition = null;
@@ -4833,12 +5021,17 @@
       } catch (e) {}
     }
 
-    window.startAssistantCall = function() {
+    window.startAssistantCall = function(initialCallType = null) {
       if (assistantCallActive) return;
       assistantCallActive = true;
+      activeCallType = initialCallType || 'general';
       assistantCallSeconds = 0;
       assistantCallHistory = [];
       playCallAudioChime('ring');
+
+      const middayGreeting = "Good afternoon, Sadie. I am checking in to see if you have managed to get through your morning phone calls today. If not, let us round them off now before the afternoon gets busy, particularly with The Wellness Pharmacy or your accountant.";
+      const standardGreeting = "Hello Sadie. I am right here on the line. How can I help you organise, prioritise, or plan your tasks today?";
+      const chosenGreeting = (activeCallType === 'midday_phone_checkin') ? middayGreeting : standardGreeting;
 
       getAllDoStuffDocs().forEach(doc => {
         const modal = Document.prototype.getElementById.call(doc, 'assistantCallModal');
@@ -4846,12 +5039,12 @@
         const timerBadge = Document.prototype.getElementById.call(doc, 'callDurationBadge');
         if (timerBadge) timerBadge.textContent = '00:00';
         const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
-        if (statusEl) statusEl.textContent = '● Ringing Sonia...';
+        if (statusEl) statusEl.textContent = (activeCallType === 'midday_phone_checkin') ? '● Connected • Sonia speaking...' : '● Connected • Listening to Sadie...';
         const transcript = Document.prototype.getElementById.call(doc, 'callTranscriptBox');
         if (transcript) {
           transcript.innerHTML = `
             <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #0f172a; line-height: 1.4;">
-              <strong style="color: #059669;">Sonia:</strong> Hello Sadie. I am right here on the line. How can I help you organise, prioritise, or plan your tasks today?
+              <strong style="color: #059669;">Sonia:</strong> ${chosenGreeting}
             </div>
           `;
         }
@@ -4859,12 +5052,24 @@
 
       setTimeout(() => {
         playCallAudioChime('connect');
-        getAllDoStuffDocs().forEach(doc => {
-          const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
-          if (statusEl) statusEl.textContent = '● Connected • Listening to Sadie...';
-        });
-        startAssistantCallListening();
-      }, 900);
+        if (activeCallType === 'midday_phone_checkin') {
+          // Speak midday greeting aloud via ElevenLabs
+          assistantIsSpeaking = true;
+          const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+          const ttsBase = isCap ? 'https://orbai.appsolutelydone.com' : '';
+          const ttsUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(chosenGreeting)}&voice=${encodeURIComponent(getCurrentVoiceId())}`;
+          playCloudAudio(ttsUrl, chosenGreeting, () => {
+            assistantIsSpeaking = false;
+            getAllDoStuffDocs().forEach(doc => {
+              const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
+              if (statusEl && assistantCallActive) statusEl.textContent = '● Connected • Listening to Sadie...';
+            });
+            if (assistantCallActive) startAssistantCallListening();
+          });
+        } else {
+          startAssistantCallListening();
+        }
+      }, 700);
 
       if (assistantCallTimer) clearInterval(assistantCallTimer);
       assistantCallTimer = setInterval(() => {
@@ -4954,6 +5159,7 @@
         body: JSON.stringify({
           text: cleanPrompt,
           voice: getCurrentVoiceId(),
+          call_type: activeCallType || 'general',
           categories: dostuffState.categories,
           my_tasks: dostuffState.focusTasks,
           assistant_tasks: dostuffState.assistantTasks,

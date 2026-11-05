@@ -198,7 +198,7 @@ def query_gemini(prompt, history=None, context=None):
 
 
 
-def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None):
+def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None, call_type=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
     models = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
 
@@ -265,6 +265,16 @@ Your goals:
    - Review her day/week/month pacing: answer questions like "Am I on track for this week?" or "How am I pacing for the month?".
    - Help her allocate focus blocks across the week (Mon to Sun).
 5. Take on tasks delegated to you ("do stuff for Sadie") and track them on your own assistant to-do list.
+
+SPECIAL CONTEXT: MIDDAY MORNING PHONE CALLS CHECK-IN (MONDAY TO FRIDAY)
+If this is a scheduled midday check-in or Sadie mentions morning calls:
+- Specifically ask Sadie if she has completed her morning phone calls for today.
+- If she has not made them yet, kindly advise her to round them off right now before the afternoon gets busy.
+- Proactively suggest specific calls she might need to make:
+  1. The Wellness Pharmacy (prescriptions, orders, wellness stock)
+  2. Her Accountant (HMRC records, VAT returns, company accounts for Coremarket Goods LTD)
+  3. Any pending phone tasks logged in her task list above (location: 'phone')
+- If she has already made them, celebrate the progress and ask which afternoon focus task she wants to set.
 
 Current Working On: "{active_task_title or 'None selected'}" (Category: {active_category})
 
@@ -600,6 +610,7 @@ class handler(BaseHTTPRequestHandler):
                 user_text = "Hello Sonia, help me organise and plan my priority tasks for today."
 
             planning = data.get("planning")
+            call_type = data.get("call_type")
             res = query_assistant_call(
                 user_text,
                 categories=categories,
@@ -608,7 +619,8 @@ class handler(BaseHTTPRequestHandler):
                 active_category=active_cat,
                 active_task_title=active_task,
                 call_history=call_history,
-                planning=planning
+                planning=planning,
+                call_type=call_type
             )
 
             reply = res.get("reply", "I am here to help you organise your tasks.")

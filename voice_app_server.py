@@ -1080,6 +1080,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             try:
                 from api.index import query_assistant_call
                 planning = data.get("planning")
+                call_type = data.get("call_type")
                 res = query_assistant_call(
                     user_text,
                     categories=categories,
@@ -1088,7 +1089,8 @@ class PWAHandler(BaseHTTPRequestHandler):
                     active_category=active_cat,
                     active_task_title=active_task,
                     call_history=call_history,
-                    planning=planning
+                    planning=planning,
+                    call_type=call_type
                 )
             except Exception as e:
                 res = {"reply": f"I am here to help Sadie. Let us look at {active_cat} and organise your top priorities.", "action": None}
