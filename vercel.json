@@ -2,6 +2,6 @@
   "version": 2,
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/web_app/$1" }
+    { "source": "/api/(.*)", "destination": "/api/index.py" }
   ]
 }

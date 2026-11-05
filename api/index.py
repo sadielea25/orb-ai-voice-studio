@@ -1,14 +1,17 @@
 """
 api/index.py
 Vercel Serverless Function for Orb AI Live Voice Studio Cloud API.
+Provides high-performance cloud voice synthesis, Gemini AI conversation, and settings sync.
 """
 
 from http.server import BaseHTTPRequestHandler
 import os
+import io
 import json
 import asyncio
-import edge_tts
 import urllib.parse
+import urllib.request
+import base64
 import time
 
 VOICE_SETTINGS = {
@@ -27,10 +30,109 @@ VOICE_SETTINGS = {
 CONVERSATION_HISTORY = [
     {
         "role": "assistant",
-        "text": "Hello Sadie! Orb AI Voice Studio v1.0 is live and connected.",
-        "time": "15:45"
+        "text": "Hello Sadie! Orb AI Voice Studio v2.9 is live and connected in the cloud.",
+        "time": time.strftime("%H:%M")
     }
 ]
+
+DEFAULT_GEM_KEY = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=").decode()
+
+
+def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
+    """
+    Synthesizes speech to MP3 bytes.
+    Tries edge-tts first; falls back smoothly to gTTS (Google Translate TTS)
+    with native British (co.uk) or Irish (ie) accent if edge-tts is blocked on cloud datacenter IPs.
+    """
+    clean_text = text.strip()
+    if not clean_text:
+        return b""
+
+    # Attempt 1: Edge-TTS
+    try:
+        import edge_tts
+        async def _edge():
+            comm = edge_tts.Communicate(clean_text, voice_id)
+            buf = b""
+            async for chunk in comm.stream():
+                if chunk["type"] == "audio":
+                    buf += chunk["data"]
+            return buf
+        audio_data = asyncio.run(_edge())
+        if audio_data and len(audio_data) > 100:
+            return audio_data
+    except Exception:
+        pass
+
+    # Attempt 2: High-reliability Google TTS (gTTS)
+    try:
+        from gtts import gTTS
+        tld = "co.uk"
+        v_low = voice_id.lower()
+        if "ie" in v_low or "emily" in v_low or "connor" in v_low:
+            tld = "ie"
+        elif "us" in v_low or "ava" in v_low or "brian" in v_low:
+            tld = "com"
+        tts = gTTS(text=clean_text, lang="en", tld=tld)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        return fp.getvalue()
+    except Exception as e:
+        print("[TTS-ERROR]:", e, flush=True)
+        return b""
+
+
+def query_gemini(prompt, history=None, context=None):
+    """Queries Google Gemini model with conversational instructions."""
+    api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
+    models = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-2.5-flash-lite"]
+
+    sys_prompt = (
+        "You are Orb, an elite conversational AI voice assistant for Sadie. "
+        "Keep responses natural, crisp, intelligent, and meant to be spoken aloud. "
+        "Strictly adhere to UK English spelling and vocabulary. "
+        "Never use exclamation marks. Keep replies concise (1-2 clear sentences) unless explicitly asked for detail."
+    )
+
+    contents = []
+    if history:
+        for msg in history[-8:]:
+            role = "user" if msg.get("role") == "user" else "model"
+            txt = msg.get("text", "").strip()
+            if txt:
+                contents.append({"role": role, "parts": [{"text": txt}]})
+
+    user_text = prompt
+    if context:
+        user_text = f"Context: {context}\n\nUser: {prompt}"
+
+    contents.append({"role": "user", "parts": [{"text": user_text}]})
+
+    payload = {
+        "system_instruction": {"parts": [{"text": sys_prompt}]},
+        "contents": contents,
+        "generationConfig": {"maxOutputTokens": 512, "temperature": 0.6}
+    }
+
+    for mod in models:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={api_key}"
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=7) as resp:
+                res_data = json.loads(resp.read().decode("utf-8"))
+                cand = res_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+                if cand:
+                    cand = cand.replace("!", ".")
+                    return cand
+        except Exception:
+            continue
+
+    return "I am connected, but I could not reach the language servers just now."
 
 
 class handler(BaseHTTPRequestHandler):
@@ -39,22 +141,26 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Private-Network")
+        self.send_header("Access-Control-Allow-Private-Network", "true")
         self.end_headers()
 
     def do_OPTIONS(self):
         self._set_headers(204)
 
     def do_GET(self):
-        path = self.path.split("?")[0]
+        parsed = urllib.parse.urlparse(self.path)
+        path = parsed.path
+        q = urllib.parse.parse_qs(parsed.query)
+
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         api_dir = os.path.dirname(os.path.abspath(__file__))
-        
+
         if path in ("/", "/index.html"):
             for candidate in [
-                os.path.join(api_dir, "index.html"),
                 os.path.join(base_dir, "public", "index.html"),
                 os.path.join(base_dir, "web_app", "index.html"),
+                os.path.join(api_dir, "index.html"),
                 os.path.join(os.getcwd(), "public", "index.html")
             ]:
                 if os.path.exists(candidate):
@@ -66,9 +172,9 @@ class handler(BaseHTTPRequestHandler):
 
         elif path == "/manifest.json":
             for candidate in [
-                os.path.join(api_dir, "manifest.json"),
                 os.path.join(base_dir, "public", "manifest.json"),
-                os.path.join(base_dir, "web_app", "manifest.json")
+                os.path.join(base_dir, "web_app", "manifest.json"),
+                os.path.join(api_dir, "manifest.json")
             ]:
                 if os.path.exists(candidate):
                     with open(candidate, "r", encoding="utf-8") as f:
@@ -79,9 +185,9 @@ class handler(BaseHTTPRequestHandler):
 
         elif path == "/sw.js":
             for candidate in [
-                os.path.join(api_dir, "sw.js"),
                 os.path.join(base_dir, "public", "sw.js"),
-                os.path.join(base_dir, "web_app", "sw.js")
+                os.path.join(base_dir, "web_app", "sw.js"),
+                os.path.join(api_dir, "sw.js")
             ]:
                 if os.path.exists(candidate):
                     with open(candidate, "r", encoding="utf-8") as f:
@@ -89,54 +195,77 @@ class handler(BaseHTTPRequestHandler):
                     self._set_headers(200, "application/javascript")
                     self.wfile.write(content.encode("utf-8"))
                     return
-        elif "settings" in path:
+
+        elif path in ("/api/status", "/status"):
+            state = {
+                "status": "online",
+                "mode": "cloud",
+                "app_version": "v2.9",
+                "active_chat_title": "Orb AI Cloud Studio",
+                "is_speaking": False,
+                "enabled": VOICE_SETTINGS.get("enabled", True),
+                "voice": VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
+            }
+            self._set_headers(200)
+            self.wfile.write(json.dumps(state).encode("utf-8"))
+            return
+
+        elif path in ("/api/settings", "/settings"):
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
             return
 
-        elif "tts" in path:
-            parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
-            text = parsed_q.get("text", [""])[0].strip()
-            voice = parsed_q.get("voice", ["en-GB-SoniaNeural"])[0].strip()
+        elif path in ("/api/conversation", "/conversation"):
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
+            return
+
+        elif path in ("/api/tts", "/tts"):
+            text = q.get("text", [""])[0].strip()
+            voice = q.get("voice", [VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")])[0].strip()
             if not text:
                 self._set_headers(400)
-                self.wfile.write(b"No text provided")
+                self.wfile.write(b'{"error": "No text provided"}')
                 return
-
-            async def gen_audio(t, v):
-                communicate = edge_tts.Communicate(t, v)
-                audio_data = b''
-                async for chunk in communicate.stream():
-                    if chunk['type'] == 'audio':
-                        audio_data += chunk['data']
-                return audio_data
-
-            try:
-                audio_bytes = asyncio.run(gen_audio(text, voice))
+            audio_bytes = generate_audio_bytes(text, voice)
+            if audio_bytes:
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/mpeg")
                 self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Cache-Control", "public, max-age=3600")
                 self.end_headers()
                 self.wfile.write(audio_bytes)
-            except Exception as e:
+            else:
                 self._set_headers(500)
-                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
+                self.wfile.write(b'{"error": "Audio generation failed"}')
             return
 
-        elif "status" in path:
-            self._set_headers(200)
-            self.wfile.write(json.dumps({"status": "online", "mode": "cloud-v1.0"}).encode("utf-8"))
-            return
-        elif "conversation" in path:
-            self._set_headers(200)
-            self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
+        elif path in ("/api/voice_preview_audio", "/voice_preview_audio"):
+            voice = q.get("voice", ["en-GB-SoniaNeural"])[0].strip()
+            preview_text = "Hello Sadie, this is your British voice preview."
+            if "IE" in voice or "Emily" in voice or "Connor" in voice:
+                preview_text = "Hello Sadie, this is your Irish voice preview."
+            elif "US" in voice:
+                preview_text = "Hello Sadie, this is your American voice preview."
+            audio_bytes = generate_audio_bytes(preview_text, voice)
+            if audio_bytes:
+                self.send_response(200)
+                self.send_header("Content-Type", "audio/mpeg")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Cache-Control", "public, max-age=86400")
+                self.end_headers()
+                self.wfile.write(audio_bytes)
+            else:
+                self._set_headers(500)
+                self.wfile.write(b'{"error": "Voice preview failed"}')
             return
 
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "1.0.0",
-            "status": "active"
+            "version": "v2.9",
+            "status": "online",
+            "cloud": True
         }).encode("utf-8"))
 
     def do_POST(self):
@@ -148,145 +277,109 @@ class handler(BaseHTTPRequestHandler):
             data = {}
 
         path = self.path.split("?")[0]
-        if path == "/api/polish_text":
+
+        if path in ("/api/speech_input", "/speech_input"):
+            user_text = data.get("text", "").strip()
+            voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
+            if not user_text:
+                self._set_headers(200)
+                self.wfile.write(b'{"status": "ok", "reply": ""}')
+                return
+
+            CONVERSATION_HISTORY.append({
+                "role": "user",
+                "text": user_text,
+                "time": time.strftime("%H:%M")
+            })
+
+            ai_reply = query_gemini(user_text, history=CONVERSATION_HISTORY)
+            CONVERSATION_HISTORY.append({
+                "role": "assistant",
+                "text": ai_reply,
+                "time": time.strftime("%H:%M")
+            })
+
+            audio_url = f"/api/tts?text={urllib.parse.quote(ai_reply)}&voice={urllib.parse.quote(voice)}"
+            self._set_headers(200)
+            self.wfile.write(json.dumps({
+                "status": "ok",
+                "reply": ai_reply,
+                "audio_url": audio_url
+            }).encode("utf-8"))
+            return
+
+        elif path in ("/api/read_ai_reply", "/api/speak_last", "/read_ai_reply", "/speak_last"):
+            voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
+            last_reply = ""
+            for msg in reversed(CONVERSATION_HISTORY):
+                if msg.get("role") == "assistant" and msg.get("text"):
+                    last_reply = msg["text"]
+                    break
+            if not last_reply:
+                last_reply = "Orb AI is online and ready to assist you."
+
+            audio_url = f"/api/tts?text={urllib.parse.quote(last_reply)}&voice={urllib.parse.quote(voice)}"
+            self._set_headers(200)
+            self.wfile.write(json.dumps({
+                "status": "ok",
+                "reply": last_reply,
+                "audio_url": audio_url
+            }).encode("utf-8"))
+            return
+
+        elif path in ("/api/polish_text", "/polish_text"):
             raw_text = data.get("text", "").strip()
             if not raw_text:
                 self._set_headers(200)
                 self.wfile.write(b'{"status": "ok", "polished": ""}')
                 return
-
-            chat_title = data.get("chat_title") or "Orb"
-            context = data.get("context")
-
-            import base64
-            default_gem_key = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=").decode()
-            api_key = data.get("api_key") or os.environ.get("GEMINI_API_KEY") or default_gem_key
-            models_to_try = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"]
-
-            content_text = raw_text
-            if context:
-                content_text = f"CURRENT CONVERSATION CONTEXT:\n{context}\n\nUSER'S SPOKEN DRAFT TO REWRITE & POLISH:\n\"{raw_text}\""
-
-            sys_instruction = (
-                "You are an elite, context-aware AI Speech Polishing & Thought Articulation Engine (like Google Gemini / Gmail 'Help Me Write' / Grammarly Go / Whisper Accent-Aware Engine). "
-                "Actively REWRITE and ELEVATE the user's spoken thoughts into crisp, articulate, high-impact, professional, and natural English while seamlessly maintaining the context of the ongoing conversation.\n\n"
-                "ACCENT & PHONETIC RECOGNITION RULES:\n"
-                "1. Interpret diverse regional accents (British, Irish, Scottish, Northern English, American, Canadian, Australian, etc.).\n"
-                "2. Intelligently rectify common Speech-To-Text phonetic blurs, homophones, and misheard technical/development terms based on the conversational context (e.g. misheard 'versal' -> 'Vercel', 'German I' -> 'Gemini', 'sans better' -> 'send button', 'oil budget' / 'all budget' -> 'Orb widget', 'for spots' -> 'voice box', 'trapped' -> 'chat', 'dex builder' -> 'dexBuilder', 'apk s' -> 'APKs', 'tax' -> 'text', 'massage' -> 'message', 'policy Jesus' -> 'polish feature', 'lassa version' -> 'lesser version', 'balance chic' -> 'balance sheet').\n\n"
-                "CONVERSATIONAL CONTEXT INTELLIGENCE:\n"
-                "1. Analyze the surrounding conversation context (active project/chat topic, recent assistant messages, recent user turns) to understand what the user is referring to.\n"
-                "2. Seamlessly resolve pronouns and references (e.g. 'it', 'that', 'the second one', 'the button') into precise, contextually clear phrasing.\n"
-                "3. Streamline rambling phrases, eliminate filler words ('like', 'you know', 'um', 'ah', 'basically', 'so yeah'), and enhance vocabulary and structure while preserving the user's core intent.\n"
-                "4. Return ONLY the polished rewrite with no quotes, explanations, or preamble."
+            context = data.get("context", "")
+            polished = query_gemini(
+                f"Please polish this spoken draft into articulate, professional UK English without filler words:\n\"{raw_text}\"",
+                context=context
             )
-
-            payload = {
-                "system_instruction": {
-                    "parts": [{"text": sys_instruction}]
-                },
-                "contents": [{"parts": [{"text": content_text}]}],
-                "generationConfig": {
-                    "maxOutputTokens": 2048,
-                    "temperature": 0.3
-                }
-            }
-
-            polished = raw_text
-            import urllib.request
-            for mod in models_to_try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={api_key}"
-                try:
-                    req = urllib.request.Request(
-                        url,
-                        data=json.dumps(payload).encode("utf-8"),
-                        headers={"Content-Type": "application/json"}
-                    )
-                    with urllib.request.urlopen(req, timeout=5) as resp:
-                        resp_data = json.loads(resp.read().decode("utf-8"))
-                        candidate = resp_data.get("candidates", [{}])[0]
-                        parts = candidate.get("content", {}).get("parts", [])
-                        if parts and parts[0].get("text"):
-                            ai_text = parts[0]["text"].strip()
-                            if (ai_text.startswith('"') and ai_text.endswith('"')) or (ai_text.startswith("'") and ai_text.endswith("'")):
-                                ai_text = ai_text[1:-1].strip()
-                            if ai_text:
-                                polished = ai_text
-                                break
-                except Exception:
-                    pass
-
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "ok", "polished": polished}).encode("utf-8"))
             return
 
-        elif "settings" in path:
+        elif path in ("/api/settings", "/settings"):
             VOICE_SETTINGS.update(data)
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "saved", "settings": VOICE_SETTINGS}).encode("utf-8"))
-        elif "speech_input" in path:
-            text = data.get("text", "").strip()
-            if text:
-                CONVERSATION_HISTORY.append({
-                    "role": "user",
-                    "text": text,
-                    "time": time.strftime("%H:%M")
-                })
-                
-                # Call Gemini for Cloud AI Mode
-                import urllib.request
-                import base64
-                default_gem_key = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=").decode()
-                api_key = data.get("api_key") or os.environ.get("GEMINI_API_KEY") or default_gem_key
-                
-                sys_prompt = "You are Orb, an elite conversational AI voice assistant. Keep responses natural, concise, and meant to be spoken aloud. Do not use markdown, emojis, or lists unless absolutely necessary. Keep it under 2 sentences unless the user asks a complex question."
-                
-# Build conversation history
-                history = data.get("history", [])
-                gemini_contents = []
-                for msg in history[-10:]:  # Keep last 10 messages for memory
-                    role = "user" if msg.get("role") == "user" else "model"
-                    gemini_contents.append({ "role": role, "parts": [ { "text": msg.get("text", "") } ] })
-                
-                gemini_contents.append({ "role": "user", "parts": [ { "text": text } ] })
-                
-                payload_data = {
-                    "system_instruction": { "parts": [ { "text": sys_prompt } ] },
-                    "contents": gemini_contents,
-                    "generationConfig": { "maxOutputTokens": 512, "temperature": 0.7 }
-                }
-                
-                ai_text = "I am currently offline or unable to reach the AI servers."
-                try:
-                    req = urllib.request.Request(
-                        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}",
-                        data=json.dumps(payload_data).encode("utf-8"),
-                        headers={"Content-Type": "application/json"},
-                        method="POST"
-                    )
-                    with urllib.request.urlopen(req, timeout=8) as resp:
-                        res_json = json.loads(resp.read().decode("utf-8"))
-                        cand = res_json.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
-                        if cand:
-                            ai_text = cand
-                except Exception as e:
-                    print("Gemini Cloud Error:", e)
-                    
-                CONVERSATION_HISTORY.append({
-                    "role": "assistant",
-                    "text": ai_text,
-                    "time": time.strftime("%H:%M")
-                })
-                
-                self._set_headers(200)
-                self.wfile.write(json.dumps({"status": "received", "response": ai_text}).encode("utf-8"))
-                return
+            return
 
-        elif "test" in path:
+        elif path in ("/api/pause_total", "/pause_total"):
+            total_pause = data.get("total_pause", True)
+            VOICE_SETTINGS["enabled"] = not total_pause
             self._set_headers(200)
-            self.wfile.write(json.dumps({"status": "spoken", "cloud": True}).encode("utf-8"))
-        else:
+            self.wfile.write(json.dumps({
+                "status": "ok",
+                "total_pause": total_pause,
+                "enabled": VOICE_SETTINGS["enabled"]
+            }).encode("utf-8"))
+            return
+
+        elif path in ("/api/stop", "/stop"):
             self._set_headers(200)
-            self.wfile.write(json.dumps({"status": "ok"}).encode("utf-8"))
+            self.wfile.write(b'{"status": "stopped"}')
+            return
+
+        elif path in ("/api/dostuff_break", "/dostuff_break"):
+            task_title = data.get("title", "Take a 60 second movement break").strip()
+            mins = data.get("minutes", 5)
+            spoken = f"DoStuff {mins} minute reset. {task_title}."
+            voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
+            audio_url = f"/api/tts?text={urllib.parse.quote(spoken)}&voice={urllib.parse.quote(voice)}"
+            self._set_headers(200)
+            self.wfile.write(json.dumps({
+                "status": "announced",
+                "spoken": spoken,
+                "audio_url": audio_url
+            }).encode("utf-8"))
+            return
+
+        self._set_headers(200)
+        self.wfile.write(b'{"status": "ok"}')
 
     def log_message(self, format, *args):
         return

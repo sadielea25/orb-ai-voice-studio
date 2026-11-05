@@ -394,19 +394,20 @@
       text-transform: uppercase;
     }
     .active-chat-title {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 750;
       color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.25;
     }
 
     /* Compact Widget Mode (<= 540px height) */
     .compact-mode #cardVoiceSettings,
     .compact-mode #cardCommands,
     .compact-mode #stepPickerContainer,
+    .compact-mode #footerUtilities,
+    .compact-mode #downloadSection,
     .compact-mode .card-title {
       display: none !important;
     }
@@ -414,53 +415,59 @@
     @media (max-height: 540px) {
       header { display: none !important; }
       body { padding: 6px !important; }
-      .container { padding-bottom: 6px !important; }
-      #cardVoiceSettings, #cardCommands, #stepPickerContainer, .card-title { display: none !important; }
-      .card { padding: 10px 14px; margin-bottom: 8px; border-radius: 12px; }
-      .orb-row { margin: 6px 0 10px; gap: 14px; }
-      .orb { width: 68px; height: 68px; font-size: 34px; }
-      .draft-container { margin-bottom: 8px; }
-      .draft-box { min-height: 48px; max-height: 75px; overflow-y: auto; padding: 10px; font-size: 14px; }
-      .action-grid button { padding: 7px 6px; font-size: 12px; }
+      .container { padding-bottom: 4px !important; }
+      #cardVoiceSettings, #cardCommands, #stepPickerContainer, #footerUtilities, #downloadSection, .card-title { display: none !important; }
+      .card { padding: 10px 12px; margin-bottom: 6px; border-radius: 12px; }
+      .orb-row { margin: 4px 0 8px; gap: 12px; }
+      .orb { width: 58px; height: 58px; font-size: 28px; }
+      .draft-container { margin-bottom: 6px; margin-top: 6px !important; }
+      .draft-box { min-height: 44px; max-height: 68px; overflow-y: auto; padding: 8px; font-size: 13.5px; }
+      .action-grid button { padding: 6px 6px; font-size: 11.5px; }
+      #appLegalFooter { margin: 4px auto 2px auto !important; padding-top: 6px !important; font-size: 10px !important; }
     }
 
-    /* Bare Minimum Mode (<= 340px height) - Always shows Ear Orb (Speak & Pause) and Voice Selector */
+    /* Bare Minimum Mode (<= 360px height, e.g. 388x287 floating capsule) */
     .bare-minimum header,
     .bare-minimum #cardVoiceSettings,
     .bare-minimum #cardCommands,
     .bare-minimum #stepPickerContainer,
     .bare-minimum #draftContainer,
     .bare-minimum #actionGrid,
+    .bare-minimum #footerUtilities,
+    .bare-minimum #downloadSection,
     .bare-minimum .card-title {
       display: none !important;
     }
     .bare-minimum #cardSpeech {
-      padding: 4px 8px !important;
+      padding: 4px 6px !important;
       margin: 0 !important;
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
     }
     .bare-minimum .orb-row {
-      margin: 2px 0 0 !important;
-      gap: 12px !important;
-      padding: 0 !important;
+      margin: 0 0 6px 0 !important;
+      gap: 10px !important;
+      padding: 6px 10px !important;
+      background: rgba(15, 23, 42, 0.72) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 12px !important;
     }
     .bare-minimum .orb {
-      width: 52px !important;
-      height: 52px !important;
-      font-size: 26px !important;
+      width: 44px !important;
+      height: 44px !important;
+      font-size: 22px !important;
     }
     .bare-minimum .status-text {
-      font-size: 14px !important;
+      font-size: 13px !important;
       margin-bottom: 1px !important;
     }
     .bare-minimum .status-sub {
-      font-size: 11px !important;
+      font-size: 10.5px !important;
     }
     .bare-minimum .active-chat-highlight {
-      padding: 3px 8px !important;
-      margin-bottom: 4px !important;
+      padding: 4px 8px !important;
+      margin-bottom: 0 !important;
       border-radius: 8px !important;
     }
     .bare-minimum .active-chat-label {
@@ -470,44 +477,73 @@
       font-size: 11px !important;
     }
 
-    @media (max-height: 340px) {
+    @media (max-width: 420px) {
+      body { padding: 8px 4px !important; overflow-x: hidden !important; }
+      .card { padding: 10px 6px !important; }
+      #dostuffMasterBar { padding: 4px 5px !important; gap: 2px !important; }
+      #dostuffMasterBar button, #dostuffMasterBar select { padding: 2px 5px !important; font-size: 9.5px !important; }
+    }
+
+    @media (max-height: 360px) {
       header,
       #cardVoiceSettings,
       #cardCommands,
+      #stepPickerContainer,
       #draftContainer,
       #actionGrid,
+      #footerUtilities,
+      #downloadSection,
       .card-title {
         display: none !important;
       }
-      body { padding: 4px !important; }
+      body { padding: 5px 6px !important; overflow-y: hidden !important; overflow-x: hidden !important; min-height: 0 !important; }
       .container { padding: 0 !important; padding-bottom: 0 !important; }
       #cardSpeech {
-        padding: 4px 8px !important;
+        padding: 0 !important;
         margin: 0 !important;
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
       }
+      #dostuffMasterBar {
+        padding: 4px 6px !important;
+        margin-bottom: 4px !important;
+        border-radius: 10px !important;
+      }
       .orb-row {
-        margin: 2px 0 0 !important;
-        gap: 12px !important;
-        padding: 0 !important;
+        margin: 0 0 4px 0 !important;
+        gap: 10px !important;
+        padding: 5px 10px !important;
+        background: rgba(15, 23, 42, 0.72) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 12px !important;
       }
       .orb {
-        width: 52px !important;
-        height: 52px !important;
-        font-size: 26px !important;
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 21px !important;
       }
       .status-text {
-        font-size: 14px !important;
+        font-size: 13px !important;
         margin-bottom: 1px !important;
       }
       .status-sub {
+        font-size: 10.5px !important;
+      }
+      #btnMicToggle {
+        padding: 6px 10px !important;
         font-size: 11px !important;
       }
-      .active-chat-highlight {
-        padding: 3px 8px !important;
+      #aiControlsRow {
         margin-bottom: 4px !important;
+        gap: 5px !important;
+        flex-wrap: nowrap !important;
+      }
+      .active-chat-highlight {
+        flex: 1 1 90px !important;
+        min-width: 75px !important;
+        padding: 4px 7px !important;
+        margin-bottom: 0 !important;
         border-radius: 8px !important;
       }
       .active-chat-label {
@@ -516,17 +552,83 @@
       .active-chat-title {
         font-size: 11px !important;
       }
-      .quick-voice-bar {
-        padding: 4px 8px !important;
-        margin-bottom: 4px !important;
+      #btnTotalPause,
+      #btnFloaterSpeakAI {
+        flex: 0 0 auto !important;
+        min-width: 0 !important;
+        padding: 5px 8px !important;
+        font-size: 11px !important;
         border-radius: 8px !important;
       }
-      .quick-voice-select {
-        padding: 4px 6px !important;
-        font-size: 12px !important;
+      .voice-selector-section {
+        margin-bottom: 2px !important;
+      }
+      .quick-voice-bar {
+        padding: 4px 8px !important;
+        margin-bottom: 2px !important;
+        border-radius: 9px !important;
+        gap: 6px !important;
+      }
+      .voice-avatar-wrap {
+        width: 26px !important;
+        height: 26px !important;
+      }
+      .voice-avatar-img {
+        width: 26px !important;
+        height: 26px !important;
+      }
+      #activePersonName {
+        font-size: 12.5px !important;
+      }
+      #selectVoice {
+        padding: 3px 6px !important;
+        font-size: 10.5px !important;
+        border-radius: 6px !important;
+        max-width: 118px !important;
+      }
+      #btnQuickVoicePreview {
+        padding: 3px 6px !important;
+        font-size: 10.5px !important;
+        border-radius: 6px !important;
+      }
+      #appLegalFooter {
+        margin: 2px auto 0 auto !important;
+        padding-top: 3px !important;
+        font-size: 8.5px !important;
+        line-height: 1.2 !important;
+      }
+      #appLegalFooter > div:first-child {
+        margin-bottom: 1px !important;
+        gap: 4px !important;
+      }
+      #appLegalFooter button, #appLegalFooter a {
+        font-size: 8.5px !important;
+      }
+      #appLegalFooter > div:last-child {
+        font-size: 8px !important;
       }
     }
-    
+
+    /* Full-Screen Takeover Mode when DoStuff Break fires */
+    body.dostuff-break-active {
+      overflow: hidden !important;
+    }
+    body.dostuff-break-active #dostuffBreakCard {
+      display: flex !important;
+    }
+    @media (max-height: 480px) {
+      body.dostuff-break-active #orbRow,
+      body.dostuff-break-active #aiControlsRow,
+      body.dostuff-break-active #draftContainer,
+      body.dostuff-break-active #actionGrid,
+      body.dostuff-break-active #voiceSelectorSection,
+      body.dostuff-break-active #footerUtilities,
+      body.dostuff-break-active #downloadSection,
+      body.dostuff-break-active #appLegalFooter {
+        display: none !important;
+      }
+    }
+
     /* Completely hide download options if the user is already inside the installed PWA */
     @media all and (display-mode: standalone) {
       .download-section { display: none !important; }
@@ -534,47 +636,90 @@
   </style>
 </head>
 <body>
-  <!-- 1-Click / Auto Launch Overlay -->
-  <div id="immediateLaunchOverlay" style="display: none; position: fixed; inset: 0; background: rgba(9, 13, 22, 0.96); z-index: 999999; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; text-align: center; padding: 24px;">
-    <div style="font-size: 56px; margin-bottom: 12px; filter: drop-shadow(0 0 24px rgba(96,165,250,0.8));">🚀</div>
-    <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">Tap Anywhere to Pop Out Floating Widget</h2>
-    <p style="font-size: 13.5px; color: #94a3b8; max-width: 340px; line-height: 1.5; margin-bottom: 20px;">Click anywhere on screen to float the always-on-top voice widget directly over your desktop.</p>
-    <div style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff; padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 700; box-shadow: 0 4px 20px rgba(124,58,237,0.5); border: 1px solid #60a5fa; pointer-events: none;">
-      ⚡ Pop Out Now
-    </div>
-  </div>
-
-  <!-- Placeholder shown in parent tab while floating window is active -->
-  <div id="pipActivePlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; color: #94a3b8; font-family: system-ui, sans-serif; gap: 14px; padding: 24px;">
-    <div style="font-size: 44px; filter: drop-shadow(0 0 16px rgba(124,58,237,0.6));">🎙️</div>
-    <div style="font-size: 18px; font-weight: 800; color: #f8fafc;">Orb Voice Floating Widget Active</div>
-    <div style="font-size: 13.5px; max-width: 340px; line-height: 1.5; color: #94a3b8;">Your floating overlay is pinned and running over your screen.</div>
-    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 12px; padding: 12px; max-width: 380px; margin: 8px 0;">
-      <div style="font-weight: 800; color: #f87171; font-size: 13px; margin-bottom: 4px;">⚠️ DO NOT MINIMIZE THIS WINDOW</div>
-      <div style="font-size: 12px; color: #fca5a5; line-height: 1.4;">If you minimize this main window to your taskbar, Windows will forcefully minimize the floating widget along with it. Just leave this window open in the background behind your other apps.</div>
-    </div>
-    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; justify-content: center;">
-      <button type="button" onclick="if(window.documentPictureInPicture && window.documentPictureInPicture.window) window.documentPictureInPicture.window.close()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; padding: 9px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">Dock Back to Tab</button>
-      <button type="button" onclick="window.toggleMicOnly()" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 9px 20px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer;">🎙️ Start Microphone</button>
-    </div>
-  </div>
+  <div id="immediateLaunchOverlay" style="display: none !important;"></div>
+  <div id="pipActivePlaceholder" style="display: none !important;"></div>
 
   <div class="container">
+    <canvas id="dostuffConfettiCanvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 999999; width: 100%; height: 100%;"></canvas>
     <header>
-      <h1>🎙️ Orb AI Live Voice Studio</h1>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+        <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v2.9</span>
+      </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-        <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #7c3aed); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(124,58,237,0.4); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget()">🚀 Launch on your screen</button>
-        <button type="button" id="btnFocusMain" style="display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid #0ea5e9; color: #38bdf8; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; cursor: pointer; align-items: center; gap: 6px;" onclick="window.focus(); showToast('Back on Main Page! Click Start Listening.');">🔙 Go to Main Page</button>
+        <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
+        <button type="button" id="btnFocusMain" style="display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid #0ea5e9; color: #38bdf8; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; cursor: pointer; align-items: center; gap: 6px;" onclick="window.focus(); showToast('Back on Main Page. Click Start Listening.');">🔙 Go to Main Page</button>
       </div>
     </header>
 
-    <!-- Section 1: Live Voice Soundboard & Syllable Stream -->
+    <!-- Section 1: Unified Master Widget (DoStuff Micro-Break + Live Voice Stream) -->
     <div id="cardSpeech" class="card">
       <div class="card-title">
-        <span>💬 Real-Time Speech Stream</span>
-        <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
+        <span>💬 Real-Time Speech & Focus Stream</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v2.9</span>
+        </div>
       </div>
-        </button>
+
+      <!-- UNIFIED DOSTUFF MICRO-BREAK CAPSULE BAR -->
+      <div id="dostuffMasterBar" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(15, 23, 42, 0.75)); border: 1.5px solid rgba(16, 185, 129, 0.45); border-radius: 12px; padding: 5px 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-wrap: nowrap; box-shadow: 0 2px 12px rgba(16, 185, 129, 0.12);">
+        <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+          <span style="font-size: 12px; line-height: 1;">⚡</span>
+          <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
+          <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v2.9</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
+          <select id="dostuffIntervalSelect" onchange="window.changeDoStuffInterval(this.value)" title="Select micro-break timer interval or Pause" style="width: auto !important; min-width: 0; padding: 2px 4px; border-radius: 6px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; font-size: 10.5px; font-weight: 800; cursor: pointer;">
+            <option value="0">⏸ Off</option>
+            <option value="2">2m</option>
+            <option value="5" selected>5m</option>
+            <option value="10">10m</option>
+            <option value="20">20m</option>
+            <option value="30">30m</option>
+            <option value="60">60m</option>
+          </select>
+
+          <button type="button" id="dostuffTimerBtn" onclick="window.toggleDoStuffTimer()" title="Click to pause or resume DoStuff break timer" style="background: rgba(16, 185, 129, 0.22); border: 1px solid rgba(16, 185, 129, 0.55); color: #34d399; padding: 3px 7px; border-radius: 999px; font-size: 10.5px; font-weight: 800; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+            <span id="dostuffTimerIcon" style="font-size: 9.5px; line-height: 1; font-family: sans-serif;">⏸</span>
+            <span id="dostuffCountdownText">05:00</span>
+          </button>
+
+          <button type="button" id="dostuffTriggerBtn" onclick="window.triggerDoStuffBreak()" title="Trigger physical reset break right now" style="background: linear-gradient(135deg, #059669, #0d9488); border: 1px solid #34d399; color: #ffffff; padding: 3px 7px; border-radius: 999px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+            ⚡ Break
+          </button>
+
+          <button type="button" id="dostuffSizeToggleBtn" onclick="popOutFloatingWidget('toggle')" title="Toggle Compact Corner / Full Studio window size" style="background: rgba(59, 130, 246, 0.16); border: 1px solid rgba(96, 165, 250, 0.4); color: #93c5fd; padding: 3px 5px; border-radius: 6px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+            🗗
+          </button>
+        </div>
+      </div>
+
+      <!-- DOSTUFF FULL-SCREEN TAKEOVER OVERLAY (Shown when timer hits 00:00 or Break clicked) -->
+      <div id="dostuffBreakCard" style="display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 999990; background: radial-gradient(circle at center, rgba(6, 78, 59, 0.96) 0%, rgba(15, 23, 42, 0.99) 100%); backdrop-filter: blur(14px); flex-direction: column; align-items: center; justify-content: center; padding: clamp(8px, 3vh, 32px) clamp(10px, 4vw, 32px); box-sizing: border-box; text-align: center;">
+        <div style="width: min(560px, 100%); max-height: 100%; background: linear-gradient(145deg, rgba(6, 78, 59, 0.92), rgba(15, 23, 42, 0.96)); border: 2px solid #10b981; border-radius: clamp(14px, 2.5vw, 24px); padding: clamp(10px, 3.5vh, 32px) clamp(12px, 4vw, 36px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(16, 185, 129, 0.35); display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: clamp(6px, 2vh, 18px); gap: 8px; flex-wrap: nowrap;">
+            <span id="dostuffBreakBadge" style="background: rgba(16, 185, 129, 0.25); border: 1px solid #34d399; color: #a7f3d0; font-size: clamp(10px, 1.5vh, 13px); font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap;">🌱 Physical Reset</span>
+            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+              <button type="button" onclick="window.pauseDoStuffFromBreak()" title="Pause DoStuff timer until you resume" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.45); color: #fcd34d; padding: clamp(4px, 1vh, 8px) clamp(8px, 1.5vw, 14px); border-radius: 9px; font-size: clamp(10px, 1.4vh, 13px); font-weight: 700; cursor: pointer; white-space: nowrap;">⏸ Pause</button>
+              <button type="button" onclick="window.snoozeDoStuffBreak(2)" title="Snooze break for 2 minutes" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #e2e8f0; padding: clamp(4px, 1vh, 8px) clamp(8px, 1.5vw, 14px); border-radius: 9px; font-size: clamp(10px, 1.4vh, 13px); font-weight: 700; cursor: pointer; white-space: nowrap;">⏳ 2m Snooze</button>
+              <button type="button" onclick="window.dismissDoStuffBreak()" title="Dismiss break" style="background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.45); color: #fca5a5; padding: clamp(4px, 1vh, 8px) clamp(8px, 1.5vw, 14px); border-radius: 9px; font-size: clamp(10.5px, 1.4vh, 13px); font-weight: 800; cursor: pointer; white-space: nowrap;">✕</button>
+            </div>
+          </div>
+          <div id="dostuffBreakIcon" style="font-size: clamp(32px, 8vh, 72px); line-height: 1.1; margin: clamp(2px, 1vh, 10px) 0 clamp(6px, 1.8vh, 16px);">💧</div>
+          <div id="dostuffBreakTitle" style="font-size: clamp(15px, 3.2vh, 28px); font-weight: 800; color: #ffffff; line-height: 1.25; margin-bottom: clamp(4px, 1.2vh, 12px);">Drink a tall glass of crisp cold water</div>
+          <div id="dostuffBreakTip" style="font-size: clamp(11px, 1.9vh, 16px); color: #a7f3d0; line-height: 1.4; margin-bottom: clamp(10px, 3vh, 26px);">Hydrates your brain and gives your eyes a full rest from display glare.</div>
+          <div style="display: flex; gap: clamp(8px, 1.5vw, 14px); flex-wrap: nowrap;">
+            <button type="button" id="dostuffDoneBtn" onclick="window.completeDoStuffBreak()" style="flex: 2; min-width: 0; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; border: 1px solid #6ee7b7; padding: clamp(8px, 2vh, 16px) clamp(12px, 2vw, 24px); border-radius: 12px; font-size: clamp(13px, 2.2vh, 18px); font-weight: 800; cursor: pointer; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45); white-space: nowrap;">
+              ✅ Done
+            </button>
+            <button type="button" id="dostuffSwapBtn" onclick="window.swapDoStuffTask()" style="flex: 1; min-width: 0; background: rgba(255,255,255,0.12); color: #f8fafc; border: 1px solid rgba(255,255,255,0.28); padding: clamp(8px, 2vh, 16px) clamp(10px, 1.8vw, 20px); border-radius: 12px; font-size: clamp(12px, 2vh, 16px); font-weight: 700; cursor: pointer; white-space: nowrap;">
+              🔀 Swap Task
+            </button>
+          </div>
+        </div>
       </div>
 
       <div id="orbRow" class="orb-row" onclick="handleOrbClick()" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px;" title="Click Ear to toggle listening">
@@ -585,7 +730,7 @@
             <div id="statusSub" class="status-sub">Click Ear or Start Listening below</div>
           </div>
         </div>
-        <button type="button" id="btnMicToggle" type="button" onclick="event.stopPropagation(); toggleMicOnly();" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.2s ease;">🎙️ Start Listening</button>
+        <button type="button" id="btnMicToggle" onclick="event.stopPropagation(); toggleMicOnly();" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; transition: all 0.2s ease;">🎙️ Start Listening</button>
       </div>
 
       <!-- Live Draft Display (Placed directly below Listening) -->
@@ -593,7 +738,6 @@
         <div class="draft-label" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
           <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <span>📝 Spoken Words</span>
-            
           </div>
           <span id="draftStatus" style="color: #60a5fa; font-size: 11px;">Continuous Listening</span>
         </div>
@@ -619,23 +763,23 @@
       </div>
 
       <!-- AI Controls & Chat Target -->
-      <div style="margin-bottom: 12px; display: flex; gap: 6px; align-items: stretch; flex-wrap: wrap;">
+      <div id="aiControlsRow" style="margin-bottom: 10px; display: flex; gap: 6px; align-items: stretch; flex-wrap: wrap;">
         <!-- Active Chat Target Spotlight -->
-        <div id="activeChatHighlight" class="active-chat-highlight" style="flex: 1 1 180px; min-width: 160px; margin-bottom: 0;" title="Currently active conversation">
+        <div id="activeChatHighlight" class="active-chat-highlight" style="flex: 1 1 160px; min-width: 130px; margin-bottom: 0;" title="Currently active conversation">
           <span class="active-chat-pulse"></span>
-          <span class="active-chat-icon">??</span>
+          <span class="active-chat-icon">💬</span>
           <div class="active-chat-meta">
             <span class="active-chat-label">Active Chat</span>
-            <span id="activeChatTitleText" class="active-chat-title">Detecting active chat...</span>
+            <span id="activeChatTitleText" class="active-chat-title">Live Chat Ready</span>
           </div>
         </div>
-        <button type="button" id="btnTotalPause" onclick="toggleTotalPause()" style="flex: 1 1 120px; min-width: 105px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-          <span id="totalPauseIcon">??</span>
+        <button type="button" id="btnTotalPause" onclick="toggleTotalPause()" style="flex: 1 1 110px; min-width: 95px; padding: 9px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: #f87171; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span id="totalPauseIcon">⏸️</span>
           <span id="totalPauseText">Total Pause</span>
         </button>
-        <button type="button" id="btnFloaterSpeakAI" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1 1 130px; min-width: 115px; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-          <span>??</span>
-          <span>Speak AI Reply</span>
+        <button type="button" id="btnFloaterSpeakAI" onclick="speakLastAIReply()" title="Speak AI's latest reply aloud" style="flex: 1 1 120px; min-width: 105px; padding: 9px 8px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(59,130,246,0.5); background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(124,58,237,0.28)); color: #60a5fa; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+          <span>🔊</span>
+          <span>Speak AI</span>
         </button>
       </div>
 
@@ -648,26 +792,29 @@
             <span id="voiceAvatarFlag" class="voice-avatar-flag">🇬🇧</span>
           </div>
           <div style="flex: 1; min-width: 0; text-align: left;">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Speaking Voice</div>
+            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; white-space: nowrap;">Speaking Voice</div>
             <div style="display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;">
-              <span id="activePersonName" style="font-size: 16px; font-weight: 800; color: #fff;">Libby</span>
+              <span id="activePersonName" style="font-size: 15px; font-weight: 800; color: #fff;">Libby</span>
             </div>
           </div>
-          <select id="selectVoice" onchange="onVoiceSelected()" style="display: none;">
-            <option value="en-GB-LibbyNeural" selected>Libby</option>
-            <option value="en-GB-SoniaNeural">Sonia</option>
-            <option value="en-GB-RyanNeural">Ryan</option>
-            <option value="en-GB-ThomasNeural">Thomas</option>
-            <option value="en-US-AvaNeural">Ava</option>
-            <option value="en-US-BrianNeural">Brian</option>
-            <option value="en-US-JennyNeural">Jenny</option>
-            <option value="en-US-GuyNeural">Guy</option>
-            <option value="en-US-ChristopherNeural">Christopher</option>
-            <option value="en-US-AriaNeural">Aria</option>
-            <option value="en-IE-EmilyNeural">Emily</option>
-            <option value="en-AU-NatashaNeural">Natasha</option>
-            <option value="en-CA-LiamNeural">Liam</option>
-          </select>
+          <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+            <select id="selectVoice" onchange="onVoiceSelected(true)" title="Switch AI Speaking Voice" style="width: auto !important; min-width: 0; padding: 5px 8px; border-radius: 8px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.45); color: #e0f2fe; font-size: 11.5px; font-weight: 700; cursor: pointer;">
+              <option value="en-GB-LibbyNeural" selected>🇬🇧 Libby</option>
+              <option value="en-GB-SoniaNeural">🇬🇧 Sonia</option>
+              <option value="en-GB-RyanNeural">🇬🇧 Ryan</option>
+              <option value="en-GB-ThomasNeural">🇬🇧 Thomas</option>
+              <option value="en-US-AvaNeural">🇺🇸 Ava</option>
+              <option value="en-US-BrianNeural">🇺🇸 Brian</option>
+              <option value="en-US-JennyNeural">🇺🇸 Jenny</option>
+              <option value="en-US-GuyNeural">🇺🇸 Guy</option>
+              <option value="en-US-ChristopherNeural">🇺🇸 Chris</option>
+              <option value="en-US-AriaNeural">🇺🇸 Aria</option>
+              <option value="en-IE-EmilyNeural">🇮🇪 Emily</option>
+              <option value="en-AU-NatashaNeural">🇦🇺 Natasha</option>
+              <option value="en-CA-LiamNeural">🇨🇦 Liam</option>
+            </select>
+            <button type="button" id="btnQuickVoicePreview" onclick="testVoicePreview()" title="Preview Selected Voice" style="width: auto !important; min-width: 0; padding: 5px 8px; border-radius: 8px; background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.4); color: #93c5fd; font-size: 11.5px; font-weight: 800; cursor: pointer; flex-shrink: 0;">🔊</button>
+          </div>
         </div>
 
         <div id="stepPickerContainer" class="step-picker-container">
@@ -711,7 +858,7 @@
               </div>
             </div>
 
-            <button type="button" type="button" class="btn-test" onclick="testVoicePreview()" style="margin-top: 6px; padding: 9px 12px; font-size: 12px; border-radius: 8px;">🔊 Test Voice Preview</button>
+            <button type="button" class="btn-test" onclick="testVoicePreview()" style="margin-top: 6px; padding: 9px 12px; font-size: 12px; border-radius: 8px;">🔊 Test Voice Preview</button>
           </div>
         </div>
       </div>
@@ -720,20 +867,20 @@
   </div>
 
     <!-- Footer Utilities -->
-  <div style="margin: 20px auto 10px auto; max-width: 600px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+  <div id="footerUtilities" style="margin: 16px auto 10px auto; max-width: 600px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
     <button type="button" id="btnFloaterRefresh" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-      <span id="floaterRefreshIcon">??</span>
+      <span id="floaterRefreshIcon">🔄</span>
       <span>Refresh</span>
     </button>
     <button type="button" id="btnFloaterPinTaskbar" onclick="pinFloaterToTaskbar()" title="Pin standalone app to Windows Taskbar" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
-      <span>??</span>
+      <span>📌</span>
       <span>Pin to Taskbar</span>
     </button>
   </div>
-  <div id="downloadSection" class="download-section" style="margin: 30px auto 40px auto; max-width: 600px; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 25px;">
-    <h3 style="margin-top: 0; font-size: 15px; font-weight: 600; color: #f8fafc; margin-bottom: 16px;">Get the App</h3>
+  <div id="downloadSection" class="download-section" style="margin: 24px auto 20px auto; max-width: 600px; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+    <h3 style="margin-top: 0; font-size: 15px; font-weight: 600; color: #f8fafc; margin-bottom: 14px;">Get the App</h3>
     <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-      <button type="button" onclick="window.location.href='/Orb.apk'" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+      <button type="button" onclick="downloadAndroidOrPWA()" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
         <span style="font-size: 16px;">📱</span> Download for Android
       </button>
       <button type="button" onclick="installPWA()" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
@@ -741,6 +888,20 @@
       </button>
     </div>
   </div>
+  <footer id="appLegalFooter" style="width: 100%; max-width: 600px; margin: 0 auto 20px auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 11.5px; color: #94a3b8;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 6px; align-items: center;">
+      <a href="https://orb-ai-voice-studio.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #34d399; text-decoration: none; font-weight: 700;">🌐 Live Website</a>
+      <span>•</span>
+      <button type="button" onclick="showToast('Privacy Policy: Voice settings and DoStuff streaks are stored locally on your device.')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Privacy Policy</button>
+      <span>•</span>
+      <button type="button" onclick="showToast('Terms of Service: Provided for voice productivity and physical micro-break wellness.')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Terms of Service</button>
+      <span>•</span>
+      <button type="button" onclick="showToast('Cookie Preferences: Functional local storage only. Zero tracking cookies.')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Cookie Preferences</button>
+      <span>•</span>
+      <button type="button" onclick="showToast('Contact: Coremarket Goods Ltd — Orb & DoStuff Studio')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Contact</button>
+    </div>
+    <div style="font-size: 10.5px; color: #64748b;">© <span id="footerYear">2026</span> Coremarket Goods Ltd — Orb + DoStuff Master Studio</div>
+  </footer>
 
   <script>
 // Single-instance coordinator: ensure multiple open tabs never spawn a barrage of conflicting widgets
@@ -807,6 +968,7 @@
     let silenceCountdownInterval = null;
     let isDraftPolished = false;
     let lastRenderedMessages = [];
+    let knownAITexts = [];
 
     function showToast(msg) {
       const docs = [document];
@@ -973,47 +1135,39 @@
       return `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="${bg}"/><circle cx="50" cy="38" r="18" fill="white" opacity="0.9"/><path d="M22 84 C22 64 36 58 50 58 C64 58 78 64 78 84 Z" fill="white" opacity="0.9"/></svg>`;
     }
 
-            function updateVoicePersonaUI(voiceId) {
+    function updateVoicePersonaUI(voiceId) {
       if (!voiceId) return;
-      const p = voicePersonas.find(v => v.id === voiceId);
+      const p = PERSONAS.find(v => v.id === voiceId) || PERSONAS[0];
       if (!p) return;
-      
-      const avatarImg = document.getElementById('voiceAvatarImg');
-      const avatarFlag = document.getElementById('voiceAvatarFlag');
-      const nameEl = document.getElementById('activePersonName');
-      const select = document.getElementById('selectVoice');
-      
-      if (avatarImg) {
-        avatarImg.src = p.avatar;
-        avatarImg.onerror = () => { avatarImg.src = getAvatarFallback(p.id); }
 
-;
+      if (p.accent && p.accent !== selectedAccent) {
+        selectedAccent = p.accent;
       }
-      if (avatarFlag) avatarFlag.innerText = p.flag;
-      if (nameEl) nameEl.innerText = p.name;
-      if (select && select.value !== p.id) select.value = p.id;
-      
-      const pCards = document.querySelectorAll('.persona-card');
-      pCards.forEach(c => {
-        if (c.getAttribute('data-id') === voiceId) {
-          c.classList.add('active');
-        } else {
-          c.classList.remove('active');
-        }
-      });
+
+      const docs = [document];
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        const pipCards = window.documentPictureInPicture.window.document.querySelectorAll('.persona-card');
-        pipCards.forEach(c => {
-          if (c.getAttribute('data-id') === voiceId) {
-            c.classList.add('active');
-          } else {
-            c.classList.remove('active');
-          }
-        });
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
       }
+
+      docs.forEach(doc => {
+        const avatarImg = Document.prototype.getElementById.call(doc, 'voiceAvatarImg');
+        const avatarFlag = Document.prototype.getElementById.call(doc, 'voiceAvatarFlag');
+        const nameEl = Document.prototype.getElementById.call(doc, 'activePersonName');
+        const select = Document.prototype.getElementById.call(doc, 'selectVoice');
+
+        if (avatarImg) {
+          avatarImg.src = p.avatar;
+          avatarImg.onerror = () => { avatarImg.src = getAvatarFallback(p.id); };
+        }
+        if (avatarFlag) avatarFlag.innerText = p.flag;
+        if (nameEl) nameEl.innerText = p.name;
+        if (select && select.value !== p.id) select.value = p.id;
+      });
+
+      render2StepVoicePicker();
     }
 
-function render2StepVoicePicker() {
+    function render2StepVoicePicker() {
       const docs = [document];
       if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
         try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
@@ -1026,7 +1180,7 @@ function render2StepVoicePicker() {
 
     function renderAccentPills(targetDoc = document) {
       if (!targetDoc) return;
-      const container = targetDoc.getElementById('accentPills');
+      const container = Document.prototype.getElementById.call(targetDoc, 'accentPills');
       if (!container) return;
 
       let html = '';
@@ -1065,9 +1219,9 @@ function render2StepVoicePicker() {
 
     function renderPersonaGallery(targetDoc = document) {
       if (!targetDoc) return;
-      const gallery = targetDoc.getElementById('voiceAvatarGallery');
+      const gallery = Document.prototype.getElementById.call(targetDoc, 'voiceAvatarGallery');
       if (!gallery) return;
-      const select = targetDoc.getElementById('selectVoice');
+      const select = Document.prototype.getElementById.call(targetDoc, 'selectVoice');
       const currentVoice = (select && select.value) ? select.value : 'en-GB-SoniaNeural';
 
       const filtered = PERSONAS.filter(p => p.accent === selectedAccent);
@@ -1090,18 +1244,28 @@ function render2StepVoicePicker() {
     let currentPreviewAudio = null;
 
     function previewPersonaVoice(voiceId, name) {
+      if (isTotalPaused) {
+        isTotalPaused = false;
+        updateTotalPauseUI(false);
+      }
       selectPersona(voiceId);
 
       if (currentPreviewAudio) {
         try { currentPreviewAudio.pause(); currentPreviewAudio.currentTime = 0; } catch (e) {}
       }
 
+      isAISpeaking = true;
       setOrbState('speaking');
       document.getElementById('statusTitle').innerText = 'Speaking Readout...';
 
+      const rateVal = parseInt(document.getElementById('rangeRate')?.value || '0', 10) || 0;
+      const rateMult = Math.max(0.5, Math.min(2.0, (100 + rateVal) / 100));
+
       currentPreviewAudio = new Audio('/api/voice_preview_audio?voice=' + encodeURIComponent(voiceId));
+      currentPreviewAudio.playbackRate = rateMult;
       currentPreviewAudio.play().then(() => {
         currentPreviewAudio.onended = () => {
+          isAISpeaking = false;
           setOrbState(isConnected ? 'listening' : 'paused');
           document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
         };
@@ -1109,9 +1273,10 @@ function render2StepVoicePicker() {
         fetch('/api/test', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: `Hello Sadie! I'm ${name}.`, voice: voiceId })
+          body: JSON.stringify({ text: `Hello Sadie, I am ${name}.`, voice: voiceId })
         }).finally(() => {
           setTimeout(() => {
+            isAISpeaking = false;
             setOrbState(isConnected ? 'listening' : 'paused');
             document.getElementById('statusTitle').innerText = isConnected ? 'Listening for Voice...' : 'Microphone Paused';
           }, 2000);
@@ -1127,11 +1292,17 @@ function render2StepVoicePicker() {
     }
 
     
-    function onVoiceSelected() {
+    function onVoiceSelected(preview = false) {
       const select = document.getElementById('selectVoice');
       if (select) {
-        updateVoicePersonaUI(select.value);
+        const voiceId = select.value;
+        updateVoicePersonaUI(voiceId);
         saveVoiceSettings();
+        if (preview) {
+          const p = PERSONAS.find(x => x.id === voiceId) || PERSONAS[0];
+          previewPersonaVoice(voiceId, p.name);
+          showToast('🎙️ Voice changed to ' + p.name);
+        }
       }
     }
 
@@ -1177,266 +1348,167 @@ function render2StepVoicePicker() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        showToast('Voice settings saved live!');
+        showToast('Voice settings saved live.');
       } catch (e) {}
     }
 
-    async function popOutFloatingWidget(silentFail = false) {
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        window.documentPictureInPicture.window.close();
-        return;
-      }
-
-      if (widgetSyncChannel) {
-        try { widgetSyncChannel.postMessage({ type: 'PIP_OPENED' }); } catch (e) {}
-      }
-
-      if ('documentPictureInPicture' in window) {
-        try {
-          const pipWindow = await window.documentPictureInPicture.requestWindow();
-          
-          try {
-            pipWindow.resizeTo(470, 720);
-          } catch (e) {}
-
-          pipWindow.document.title = "🎙️ Orb AI Live Voice Studio";
-
-          [...document.styleSheets].forEach((styleSheet) => {
-            try {
-              const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join('');
-              const style = document.createElement('style');
-              style.textContent = cssRules;
-              pipWindow.document.head.appendChild(style);
-            } catch (e) {
-              const link = document.createElement('link');
-              link.rel = 'stylesheet';
-              link.type = styleSheet.type;
-              link.media = styleSheet.media;
-              link.href = styleSheet.href;
-              pipWindow.document.head.appendChild(link);
-            }
-          });
-
-          pipWindow.document.body.style.background = "#090d16";
-          pipWindow.document.body.style.color = "#f8fafc";
-          pipWindow.document.body.style.margin = "0";
-          pipWindow.document.body.style.padding = "10px";
-          pipWindow.document.body.style.overflowY = "auto";
-          pipWindow.document.body.classList.add('pip-mode');
-          const container = document.querySelector('.container');
-          container.classList.add('pip-container');
-          pipWindow.document.body.appendChild(container);
-
-          const updateWidgetCompactState = () => {
-            const h = pipWindow.innerHeight;
-            if (h <= 340) {
-              container.classList.add('bare-minimum');
-              container.classList.remove('compact-mode');
-            } else if (h <= 540) {
-              container.classList.add('compact-mode');
-              container.classList.remove('bare-minimum');
-            } else {
-              container.classList.remove('compact-mode');
-              container.classList.remove('bare-minimum');
-            }
-          };
-
-          pipWindow.addEventListener('resize', updateWidgetCompactState);
-          updateWidgetCompactState();
-
-          bindPipControls(pipWindow);
-
-          const placeholder = document.getElementById('pipActivePlaceholder');
-          if (placeholder) placeholder.style.display = 'flex';
-          const overlay = document.getElementById('immediateLaunchOverlay');
-          if (overlay) overlay.style.display = 'none';
-
-          const mainBtn = document.getElementById('btnPipFloat');
-          if (mainBtn) mainBtn.style.display = 'none';
-          const focusBtn = document.getElementById('btnFocusMain');
-          if (focusBtn) focusBtn.style.display = 'inline-flex';
-
-          pipWindow.addEventListener('pagehide', () => {
-            const placeholder = document.getElementById('pipActivePlaceholder');
-            if (placeholder) placeholder.style.display = 'none';
-            container.classList.remove('pip-container');
-            container.classList.remove('compact-mode');
-            container.classList.remove('bare-minimum');
-            document.body.insertBefore(container, document.body.firstChild);
-            bindOrbHandlers(document);
-            const mainBtn = document.getElementById('btnPipFloat');
-            if (mainBtn) {
-              mainBtn.style.display = 'inline-flex';
-              mainBtn.innerText = '🚀 Launch on your screen';
-              mainBtn.style.background = 'linear-gradient(135deg, #2563eb, #7c3aed)';
-            }
-            const focusBtn = document.getElementById('btnFocusMain');
-            if (focusBtn) focusBtn.style.display = 'none';
-          });
-
-          showToast('🚀 Launched on your screen!');
-        } catch (err) {
-          console.error('PiP Error:', err);
-          showToast('⚠️ Pop-up Error: ' + err.message);
-          throw err;
-        }
+    function updateMainWindowCompactState() {
+      const container = document.querySelector('.container');
+      if (!container) return;
+      const h = window.innerHeight;
+      if (h <= 360) {
+        container.classList.add('bare-minimum');
+        container.classList.remove('compact-mode');
+      } else if (h <= 540) {
+        container.classList.add('compact-mode');
+        container.classList.remove('bare-minimum');
       } else {
-        alert('Always-on-top floating is supported in Microsoft Edge and Google Chrome.');
+        container.classList.remove('compact-mode');
+        container.classList.remove('bare-minimum');
+      }
+      const sizeBtn = document.getElementById('dostuffSizeToggleBtn');
+      if (sizeBtn) {
+        sizeBtn.textContent = h <= 380 ? '🗖' : '🗗';
+        sizeBtn.title = h <= 380 ? 'Expand to Full Studio view' : 'Shrink to Compact Corner Widget';
+      }
+    }
+    window.addEventListener('resize', updateMainWindowCompactState);
+
+    async function popOutFloatingWidget(mode = 'toggle') {
+      // Close any legacy Document Picture-in-Picture child window so there is only ever ONE native window
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { window.documentPictureInPicture.window.close(); } catch (e) {}
+      }
+      const placeholder = document.getElementById('pipActivePlaceholder');
+      if (placeholder) placeholder.style.display = 'none';
+
+      const reqMode = (typeof mode === 'string') ? mode : 'toggle';
+      const isLocalServer = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const urls = isLocalServer
+        ? ['/api/float_window', 'http://127.0.0.1:8766/api/float_window']
+        : ['http://127.0.0.1:8766/api/float_window', '/api/float_window'];
+
+      let handled = false;
+      for (const u of urls) {
+        try {
+          const res = await fetch(u, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: reqMode })
+          });
+          if (res && res.ok) {
+            const data = await res.json();
+            if (data && data.mode === 'compact') {
+              showToast('⚡ Pop-Up Widget launched and pinned to corner');
+            } else if (data && data.mode === 'studio') {
+              showToast('🗖 Expanded to Full Studio Mode');
+            } else {
+              showToast('⚡ Master Widget pinned on top');
+            }
+            setTimeout(updateMainWindowCompactState, 120);
+            handled = true;
+            break;
+          }
+        } catch (e) {}
+      }
+
+      if (!handled) {
+        try {
+          const w = 400, h = 290;
+          const left = Math.max(20, (window.screen.availWidth || 1200) - w - 20);
+          const top = Math.max(20, (window.screen.availHeight || 800) - h - 55);
+          const pop = window.open(window.location.href, 'OrbFloatingWidget', `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=no`);
+          if (pop) {
+            pop.focus();
+            showToast('⚡ Pop-Up Widget launched');
+          }
+          setTimeout(updateMainWindowCompactState, 120);
+        } catch (re) {}
       }
     }
 
     function bindPipControls(pipWindow) {
       if (!pipWindow || !pipWindow.document) return;
-      const bridgeFns = [
-        'toggleTotalPause', 'updateTotalPauseUI', 'toggleMicOnly', 'handleOrbClick',
-        'toggleOrb', 'pauseAI', 'toggleMic', 'startMic', 'stopMic', 'readDraftBack', 'sendDraftNow', 'clearDraft',
-        'polishDraft', 'saveVoiceSettings', 'updateRateLabel', 'updatePitchLabel', 'testVoicePreview',
-        'speakAudio', 'stopSpeech', 'showToast', 'installPWA', 'popOutFloatingWidget',
-        'setOrbState', 'processUtterance', 'adaptSpeechText', 'renderDraftDisplay',
-        'resetSilenceTimer', 'initSpeechRecognition', 'bindOrbHandlers',
-        'selectPersona', 'onVoiceSelected', 'updateVoicePersonaUI', 'renderPersonaGallery', 'getAvatarFallback',
-        'selectAccent', 'renderAccentPills', 'render2StepVoicePicker', 'previewPersonaVoice', 'applyHotUpdate', 'speakLastAIReply',
-        'pinFloaterToTaskbar', 'getDraftText', 'handleDraftBoxInput', 'handleDraftBoxKey'
-      ];
-      bridgeFns.forEach(fn => {
-        try { pipWindow[fn] = window[fn]; } catch (e) {}
-      });
-
-      // Bind click handlers inside popup window
       bindOrbHandlers(pipWindow.document);
       render2StepVoicePicker(pipWindow.document);
-
-      const pipDraftBox = pipWindow.document.getElementById('draftBox');
-      if (pipDraftBox) {
-        pipDraftBox.oninput = () => window.handleDraftBoxInput(pipDraftBox);
-        pipDraftBox.onkeydown = (e) => window.handleDraftBoxKey(e);
-      }
-
-      const pipVoiceSelect = pipWindow.document.getElementById('selectVoice');
-      if (pipVoiceSelect) {
-        pipVoiceSelect.onchange = () => window.onVoiceSelected();
-      }
-      const pipPolishBtn = pipWindow.document.getElementById('btnPolish') || pipWindow.document.querySelector('.btn-polish');
-      if (pipPolishBtn) {
-        pipPolishBtn.onclick = () => window.polishDraft();
-      }
-      const pipReadBackBtn = pipWindow.document.querySelector('.btn-readback');
-      if (pipReadBackBtn) {
-        pipReadBackBtn.onclick = () => window.readDraftBack();
-      }
-      const pipSendBtn = pipWindow.document.querySelector('.btn-send');
-      if (pipSendBtn) {
-        pipSendBtn.onclick = () => window.sendDraftNow();
-      }
-      const pipClearBtn = pipWindow.document.querySelector('.btn-clear');
-      if (pipClearBtn) {
-        pipClearBtn.onclick = () => window.clearDraft(false);
-      }
-
-            const pipTotalPauseBtn = pipWindow.document.getElementById('btnTotalPause');
-      if (pipTotalPauseBtn) {
-        pipTotalPauseBtn.onclick = () => window.toggleTotalPause();
-      }
-
-      const pipSpeakBtn = pipWindow.document.getElementById('btnFloaterSpeakAI');
-      if (pipSpeakBtn) {
-        pipSpeakBtn.onclick = () => window.speakLastAIReply();
-      }
-
-      const pipRefreshBtn = pipWindow.document.getElementById('btnFloaterRefresh');
-      if (pipRefreshBtn) {
-        pipRefreshBtn.onclick = () => window.applyHotUpdate(true);
-      }
-
-      const pipPinBtn = pipWindow.document.getElementById('btnFloaterPinTaskbar');
-      if (pipPinBtn) {
-        pipPinBtn.onclick = () => window.pinFloaterToTaskbar();
-      }
-
-      const floatBtn = pipWindow.document.getElementById('btnPipFloat');
-      if (floatBtn) {
-        floatBtn.style.display = 'none';
-      }
     }
 
     async function applyHotUpdate(force = false) {
       if (isHotUpdating && !force) return;
       isHotUpdating = true;
 
-      // Animate refresh icon rotation
       try {
-        const docs = [document];
-        if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-          docs.push(window.documentPictureInPicture.window.document);
+        const icon = document.getElementById('floaterRefreshIcon');
+        if (icon) {
+          icon.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+          icon.style.transform = 'rotate(360deg)';
+          setTimeout(() => { icon.style.transform = 'rotate(0deg)'; }, 550);
         }
-        docs.forEach(doc => {
-          const icon = Document.prototype.getElementById.call(doc, 'floaterRefreshIcon');
-          if (icon) {
-            icon.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            icon.style.transform = 'rotate(360deg)';
-            setTimeout(() => { icon.style.transform = 'rotate(0deg)'; }, 550);
-          }
-        });
       } catch (e) {}
 
-      // If user clicked Refresh button, perform complete, total reload of entire application & scripts
-      if (force) {
-        showToast('🔄 Full reload & syncing latest version...');
-        try {
-          sessionStorage.setItem('reopen_pip_after_reload', 'true');
-        } catch (e) {}
-        setTimeout(() => {
-          window.location.href = window.location.pathname + '?v=' + Date.now();
-        }, 200);
-        return;
-      }
-
+      // Close any open Document PiP window before reloading so the main native window never gets stuck on a placeholder
       try {
-        const isPipOpen = window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed;
-        if (!isPipOpen) {
-          window.location.reload();
-          return;
+        if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+          window.documentPictureInPicture.window.close();
         }
+        sessionStorage.removeItem('reopen_pip_after_reload');
+      } catch (e) {}
 
-        // Hot update floater in place without closing or reopening the window
-        const res = await fetch('/index.html?t=' + Date.now());
-        const htmlText = await res.text();
-        const parser = new DOMParser();
-        const newDoc = parser.parseFromString(htmlText, 'text/html');
+      showToast('🔄 Syncing latest version...');
+      setTimeout(() => {
+        window.location.href = window.location.pathname + '?v=' + Date.now();
+      }, 150);
+    }
 
-        const pipWindow = window.documentPictureInPicture.window;
-        const pipDoc = pipWindow.document;
+    function playCloudAudio(url, spokenText = '') {
+      if (!url) return;
+      if (currentPreviewAudio) {
+        try { currentPreviewAudio.pause(); currentPreviewAudio.currentTime = 0; } catch (e) {}
+      }
+      setOrbState('speaking');
+      const title = document.getElementById('statusTitle');
+      if (title) title.innerText = 'AI Speaking...';
+      const audio = new Audio(url);
+      currentPreviewAudio = audio;
+      isAISpeaking = true;
+      audio.onended = () => {
+        isAISpeaking = false;
+        setOrbState(isConnected ? 'listening' : 'paused');
+        if (title) title.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Idle';
+      };
+      audio.onerror = () => {
+        isAISpeaking = false;
+        if (spokenText) speakTextInBrowser(spokenText, currentVoiceId);
+        setOrbState(isConnected ? 'listening' : 'paused');
+      };
+      audio.play().catch(() => {
+        if (spokenText) speakTextInBrowser(spokenText, currentVoiceId);
+        isAISpeaking = false;
+        setOrbState(isConnected ? 'listening' : 'paused');
+      });
+    }
 
-        // 1. Update style rules in floating window
-        const newStyles = [...newDoc.querySelectorAll('style')].map(s => s.textContent).join('\n');
-        let pipStyleEl = pipDoc.getElementById('pipHotReloadStyles');
-        if (!pipStyleEl) {
-          pipStyleEl = pipDoc.createElement('style');
-          pipStyleEl.id = 'pipHotReloadStyles';
-          pipDoc.head.appendChild(pipStyleEl);
-        }
-        pipStyleEl.textContent = newStyles;
-
-        // 2. Hot-swap container DOM contents
-        const newContainer = newDoc.querySelector('.container');
-        const pipContainer = pipDoc.querySelector('.container');
-        if (newContainer && pipContainer) {
-          pipContainer.innerHTML = newContainer.innerHTML;
-        }
-
-        // 3. Rebind all controls and bridge functions
-        bindPipControls(pipWindow);
-
-        // 4. Re-sync active states
-        updateTotalPauseUI(isTotalPaused);
-        renderDraftDisplay();
-
-        showToast('⚡ Floater auto-updated live!');
-        console.log('[AUTO-UPDATE] Floater DOM hot-swapped successfully.');
-      } catch (err) {
-        console.error('[AUTO-UPDATE] Error applying hot update:', err);
-      } finally {
-        setTimeout(() => { isHotUpdating = false; }, 800);
+    function speakTextInBrowser(text, voiceId) {
+      if (!text || !text.trim()) return;
+      const clean = text.replace(/[*_#`~]+/g, '').replace(/https?:\/\/\S+/g, '').trim();
+      if (!clean) return;
+      setOrbState('speaking');
+      const title = document.getElementById('statusTitle');
+      if (title) title.innerText = 'AI Speaking...';
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(clean);
+        utt.lang = 'en-GB';
+        const voices = window.speechSynthesis.getVoices();
+        const match = voices.find(v => v.lang.startsWith('en-GB') || v.lang.startsWith('en-IE')) || voices[0];
+        if (match) utt.voice = match;
+        utt.onend = () => {
+          isAISpeaking = false;
+          setOrbState(isConnected ? 'listening' : 'paused');
+          if (title) title.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Idle';
+        };
+        window.speechSynthesis.speak(utt);
       }
     }
 
@@ -1456,13 +1528,18 @@ function render2StepVoicePicker() {
 
       // 3. Trigger server to speak latest AI response aloud (does NOT switch to listening)
       try {
-        const res = await fetch('/api/read_ai_reply', { method: 'POST' });
+        const res = await fetch('/api/read_ai_reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voice: currentVoiceId })
+        });
         const data = await res.json();
-        if (data && data.status === 'no_reply_found') {
-          showToast('🔍 Scanned chats — no unread reply found.');
+        if (data && data.audio_url) {
+          playCloudAudio(data.audio_url, data.reply);
+        } else if (data && data.reply) {
+          speakTextInBrowser(data.reply, currentVoiceId);
         } else {
-          setOrbState('speaking');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'AI Speaking...';
+          showToast('🔍 No recent AI reply found.');
         }
       } catch (e) {
         showToast('⚠️ Could not play AI speech.');
@@ -1470,37 +1547,12 @@ function render2StepVoicePicker() {
     }
 
     async function attemptAutoLaunch() {
-      if (!('documentPictureInPicture' in window)) return;
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) return;
-
-      try {
-        await popOutFloatingWidget(true);
-        console.log('[AUTO-LAUNCH] Floating overlay opened on start.');
-      } catch (err) {
-        console.log('[AUTO-LAUNCH] Browser requires single gesture to float window:', err);
-        enableImmediateLaunchOverlay();
-      }
+      updateMainWindowCompactState();
     }
 
     function enableImmediateLaunchOverlay() {
       const overlay = document.getElementById('immediateLaunchOverlay');
-      if (overlay) overlay.style.display = 'flex';
-
-      const trigger = async () => {
-        window.removeEventListener('click', trigger);
-        window.removeEventListener('keydown', trigger);
-        window.removeEventListener('pointerdown', trigger);
-        try {
-          await popOutFloatingWidget(true);
-          if (overlay) overlay.style.display = 'none';
-        } catch (e) {
-          console.error('Launch failed:', e);
-        }
-      };
-
-      window.addEventListener('click', trigger, { once: true });
-      window.addEventListener('keydown', trigger, { once: true });
-      window.addEventListener('pointerdown', trigger, { once: true });
+      if (overlay) overlay.style.display = 'none';
     }
 
     function updateTotalPauseUI(isPaused) {
@@ -1844,6 +1896,12 @@ function render2StepVoicePicker() {
         toggleTotalPause();
         return;
       }
+      if (isAISpeaking) {
+        stopSpeech();
+        setOrbState(isConnected ? 'listening' : 'paused');
+        showToast('⏹️ AI speech stopped.');
+        return;
+      }
       if (isConnected && !isMicActive && !isStartingMic) {
         isConnected = false;
       }
@@ -1962,7 +2020,9 @@ function render2StepVoicePicker() {
         }
       }
 
-      stopSpeech();
+      if (isAISpeaking || (currentPreviewAudio && !currentPreviewAudio.paused)) {
+        stopSpeech();
+      }
       isManualPaused = false;
       isConnected = true;
       lastAISpeechEndTime = 0;
@@ -1978,7 +2038,7 @@ function render2StepVoicePicker() {
         if (statusSub) statusSub.innerText = 'Talk naturally • Click Stop Mic when done';
       });
       setOrbState('listening');
-      showToast('👂 Listening to room! Speak freely.');
+      showToast('👂 Listening to room. Speak freely.');
     }
 
     function stopMic() {
@@ -2183,7 +2243,8 @@ function render2StepVoicePicker() {
     function processUtterance(text) {
       if (!text) return;
 
-      const cleanLower = text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      const adaptedInput = adaptSpeechText(text);
+      const cleanLower = adaptedInput.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
       const words = cleanLower.split(' ');
       const lastWord = words[words.length - 1] || '';
       const lastTwo = words.slice(-2).join(' ');
@@ -2201,13 +2262,19 @@ function render2StepVoicePicker() {
         return;
       }
 
-      // 3. Smart Send Matcher: ONLY intentional send phrases (no accidental single-word triggers)
+      // 3. Polish trigger
+      if (cleanLower === 'polish draft' || cleanLower === 'polish it' || cleanLower === 'polish message') {
+        polishDraft();
+        return;
+      }
+
+      // 4. Smart Send Matcher: ONLY intentional send phrases (no accidental single-word triggers)
       const sendPhrases = ['send now', 'send it', 'send message', 'shoot it', 'send that', 'send draft', 'dispatch message'];
       const isPhraseMatch = sendPhrases.includes(lastTwo) || (lastWord === 'send' && words.length <= 2);
 
       if (isPhraseMatch) {
-        const wordsToDrop = lastTwo.includes('send') ? 2 : 1;
-        const textWords = text.trim().split(/\s+/);
+        const wordsToDrop = sendPhrases.includes(lastTwo) ? 2 : 1;
+        const textWords = adaptedInput.trim().split(/\s+/);
         const remainingWords = textWords.slice(0, -wordsToDrop);
         const contentBefore = remainingWords.join(' ').trim();
 
@@ -2217,14 +2284,14 @@ function render2StepVoicePicker() {
 
         currentDraft = adaptSpeechText(currentDraft);
         renderDraftDisplay();
-        showToast('🚀 Send trigger recognized!');
+        showToast('🚀 Send trigger recognised.');
         sendDraftNow();
         return;
       }
 
       // Normal speech: adapt in context, then append
       isDraftPolished = false;
-      currentDraft = (currentDraft ? currentDraft + ' ' : '') + text;
+      currentDraft = (currentDraft ? currentDraft + ' ' : '') + adaptedInput;
       currentDraft = adaptSpeechText(currentDraft);
       interimText = '';
       renderDraftDisplay();
@@ -2372,12 +2439,12 @@ function render2StepVoicePicker() {
     async function polishDraft() {
       let rawText = getDraftText();
       if (!rawText) {
-        showToast('Draft is empty. Speak or type something first to polish!');
+        showToast('Draft is empty. Speak or type something first to polish.');
         return;
       }
       if (isPolishing) return;
       isPolishing = true;
-      isDraftPolished = true; // Lock in polish mode so timer NEVER auto-sends!
+      isDraftPolished = true;
 
       // Stop microphone so ambient noise/speech never resets polish state or auto-sends
       stopMic();
@@ -2413,9 +2480,8 @@ function render2StepVoicePicker() {
       let activeChatName = '';
       docs.forEach(doc => {
         if (!activeChatName) {
-          const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText') ||
-                     Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-          if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Orb') {
+          const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
+          if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Live Chat Ready') {
             activeChatName = el.innerText.trim();
           }
         }
@@ -2448,7 +2514,7 @@ function render2StepVoicePicker() {
           const defaultKey = atob("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=");
           const gemKey = localStorage.getItem('gemini_api_key') || window.__GEMINI_KEY__ || defaultKey;
           if (gemKey) {
-            const modelsToTry = ["gemini-3.5-flash", "gemini-3.5-flash-lite"];
+            const modelsToTry = ["gemini-3.5-flash-lite", "gemini-3.5-flash"];
             const systemPrompt = "You are an elite, context-aware AI Speech Polishing & Thought Articulation Engine (like Google Gemini / Gmail 'Help Me Write' / Grammarly Go / Whisper Accent-Aware Engine). Actively REWRITE and ELEVATE the user's spoken thoughts into crisp, articulate, high-impact, professional, and natural English while seamlessly maintaining the context of the ongoing conversation.\n\nACCENT & PHONETIC RECOGNITION RULES:\n1. Interpret diverse regional accents (British, Irish, Scottish, Northern English, American, Canadian, Australian, etc.).\n2. Intelligently rectify common Speech-To-Text phonetic blurs, homophones, and misheard technical/development terms based on the conversational context (e.g. misheard 'versal' -> 'Vercel', 'German I' -> 'Gemini', 'sans better' -> 'send button', 'oil budget' / 'all budget' -> 'Orb widget', 'for spots' -> 'voice box', 'trapped' -> 'chat', 'dex builder' -> 'dexBuilder', 'apk s' -> 'APKs', 'tax' -> 'text', 'massage' -> 'message', 'policy Jesus' -> 'polish feature', 'lassa version' -> 'lesser version', 'balance chic' -> 'balance sheet').\n\nCONVERSATIONAL CONTEXT INTELLIGENCE:\n1. Analyze the surrounding conversation context (active project/chat topic, recent assistant messages, recent user turns) to understand what the user is referring to.\n2. Seamlessly resolve pronouns and references (e.g. 'it', 'that', 'the second one', 'the button') into precise, contextually clear phrasing.\n3. Streamline rambling phrases, eliminate filler words ('like', 'you know', 'um', 'ah', 'basically', 'so yeah'), and enhance vocabulary and structure while preserving the user's core intent.\n4. Return ONLY the polished rewrite with no quotes, explanations, or preamble.";
 
             const contentText = contextBlock
@@ -2539,13 +2605,13 @@ function render2StepVoicePicker() {
             }
           });
 
-          showToast('✨ Polished in conversation context!');
+          showToast('✨ Polished in conversation context.');
         }
       } catch (err) {
         console.error('Polish error:', err);
         currentDraft = adaptSpeechText(rawText);
         renderDraftDisplay();
-        showToast('✨ Speech adapted!');
+        showToast('✨ Speech adapted.');
       } finally {
         docs.forEach(doc => {
           const btn = Document.prototype.getElementById.call(doc, 'btnPolish');
@@ -2610,7 +2676,7 @@ function render2StepVoicePicker() {
       const rawText = getDraftText();
       const fullText = isDraftPolished ? rawText : adaptSpeechText(rawText);
       if (!fullText || !fullText.trim()) {
-        showToast('Draft is empty. Speak or type something first!');
+        showToast('Draft is empty. Speak or type something first.');
         return;
       }
 
@@ -2635,47 +2701,42 @@ function render2StepVoicePicker() {
       docs.forEach(doc => {
         if (!activeChatName) {
           const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-          if (el && el.innerText && el.innerText.trim() !== 'Orb') activeChatName = el.innerText.trim();
+          if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Live Chat Ready') activeChatName = el.innerText.trim();
         }
       });
 
       const payload = JSON.stringify({ text: fullText, auto_send: true, source: 'app', chat_title: activeChatName });
       const headers = { 'Content-Type': 'application/json' };
 
-      // Dispatch to local relay server (127.0.0.1:8766) which triggers Windows keystroke injection
-      fetch('http://127.0.0.1:8766/api/speech_input', {
-        method: 'POST',
-        headers: headers,
-        body: payload,
-        mode: 'cors'
-      }).then(res => {
-        if (!res.ok) throw new Error('Status ' + res.status);
-        showToast('✅ Sent directly into Antigravity chat!');
-        docs.forEach(doc => {
-          const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
-          if (statusEl) statusEl.innerText = '✅ Relayed to Chat!';
-        });
-      }).catch((err) => {
-        // Fallback to relative URL
-        return fetch('/api/speech_input', {
-          method: 'POST',
-          headers: headers,
-          body: payload
-        }).then(res => {
-          if (!res.ok) throw new Error('Status ' + res.status);
-          showToast('✅ Sent directly into Antigravity chat!');
-          docs.forEach(doc => {
-            const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
-            if (statusEl) statusEl.innerText = '✅ Relayed to Chat!';
-          });
-        }).catch(finalErr => {
-          showToast('❌ Relay error: Unable to connect to local server on port 8766');
-          docs.forEach(doc => {
-            const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
-            if (statusEl) statusEl.innerText = '❌ Failed to connect';
-          });
-        });
-      }).finally(() => {
+      const isCloud = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.port !== '8766';
+      const speechEndpoints = isCloud ? ['/api/speech_input'] : ['http://127.0.0.1:8766/api/speech_input', '/api/speech_input'];
+      
+      async function dispatchSpeech() {
+        for (const ep of speechEndpoints) {
+          try {
+            const res = await fetch(ep, { method: 'POST', headers: headers, body: payload });
+            if (res && res.ok) {
+              const data = await res.json().catch(() => ({}));
+              showToast('✅ Spoken message processed');
+              docs.forEach(doc => {
+                const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
+                if (statusEl) statusEl.innerText = '✅ Sent';
+              });
+              if (data && data.reply) {
+                if (data.audio_url) {
+                  playCloudAudio(data.audio_url, data.reply);
+                } else {
+                  speakTextInBrowser(data.reply, currentVoiceId);
+                }
+              }
+              return true;
+            }
+          } catch(e) {}
+        }
+        showToast('⚠️ Speech relay offline');
+        return false;
+      }
+      dispatchSpeech().finally(() => {
         setTimeout(() => {
           docs.forEach(doc => {
             const statusEl = Document.prototype.getElementById.call(doc, 'draftStatus');
@@ -2713,7 +2774,7 @@ function render2StepVoicePicker() {
 
     function testVoicePreview() {
       const voiceSelect = document.getElementById('selectVoice');
-      const voiceId = voiceSelect.value;
+      const voiceId = voiceSelect ? voiceSelect.value : 'en-GB-SoniaNeural';
       const p = PERSONAS.find(x => x.id === voiceId) || PERSONAS[0];
       previewPersonaVoice(voiceId, p.name);
     }
@@ -2740,9 +2801,9 @@ function render2StepVoicePicker() {
     async function pollLiveState() {
       try {
         // Always hit local relay server for live state — relative URL won't work from Vercel
-        const url = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+        const url = (window.location.protocol.startsWith('http') && window.location.hostname !== '127.0.0.1')
           ? '/api/status'
-          : 'http://127.0.0.1:8766/api/status';
+          : (window.location.port === '8766' ? '/api/status' : 'http://127.0.0.1:8766/api/status');
         const res = await fetch(url);
         const state = await res.json();
 
@@ -2757,7 +2818,7 @@ function render2StepVoicePicker() {
           }
         }
 
-        // Dynamically update active chat highlight banner and spoken words target tag across main tab and floating PiP window
+        // Dynamically update active chat highlight banner across main tab and floating PiP window
         if (state.active_chat_title) {
           const docs = [document];
           if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
@@ -2768,23 +2829,6 @@ function render2StepVoicePicker() {
             if (chatEl && chatEl.innerText !== state.active_chat_title) {
               chatEl.innerText = state.active_chat_title;
               chatEl.title = 'Active Chat: ' + state.active_chat_title;
-            }
-            const draftTagEl = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-            if (draftTagEl && draftTagEl.innerText !== state.active_chat_title) {
-              draftTagEl.innerText = state.active_chat_title;
-              
-              // Flash animation for visual feedback
-              draftTagEl.style.transition = 'none';
-              draftTagEl.style.background = '#10b981'; // Green flash
-              draftTagEl.style.color = '#ffffff';
-              draftTagEl.style.transform = 'scale(1.08)';
-              
-              setTimeout(() => {
-                draftTagEl.style.transition = 'all 0.6s ease';
-                draftTagEl.style.background = 'rgba(56, 189, 248, 0.1)';
-                draftTagEl.style.color = '#38bdf8';
-                draftTagEl.style.transform = 'scale(1)';
-              }, 400);
             }
           });
         }
@@ -2808,7 +2852,8 @@ function render2StepVoicePicker() {
         }
 
         const wasSpeaking = isAISpeaking;
-        isAISpeaking = !!state.is_speaking;
+        const isPreviewPlaying = !!(currentPreviewAudio && !currentPreviewAudio.paused && !currentPreviewAudio.ended);
+        isAISpeaking = !!state.is_speaking || isPreviewPlaying;
         currentAISpeakingText = state.current_text || '';
         if (currentAISpeakingText) {
           lastAISpeakingText = currentAISpeakingText;
@@ -2820,10 +2865,17 @@ function render2StepVoicePicker() {
           lastAISpeechEndTime = Date.now() + 1000;
         }
 
-        if (isAISpeaking && !isManualPaused) {
+        const docs = [document];
+        if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+          try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+        }
+
+        if (isAISpeaking) {
           setOrbState('speaking');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'AI Speaking...';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Click Ear or speak to talk';
+          docs.forEach(doc => {
+            const title = Document.prototype.getElementById.call(doc, 'statusTitle'); if (title) title.innerText = 'AI Speaking...';
+            const sub = Document.prototype.getElementById.call(doc, 'statusSub'); if (sub) sub.innerText = 'Click Ear or Total Pause to stop';
+          });
           if (silenceTimer) {
             clearTimeout(silenceTimer);
             silenceTimer = null;
@@ -2833,13 +2885,24 @@ function render2StepVoicePicker() {
             silenceCountdownInterval = null;
           }
         } else if (isConnected && !isManualPaused) {
-          setOrbState('listening');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Listening for Voice...';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Talk naturally anywhere in the room';
+          if (interimText) {
+            setOrbState('hearing');
+            docs.forEach(doc => {
+              const title = Document.prototype.getElementById.call(doc, 'statusTitle'); if (title) title.innerText = 'Hearing Speech...';
+            });
+          } else {
+            setOrbState('listening');
+            docs.forEach(doc => {
+              const title = Document.prototype.getElementById.call(doc, 'statusTitle'); if (title) title.innerText = 'Listening for Voice...';
+              const sub = Document.prototype.getElementById.call(doc, 'statusSub'); if (sub) sub.innerText = 'Talk naturally anywhere in the room';
+            });
+          }
         } else {
           setOrbState('paused');
-          const title = document.getElementById('statusTitle'); if (title) title.innerText = 'Microphone Idle';
-          const sub = document.getElementById('statusSub'); if (sub) sub.innerText = 'Click Start Listening to talk';
+          docs.forEach(doc => {
+            const title = Document.prototype.getElementById.call(doc, 'statusTitle'); if (title) title.innerText = 'Microphone Idle';
+            const sub = Document.prototype.getElementById.call(doc, 'statusSub'); if (sub) sub.innerText = 'Click Start Listening to talk';
+          });
         }
       } catch (e) { isAISpeaking = false; }
     }
@@ -2854,7 +2917,7 @@ function render2StepVoicePicker() {
         docs.forEach(doc => {
           if (!activeChatName) {
             const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-            if (el && el.innerText && el.innerText.trim() !== 'Orb') activeChatName = el.innerText.trim();
+            if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Live Chat Ready') activeChatName = el.innerText.trim();
           }
         });
         
@@ -2873,16 +2936,11 @@ function render2StepVoicePicker() {
       } catch (e) {}
     }
 
-        function renderChatStream(messages) {
+    function renderChatStream(messages) {
       knownAITexts = (messages || [])
         .filter(m => m.role === 'assistant' && m.text)
         .slice(-15)
         .map(m => m.text);
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     let deferredPrompt = null;
@@ -2898,11 +2956,22 @@ function render2StepVoicePicker() {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            showToast('App installed successfully!');
-            document.getElementById('btnInstallApp').style.display = 'none';
+            showToast('App installed successfully.');
+            const btn = document.getElementById('btnInstallApp');
+            if (btn) btn.style.display = 'none';
           }
           deferredPrompt = null;
         });
+      } else {
+        pinFloaterToTaskbar();
+      }
+    }
+
+    function downloadAndroidOrPWA() {
+      if (deferredPrompt) {
+        installPWA();
+      } else {
+        window.location.href = '/Orb.apk';
       }
     }
 
@@ -2913,7 +2982,7 @@ function render2StepVoicePicker() {
           deferredPrompt.prompt();
           deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
-              showToast('✅ Installed! Right-click icon on Taskbar -> Pin to taskbar.');
+              showToast('✅ Installed. Right-click icon on Taskbar -> Pin to taskbar.');
             }
             deferredPrompt = null;
           });
@@ -2937,7 +3006,7 @@ function render2StepVoicePicker() {
         }
         if (res && res.ok) {
           const data = await res.json();
-          showToast('📌 Standalone app opened! Right-click its icon on your Taskbar -> Pin to taskbar.');
+          showToast('📌 Standalone app opened. Right-click its icon on your Taskbar -> Pin to taskbar.');
         } else {
           showToast('📌 Right-click the Orb app window on your Taskbar and click "Pin to taskbar".');
         }
@@ -3029,8 +3098,457 @@ function render2StepVoicePicker() {
       }
     }
 
+    // === DOSTUFF MASTER MICRO-BREAK & ACCOUNTABILITY ENGINE ===
+    const DOSTUFF_CHORES = [
+      { id: 'c1', title: 'Make your bed for a fresh space', icon: '🛏️', category: 'chore', tip: 'Creates visual order in your room to clear mental distraction.' },
+      { id: 'c2', title: 'Brush teeth or splash face with cool water', icon: '🪥', category: 'chore', tip: 'Cool water stimulates the vagus nerve and refreshes tired screen eyes.' },
+      { id: 'c3', title: 'Put a laundry load on or swap to dryer', icon: '🧺', category: 'chore', tip: 'Gets you on your feet and away from desk posture for a physical win.' },
+      { id: 'c4', title: 'Drink a tall glass of crisp cold water', icon: '💧', category: 'chore', tip: 'Hydrates your brain and gives your eyes a full rest from display glare.' },
+      { id: 'c5', title: 'Empty your desk or room bin', icon: '🗑️', category: 'chore', tip: 'Takes 30 seconds to empty, immediately reducing desk clutter.' },
+      { id: 'c6', title: 'Clear 3 misplaced items off your desk', icon: '🧹', category: 'chore', tip: 'Quick micro-win that restores breathing room to your focus space.' },
+      { id: 'c7', title: 'Step outside or open window for 60s fresh air', icon: '☀️', category: 'chore', tip: 'Natural daylight and fresh air quickly restore alertness.' },
+      { id: 'c8', title: 'Put dirty mugs and cups into the sink', icon: '🍽️', category: 'chore', tip: 'Stand up, move your body, and keep your workspace clear.' },
+      { id: 'c9', title: 'Water a house plant', icon: '🪴', category: 'chore', tip: 'A tactile micro-pause connecting you with your living space.' },
+      { id: 'c10', title: 'Quick wipe of desk and keyboard', icon: '✨', category: 'chore', tip: 'Clears dust and grime for a fresh, clean keyboard and desk.' }
+    ];
+
+    const DOSTUFF_EXERCISES = [
+      { id: 'e1', title: '30-second desk shakeout and shoulder roll', icon: '🪩', category: 'exercise', tip: 'Loosens upper back and neck tension immediately.' },
+      { id: 'e2', title: 'Seated neck stretch (15s each side)', icon: '🧘', category: 'exercise', tip: 'Releases cervical spine compression from staring at the display.' },
+      { id: 'e3', title: 'Doorframe chest and shoulder opening stretch', icon: '🙆', category: 'exercise', tip: 'Opens chest muscles constricted by hunching over a keyboard.' },
+      { id: 'e4', title: '20 standing calf raises behind chair', icon: '🦵', category: 'exercise', tip: 'Pumps venous blood circulation back up from your legs.' },
+      { id: 'e5', title: 'Seated gentle spinal torso twist', icon: '🔄', category: 'exercise', tip: 'Mobilises your spine and resets seated desk posture.' },
+      { id: 'e6', title: '10 gentle chair squats (stand up and sit down)', icon: '🪑', category: 'exercise', tip: 'Re-engages large quadriceps and glutes to wake up circulation.' },
+      { id: 'e7', title: '5 Cat-Cow spine releases on mat or chair', icon: '🐈', category: 'exercise', tip: 'Restores fluid motion to your spine after stationary sitting.' },
+      { id: 'e8', title: 'Arm circles and wrist rotations (30s)', icon: '⭕', category: 'exercise', tip: 'Relieves repetitive typing strain in wrists and forearms.' },
+      { id: 'e9', title: '5 desk-edge or floor push-ups', icon: '💪', category: 'exercise', tip: 'Activates chest and core muscles to break prolonged sitting.' }
+    ];
+
+    let dostuffState = {
+      intervalMinutes: 5,
+      remainingSeconds: 5 * 60,
+      targetEndTime: Date.now() + 5 * 60 * 1000,
+      isRunning: true,
+      lastCategory: 'exercise',
+      todayCount: 0,
+      lastDate: new Date().toISOString().slice(0, 10),
+      currentTask: null
+    };
+
+    function getAllDoStuffDocs() {
+      const docs = [document];
+      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
+        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      }
+      return docs;
+    }
+
+    function saveDoStuffState() {
+      try {
+        localStorage.setItem('orb_dostuff_master_state', JSON.stringify({
+          intervalMinutes: dostuffState.intervalMinutes,
+          lastCategory: dostuffState.lastCategory,
+          todayCount: dostuffState.todayCount,
+          lastDate: dostuffState.lastDate,
+          isRunning: dostuffState.isRunning,
+          targetEndTime: dostuffState.targetEndTime,
+          remainingSeconds: dostuffState.remainingSeconds
+        }));
+      } catch (e) {}
+    }
+
+    function playDoStuffChime(freqs, durs) {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!window.__dostuffAudioCtx || window.__dostuffAudioCtx.state === 'closed') {
+          window.__dostuffAudioCtx = new AudioCtx();
+        }
+        const ctx = window.__dostuffAudioCtx;
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+        freqs.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const start = ctx.currentTime + i * 0.1;
+          const dur = durs[i] || 0.35;
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.exponentialRampToValueAtTime(0.22, start + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + dur + 0.05);
+        });
+      } catch (e) {}
+    }
+
+    function fireDoStuffConfetti() {
+      getAllDoStuffDocs().forEach(doc => {
+        const canvas = Document.prototype.getElementById.call(doc, 'dostuffConfettiCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width = doc.defaultView ? doc.defaultView.innerWidth : 460;
+        const h = canvas.height = doc.defaultView ? doc.defaultView.innerHeight : 720;
+        const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6'];
+        const particles = [];
+        for (let i = 0; i < 60; i++) {
+          particles.push({
+            x: w / 2 + (Math.random() - 0.5) * 140,
+            y: h / 3,
+            vx: (Math.random() - 0.5) * 12,
+            vy: -(Math.random() * 10 + 4),
+            size: Math.random() * 7 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rot: Math.random() * 360,
+            rotSpd: (Math.random() - 0.5) * 10,
+            op: 1
+          });
+        }
+        const start = Date.now();
+        function step() {
+          ctx.clearRect(0, 0, w, h);
+          let alive = 0;
+          particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.42;
+            p.rot += p.rotSpd;
+            p.op -= 0.018;
+            if (p.op > 0) {
+              alive++;
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              ctx.rotate(p.rot * Math.PI / 180);
+              ctx.fillStyle = p.color;
+              ctx.globalAlpha = Math.max(0, p.op);
+              ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+              ctx.restore();
+            }
+          });
+          if (alive > 0 && Date.now() - start < 2000) {
+            requestAnimationFrame(step);
+          } else {
+            ctx.clearRect(0, 0, w, h);
+          }
+        }
+        step();
+      });
+    }
+
+    function formatDoStuffTime(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${m.toString().padStart(2, '0')}:${r.toString().padStart(2, '0')}`;
+    }
+
+    function updateDoStuffUI() {
+      const timeStr = formatDoStuffTime(dostuffState.remainingSeconds);
+      getAllDoStuffDocs().forEach(doc => {
+        const txt = Document.prototype.getElementById.call(doc, 'dostuffCountdownText');
+        if (txt) txt.textContent = timeStr;
+
+        const icon = Document.prototype.getElementById.call(doc, 'dostuffTimerIcon');
+        if (icon) {
+          icon.textContent = dostuffState.isRunning ? '⏸' : '▶';
+        }
+
+        const btn = Document.prototype.getElementById.call(doc, 'dostuffTimerBtn');
+        if (btn) {
+          btn.style.background = dostuffState.isRunning ? 'rgba(16, 185, 129, 0.22)' : 'rgba(245, 158, 11, 0.22)';
+          btn.style.borderColor = dostuffState.isRunning ? 'rgba(16, 185, 129, 0.55)' : 'rgba(245, 158, 11, 0.55)';
+          btn.style.color = dostuffState.isRunning ? '#34d399' : '#fbbf24';
+          btn.title = dostuffState.isRunning ? 'Click to pause DoStuff break timer' : 'Timer paused — click to resume DoStuff break timer';
+        }
+
+        const streak = Document.prototype.getElementById.call(doc, 'dostuffStreakBadge');
+        if (streak) streak.textContent = `🔥 ${dostuffState.todayCount}`;
+
+        const sel = Document.prototype.getElementById.call(doc, 'dostuffIntervalSelect');
+        if (sel) {
+          const targetVal = dostuffState.isRunning ? String(dostuffState.intervalMinutes) : (sel.value === '0' ? '0' : String(dostuffState.intervalMinutes));
+          if (sel.value !== targetVal) sel.value = targetVal;
+        }
+      });
+    }
+
+    function pickNextDoStuffTask(excludeId = null) {
+      const nextCat = dostuffState.lastCategory === 'chore' ? 'exercise' : 'chore';
+      const pool = nextCat === 'chore' ? DOSTUFF_CHORES : DOSTUFF_EXERCISES;
+      const filtered = pool.filter(t => t.id !== excludeId);
+      const candidates = filtered.length > 0 ? filtered : pool;
+      const picked = candidates[Math.floor(Math.random() * candidates.length)];
+      dostuffState.lastCategory = nextCat;
+      saveDoStuffState();
+      return picked;
+    }
+
+    function enterDoStuffFullscreen() {
+      if (navigator.webdriver) return;
+      try {
+        if (document.documentElement && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch (e) {}
+      try {
+        window.__prevOrbBounds = {
+          x: window.screenX,
+          y: window.screenY,
+          w: window.outerWidth,
+          h: window.outerHeight
+        };
+        window.moveTo(0, 0);
+        window.resizeTo(window.screen.availWidth || 1536, window.screen.availHeight || 864);
+      } catch (e) {}
+      const isLocal = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const url = isLocal ? '/api/float_window' : 'http://127.0.0.1:8766/api/float_window';
+      fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'fullscreen' })
+      }).then(() => setTimeout(updateMainWindowCompactState, 120)).catch(() => {});
+    }
+
+    function exitDoStuffFullscreen() {
+      if (navigator.webdriver) return;
+      try {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      } catch (e) {}
+      try {
+        if (window.__prevOrbBounds && window.__prevOrbBounds.w && window.__prevOrbBounds.w < (window.screen.availWidth - 60)) {
+          window.resizeTo(window.__prevOrbBounds.w, window.__prevOrbBounds.h);
+          window.moveTo(window.__prevOrbBounds.x, window.__prevOrbBounds.y);
+        }
+      } catch (e) {}
+      const isLocal = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const url = isLocal ? '/api/float_window' : 'http://127.0.0.1:8766/api/float_window';
+      fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'restore' })
+      }).then(() => setTimeout(updateMainWindowCompactState, 120)).catch(() => {});
+    }
+
+    function renderDoStuffBreakCard(task) {
+      dostuffState.currentTask = task;
+      getAllDoStuffDocs().forEach(doc => {
+        if (doc.body) doc.body.classList.add('dostuff-break-active');
+        const card = Document.prototype.getElementById.call(doc, 'dostuffBreakCard');
+        const badge = Document.prototype.getElementById.call(doc, 'dostuffBreakBadge');
+        const icon = Document.prototype.getElementById.call(doc, 'dostuffBreakIcon');
+        const title = Document.prototype.getElementById.call(doc, 'dostuffBreakTitle');
+        const tip = Document.prototype.getElementById.call(doc, 'dostuffBreakTip');
+        if (card) card.style.display = 'flex';
+        if (badge) {
+          badge.textContent = task.category === 'exercise' ? '🏃 Movement Boost' : '🌱 Physical Reset';
+        }
+        if (icon) icon.textContent = task.icon || '⚡';
+        if (title) title.textContent = task.title;
+        if (tip) tip.textContent = task.tip || '';
+      });
+    }
+
+    function announceDoStuffTask(task) {
+      if (!task || isTotalPaused) return;
+      const isLocal = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const url = isLocal ? '/api/dostuff_break' : '/api/dostuff_break';
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: task.title, minutes: dostuffState.intervalMinutes, voice: currentVoiceId })
+      }).then(r => r.json()).then(data => {
+        if (data && data.audio_url) {
+          playCloudAudio(data.audio_url, data.spoken);
+        } else if (data && data.spoken) {
+          speakTextInBrowser(data.spoken, currentVoiceId);
+        }
+      }).catch(() => {});
+    }
+
+    window.triggerDoStuffBreak = function() {
+      dostuffState.isRunning = false;
+      dostuffState.targetEndTime = null;
+      const task = pickNextDoStuffTask(dostuffState.currentTask ? dostuffState.currentTask.id : null);
+      enterDoStuffFullscreen();
+      renderDoStuffBreakCard(task);
+      playDoStuffChime([523.25, 659.25, 783.99], [0.4, 0.4, 0.65]);
+      announceDoStuffTask(task);
+      updateDoStuffUI();
+    };
+
+    window.completeDoStuffBreak = function() {
+      dostuffState.todayCount += 1;
+      playDoStuffChime([523.25, 659.25, 783.99, 1046.50], [0.35, 0.35, 0.35, 0.75]);
+      fireDoStuffConfetti();
+      getAllDoStuffDocs().forEach(doc => {
+        if (doc.body) doc.body.classList.remove('dostuff-break-active');
+        const card = Document.prototype.getElementById.call(doc, 'dostuffBreakCard');
+        if (card) card.style.display = 'none';
+      });
+      exitDoStuffFullscreen();
+      dostuffState.remainingSeconds = dostuffState.intervalMinutes * 60;
+      dostuffState.targetEndTime = Date.now() + dostuffState.remainingSeconds * 1000;
+      dostuffState.isRunning = true;
+      saveDoStuffState();
+      updateDoStuffUI();
+      showToast(`🔥 Reset complete. Today's streak: ${dostuffState.todayCount}`);
+    };
+
+    window.swapDoStuffTask = function() {
+      const next = pickNextDoStuffTask(dostuffState.currentTask ? dostuffState.currentTask.id : null);
+      renderDoStuffBreakCard(next);
+      announceDoStuffTask(next);
+    };
+
+    window.snoozeDoStuffBreak = function(mins = 2) {
+      getAllDoStuffDocs().forEach(doc => {
+        if (doc.body) doc.body.classList.remove('dostuff-break-active');
+        const card = Document.prototype.getElementById.call(doc, 'dostuffBreakCard');
+        if (card) card.style.display = 'none';
+      });
+      exitDoStuffFullscreen();
+      dostuffState.remainingSeconds = Math.round(mins * 60);
+      dostuffState.targetEndTime = Date.now() + dostuffState.remainingSeconds * 1000;
+      dostuffState.isRunning = true;
+      saveDoStuffState();
+      updateDoStuffUI();
+      showToast(`⏳ Break snoozed for ${mins} minutes`);
+    };
+
+    window.pauseDoStuffFromBreak = function() {
+      getAllDoStuffDocs().forEach(doc => {
+        if (doc.body) doc.body.classList.remove('dostuff-break-active');
+        const card = Document.prototype.getElementById.call(doc, 'dostuffBreakCard');
+        if (card) card.style.display = 'none';
+      });
+      exitDoStuffFullscreen();
+      dostuffState.remainingSeconds = dostuffState.intervalMinutes * 60;
+      dostuffState.targetEndTime = null;
+      dostuffState.isRunning = false;
+      saveDoStuffState();
+      updateDoStuffUI();
+      showToast('⏸ DoStuff timer paused. Click ▶ on the timer to resume.');
+    };
+
+    window.dismissDoStuffBreak = function() {
+      getAllDoStuffDocs().forEach(doc => {
+        if (doc.body) doc.body.classList.remove('dostuff-break-active');
+        const card = Document.prototype.getElementById.call(doc, 'dostuffBreakCard');
+        if (card) card.style.display = 'none';
+      });
+      exitDoStuffFullscreen();
+      dostuffState.remainingSeconds = dostuffState.intervalMinutes * 60;
+      dostuffState.targetEndTime = Date.now() + dostuffState.remainingSeconds * 1000;
+      dostuffState.isRunning = true;
+      saveDoStuffState();
+      updateDoStuffUI();
+    };
+
+    window.toggleDoStuffTimer = function() {
+      dostuffState.isRunning = !dostuffState.isRunning;
+      const now = Date.now();
+      if (dostuffState.isRunning) {
+        if (!dostuffState.remainingSeconds || dostuffState.remainingSeconds <= 0) {
+          dostuffState.remainingSeconds = (dostuffState.intervalMinutes || 5) * 60;
+        }
+        dostuffState.targetEndTime = now + dostuffState.remainingSeconds * 1000;
+        playDoStuffChime([523, 659], [0.08, 0.12]);
+        showToast('▶ DoStuff break timer resumed');
+      } else {
+        if (dostuffState.targetEndTime) {
+          dostuffState.remainingSeconds = Math.max(0, Math.ceil((dostuffState.targetEndTime - now) / 1000));
+        }
+        dostuffState.targetEndTime = null;
+        playDoStuffChime([659, 523], [0.08, 0.12]);
+        showToast('⏸ DoStuff break timer paused');
+      }
+      saveDoStuffState();
+      updateDoStuffUI();
+    };
+
+    window.changeDoStuffInterval = function(val) {
+      const mins = parseInt(val, 10);
+      if (isNaN(mins) || mins < 0) return;
+      if (mins === 0) {
+        if (dostuffState.targetEndTime) {
+          dostuffState.remainingSeconds = Math.max(0, Math.ceil((dostuffState.targetEndTime - Date.now()) / 1000));
+        }
+        dostuffState.targetEndTime = null;
+        dostuffState.isRunning = false;
+        saveDoStuffState();
+        updateDoStuffUI();
+        showToast('⏸ DoStuff break timer paused');
+        return;
+      }
+      dostuffState.intervalMinutes = mins;
+      dostuffState.remainingSeconds = mins * 60;
+      dostuffState.targetEndTime = Date.now() + dostuffState.remainingSeconds * 1000;
+      dostuffState.isRunning = true;
+      saveDoStuffState();
+      updateDoStuffUI();
+      showToast(`⏳ DoStuff timer set to ${mins} minutes`);
+    };
+
+    function initDoStuffMaster() {
+      try {
+        const saved = localStorage.getItem('orb_dostuff_master_state');
+        const today = new Date().toISOString().slice(0, 10);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const mins = parsed.intervalMinutes || 5;
+          dostuffState.intervalMinutes = mins;
+          dostuffState.lastCategory = parsed.lastCategory || 'exercise';
+          dostuffState.todayCount = parsed.lastDate === today ? (parsed.todayCount || 0) : 0;
+          dostuffState.lastDate = today;
+          dostuffState.isRunning = parsed.isRunning !== false;
+
+          const now = Date.now();
+          if (dostuffState.isRunning && parsed.targetEndTime && parsed.targetEndTime > now) {
+            dostuffState.targetEndTime = parsed.targetEndTime;
+            dostuffState.remainingSeconds = Math.max(1, Math.ceil((parsed.targetEndTime - now) / 1000));
+          } else if (!dostuffState.isRunning && typeof parsed.remainingSeconds === 'number' && parsed.remainingSeconds > 0) {
+            dostuffState.remainingSeconds = parsed.remainingSeconds;
+            dostuffState.targetEndTime = null;
+          } else {
+            dostuffState.remainingSeconds = mins * 60;
+            dostuffState.targetEndTime = now + mins * 60 * 1000;
+          }
+        }
+      } catch (e) {}
+
+      updateDoStuffUI();
+
+      if (window.__dostuffTimerInterval) {
+        clearInterval(window.__dostuffTimerInterval);
+      }
+      window.__dostuffTimerInterval = setInterval(() => {
+        if (!dostuffState.isRunning) return;
+        const now = Date.now();
+        if (!dostuffState.targetEndTime) {
+          dostuffState.targetEndTime = now + dostuffState.remainingSeconds * 1000;
+        }
+        const rem = Math.max(0, Math.ceil((dostuffState.targetEndTime - now) / 1000));
+        dostuffState.remainingSeconds = rem;
+        updateDoStuffUI();
+        if (rem <= 0) {
+          window.triggerDoStuffBreak();
+        }
+      }, 500);
+    }
+
     window.onload = () => {
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      try {
+        sessionStorage.removeItem('reopen_pip_after_reload');
+      } catch (e) {}
+
+      const isLocal = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const badge = document.getElementById('connectionBadge');
       if (badge) {
         if (isLocal) {
@@ -3039,22 +3557,17 @@ function render2StepVoicePicker() {
           badge.style.color = '#34d399';
           badge.style.borderColor = 'rgba(16,185,129,0.3)';
         } else {
-          badge.innerHTML = '⚠️ Cloud Mode: <a href="http://localhost:8766" style="color:#60a5fa;text-decoration:underline;font-weight:bold;">Switch to Local Mode (http://localhost:8766)</a> to auto-type into chat';
-          badge.style.background = 'rgba(234,179,8,0.15)';
-          badge.style.color = '#facc15';
-          badge.style.borderColor = 'rgba(234,179,8,0.3)';
+          badge.innerHTML = '🟢 Cloud AI Voice Studio Active';
+          badge.style.background = 'rgba(16,185,129,0.15)';
+          badge.style.color = '#34d399';
+          badge.style.borderColor = 'rgba(16,185,129,0.3)';
         }
       }
 
+      updateMainWindowCompactState();
       render2StepVoicePicker(document);
       loadSettings();
-      
-      try {
-        if (sessionStorage.getItem('reopen_pip_after_reload') === 'true') {
-          sessionStorage.removeItem('reopen_pip_after_reload');
-          enableImmediateLaunchOverlay();
-        }
-      } catch (e) {}
+      initDoStuffMaster();
 
       pollConversation();
       pollLiveState();

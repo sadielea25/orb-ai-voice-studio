@@ -143,7 +143,6 @@ def update_live_state(is_speaking=False, current_text="", stop_requested=False, 
 
 
 def check_stop_requested(playback_start_time=0):
-    global global_muted
     try:
         if not load_settings().get("enabled", True):
             return True
@@ -155,7 +154,6 @@ def check_stop_requested(playback_start_time=0):
             with open(STATE_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if data.get("stop_requested", False) or data.get("user_talking", False):
-                    global_muted = True
                     return True
         except Exception:
             pass
@@ -179,8 +177,12 @@ def get_active_output_device():
             if d.get("max_output_channels", 0) > 0:
                 name = d.get("name", "").lower()
                 if "budi" in name:
-                    budi_idx = i
-                    break
+                    try:
+                        sd.check_output_settings(device=i, samplerate=44100, channels=2)
+                        budi_idx = i
+                        break
+                    except Exception:
+                        pass
 
         if budi_idx is not None:
             return budi_idx, devices[budi_idx]["name"]
@@ -278,13 +280,14 @@ async def synthesize_speech_pcm(text, settings):
     return None
 
 
-def play_audio_pcm(pcm_data):
+def play_audio_pcm(pcm_data, spoken_text="Speaking..."):
     if pcm_data is None or len(pcm_data) == 0:
         return
 
     dev_idx, dev_name = get_active_output_device()
     start_time = time.time()
-    update_live_state(is_speaking=True, current_text="Speaking...", stop_requested=False, device_name=dev_name)
+    last_hb = start_time
+    update_live_state(is_speaking=True, current_text=spoken_text, stop_requested=False, device_name=dev_name)
 
     try:
         if dev_idx is not None:
@@ -307,10 +310,14 @@ def play_audio_pcm(pcm_data):
                 update_live_state(is_speaking=False, current_text="", stop_requested=False, device_name=dev_name)
                 with queue_lock:
                     speech_queue.clear()
-                print("\n[AUTO-SPEAKER] 🛑 Audio cut in by user! Stopped playback.", flush=True)
+                print("\n[AUTO-SPEAKER] 🛑 Audio cut in by user. Stopped playback.", flush=True)
                 return True
+            now_t = time.time()
+            if now_t - last_hb >= 2.5:
+                last_hb = now_t
+                update_live_state(is_speaking=True, current_text=spoken_text, stop_requested=False, device_name=dev_name)
             time.sleep(0.03)
-            elapsed = time.time() - start_time
+            elapsed = now_t - start_time
 
         sd.wait()
         time.sleep(0.25)
@@ -431,15 +438,18 @@ def format_project_title(raw):
         else:
             formatted.append(w.capitalize())
     res = " ".join(formatted)
-    return res if len(res) <= 38 else res[:38] + "..."
+    return res
 
 def is_garbage_title(cand):
     if not cand or len(cand) < 2:
         return True
     cl = cand.lower().strip()
-    if any(cl.startswith(s) for s in ("i am ", "i want", "can you", "could you", "please", "agent ", "assistant", "http", "v1", "laptop", "tablet")):
+    if any(cl.startswith(s) for s in (
+        "i am ", "i want", "can you", "could you", "please", "agent ", "assistant",
+        "http", "v1", "laptop", "tablet", "continuing previous", "new conversation", "untitled"
+    )):
         return True
-    if any(ch in cand for ch in ("?", "=", "!", "{", "}", ";")):
+    if "..." in cand or any(ch in cand for ch in ("?", "=", "!", "{", "}", ";")):
         return True
     return False
 
@@ -509,19 +519,7 @@ def extract_chat_title(transcript_path):
             except Exception:
                 pass
 
-    # 3. Third priority: Custom label from chat_voices.json (if clean and not a sentence)
-    if os.path.exists(CHAT_VOICES_FILE):
-        try:
-            with open(CHAT_VOICES_FILE, "r", encoding="utf-8") as f:
-                cfg = json.load(f)
-                chat = cfg.get("chats", {}).get(cid, {})
-                cand = chat.get("label") or chat.get("title")
-                if cand and not is_garbage_title(cand):
-                    return cand
-        except Exception:
-            pass
-
-    return "Coremarket Goods Accounting"
+    return "Orb"
 
 
 def get_or_assign_chat_voice(cid, transcript_path):
@@ -614,6 +612,10 @@ def check_incoming_queue_file():
             text = item.get("text", "").strip()
             if text:
                 with queue_lock:
+                    if cid in ("dostuff", "preview", "replay"):
+                        kept = [q for q in speech_queue if q.get("cid") != cid]
+                        speech_queue.clear()
+                        speech_queue.extend(kept)
                     if not any(q.get("text") == text for q in speech_queue):
                         speech_queue.append({
                             "cid": cid,
@@ -700,7 +702,12 @@ def speech_queue_worker():
         clean_label = label.strip()
         clean_label = re.sub(r'[\'\"’“”]+', '', clean_label).strip()
 
-        if announce_enabled and clean_label and clean_label.lower() not in ("assistant", "agent"):
+        if (
+            announce_enabled
+            and cid not in ("dostuff", "preview", "replay", "manual")
+            and clean_label
+            and clean_label.lower() not in ("assistant", "agent", "voice preview", "dostuff break", "orb ai assistant")
+        ):
             spoken_text = f"From {clean_label}. {spoken_text}"
 
         voice = live_settings.get("voice", "en-GB-LibbyNeural")
@@ -729,7 +736,7 @@ def speech_queue_worker():
             if not load_settings().get("enabled", True):
                 update_live_state(is_speaking=False, current_text="", stop_requested=False, device_name=dev_name)
                 continue
-            play_audio_pcm(pcm)
+            play_audio_pcm(pcm, spoken_text)
             last_spoken_cid = cid
         except Exception as e:
             print(f"[AUTO-SPEAKER] Playback error: {e}", flush=True)
@@ -739,6 +746,7 @@ def speech_queue_worker():
 
 
 def monitor_and_read():
+    global global_muted
     print(f"[AUTO-SPEAKER] Direct Hardware Multi-Chat Voice Engine Active (All Active Chats Monitored)...", flush=True)
 
     # Start playback worker thread
@@ -750,14 +758,13 @@ def monitor_and_read():
     def scan_transcripts():
         res = []
         try:
-            _, active_path = get_active_chat_title_and_transcript()
-            if active_path and os.path.exists(active_path):
-                res.append(active_path)
-            elif os.path.exists(FALLBACK_LOG):
-                res.append(FALLBACK_LOG)
+            all_t = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
+            all_t.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+            res = all_t[:15]
         except Exception:
-            if os.path.exists(FALLBACK_LOG):
-                res.append(FALLBACK_LOG)
+            pass
+        if not res and os.path.exists(FALLBACK_LOG):
+            res.append(FALLBACK_LOG)
         return res
 
     file_positions = {}
@@ -802,7 +809,7 @@ def monitor_and_read():
                 for p in scan_transcripts():
                     if os.path.exists(p):
                         file_positions[p] = os.path.getsize(p)
-                print("[AUTO-SPEAKER] 🔔 Unpaused! Ready for new messages.", flush=True)
+                print("[AUTO-SPEAKER] 🔔 Unpaused. Ready for new messages.", flush=True)
             elif not is_enabled:
                 was_paused = True
 
@@ -849,18 +856,17 @@ def monitor_and_read():
                             except Exception:
                                 continue
 
-                            # If user talks, cancel the global mute block
                             if data.get("source") == "USER_EXPLICIT" or data.get("type") == "USER_INPUT":
                                 global_muted = False
 
                             is_model = data.get("source") == "MODEL"
                             is_response = data.get("type") == "PLANNER_RESPONSE"
-                            has_tools = bool(data.get("tool_calls"))
+                            has_tools = bool(data.get("tool_calls")) or ("tool_calls" in (data.get("truncated_fields") or []))
                             content = data.get("content", "").strip()
 
                             if is_model and is_response and not has_tools and content:
                                 live_cfg = load_settings()
-                                if not live_cfg.get("enabled", True) or global_muted:
+                                if not live_cfg.get("enabled", True):
                                     continue
                                 msg_hash = hash(content[:150])
                                 if msg_hash not in seen_hashes:
