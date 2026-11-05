@@ -1090,7 +1090,8 @@ class PWAHandler(BaseHTTPRequestHandler):
                     active_task_title=active_task,
                     call_history=call_history,
                     planning=planning,
-                    call_type=call_type
+                    call_type=call_type,
+                    emails=data.get("emails")
                 )
             except Exception as e:
                 res = {"reply": f"I am here to help Sadie. Let us look at {active_cat} and organise your top priorities.", "action": None}

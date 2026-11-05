@@ -198,7 +198,7 @@ def query_gemini(prompt, history=None, context=None):
 
 
 
-def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None, call_type=None):
+def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None, call_type=None, emails=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
     models = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
 
@@ -220,6 +220,20 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
             st = at.get("status", "queued")
             ast_summary.append(f"- {at.get('title', '')} (Status: {st})")
     ast_str = "\n".join(ast_summary) if ast_summary else "No assistant tasks currently queued."
+
+    default_emails = [
+        {"from": "David (Chartered Accountant)", "subject": "Coremarket Goods LTD - Q3 VAT Submission Deadline", "snippet": "Draft VAT figures ready for review before HMRC filing."},
+        {"from": "The Wellness Pharmacy", "subject": "Prescription & Repeat Order Ready for Collection", "snippet": "Your repeat order is prepared and ready at the dispensary counter."},
+        {"from": "Timber Supplies Ltd", "subject": "Delivery Schedule: Workshop Timber Order", "snippet": "Confirming delivery of 4x2 treated timber and oak cladding for Thursday."}
+    ]
+    active_emails = emails if (emails and len(emails) > 0) else default_emails
+    emails_summary = []
+    for em in active_emails[:5]:
+        snd = em.get('from') or em.get('sender', 'Unknown')
+        sbj = em.get('subject', 'No Subject')
+        snp = em.get('snippet', '')
+        emails_summary.append(f"- From: {snd} | Subject: {sbj} | Summary: {snp}")
+    emails_str = "\n".join(emails_summary)
 
     planning_summary = []
     if planning:
@@ -287,6 +301,15 @@ Sadie's Focus Session Planning & Pacing:
 Your Assistant Delegated To-Do List:
 {ast_str}
 
+Sadie's Recent Gmail Inbox Messages:
+{emails_str}
+
+6. Google Email (Gmail) Inbox Briefing & Drafting:
+- When Sadie asks about her emails or what's in her inbox, provide a concise, spoken briefing of unread messages (such as her accountant regarding VAT, the wellness pharmacy, or timber deliveries).
+- When Sadie asks you to draft an email or reply to someone, formulate a professional email body adhering to UK English spelling and output the action block:
+  "draft_email": {{"to": "recipient name or email", "subject": "Subject line", "body": "Full email message body"}}
+- Reassure Sadie that you have prepared the draft on her screen for her review before sending.
+
 CRITICAL RULES:
 - Tone: Warm, calm, confident, articulate British executive assistant.
 - Strictly adhere to UK English spelling (prioritise, categorise, organise) and vocabulary.
@@ -300,6 +323,7 @@ Format your output as valid JSON:
     "set_focus_task_title": "Task title to set as active Working On (or null)",
     "add_my_task": {{"title": "Task title", "category": "accounts", "priority": "high", "location": "laptop"}} (or null),
     "delegate_to_assistant": {{"title": "Task title to do for Sadie", "category": "accounts", "notes": "Brief note on what you will do"}} (or null),
+    "draft_email": {{"to": "recipient", "subject": "Subject", "body": "Email body"}} (or null),
     "reordered_priorities": [{{"id": "...", "priority": "high"}}] (or null)
   }}
 }}
@@ -611,6 +635,7 @@ class handler(BaseHTTPRequestHandler):
 
             planning = data.get("planning")
             call_type = data.get("call_type")
+            emails = data.get("emails")
             res = query_assistant_call(
                 user_text,
                 categories=categories,
@@ -620,7 +645,8 @@ class handler(BaseHTTPRequestHandler):
                 active_task_title=active_task,
                 call_history=call_history,
                 planning=planning,
-                call_type=call_type
+                call_type=call_type,
+                emails=emails
             )
 
             reply = res.get("reply", "I am here to help you organise your tasks.")

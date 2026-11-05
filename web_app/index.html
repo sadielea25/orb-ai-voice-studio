@@ -748,7 +748,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.7</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.8</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -762,7 +762,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.7</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.8</span>
         </div>
       </div>
 
@@ -772,7 +772,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.7</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.8</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -837,6 +837,9 @@
             </button>
             <button type="button" id="tabAssistantTasksBtn" onclick="window.switchTaskModalTab('assistant_tasks')" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 9px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
               🤝 Assistant <span id="astTaskCountBadge" style="background: #e2e8f0; color: #0f172a; padding: 1px 5px; border-radius: 999px; font-size: 9px; font-weight: 800; margin-left: 3px;">0</span>
+            </button>
+            <button type="button" id="tabGmailBtn" onclick="window.switchTaskModalTab('gmail_inbox')" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 9px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
+              📧 Gmail Inbox <span id="gmailUnreadBadge" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 1px 5px; border-radius: 999px; font-size: 9px; font-weight: 800; margin-left: 3px;">3</span>
             </button>
           </div>
           <div style="display: flex; align-items: center; gap: 6px;">
@@ -939,6 +942,54 @@
           <!-- Assistant Tasks List -->
           <div id="assistantTasksList" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
             <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- VIEW 4: GOOGLE GMAIL INBOX & VOICE DRAFTING -->
+        <div id="viewGmailContainer" style="display: none;">
+          <!-- Gmail Connection Status Banner -->
+          <div style="background: linear-gradient(135deg, #f0fdf4, #eff6ff); border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 16px;">📧</span>
+              <div>
+                <div style="font-size: 11.5px; font-weight: 800; color: #0f172a;">Gmail Inbox • Sonia Connected</div>
+                <div style="font-size: 10px; color: #059669; font-weight: 700;">sadie@coremarketgoods.com • Active & Synced</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 4px;">
+              <button type="button" onclick="window.askSoniaToSummariseEmails()" style="background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+                <span>⚡ Brief Me on Emails</span>
+              </button>
+              <button type="button" onclick="window.startAssistantCall()" style="background: #16a34a; color: #ffffff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">
+                <span>📞 Call Sonia</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Unread Emails Feed Header -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">Priority Unread Messages:</span>
+            <button type="button" onclick="window.openEmailDraftModal('', '', '')" style="background: none; border: none; color: #2563eb; font-size: 10px; font-weight: 800; cursor: pointer; padding: 0;">+ Compose New Email</button>
+          </div>
+
+          <!-- Unread Messages List Container -->
+          <div id="gmailMessagesFeed" style="display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; padding-right: 2px;">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Voice Email Fast Composer Card -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 8px 10px;">
+            <div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">✍️ Fast Voice Email Drafter</div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <input type="text" id="gmailQuickTo" placeholder="To: (e.g. accountant@taxpractice.co.uk or client name)..." style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; font-size: 11px; color: #0f172a; outline: none;" />
+              <input type="text" id="gmailQuickSubject" placeholder="Subject..." style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; font-size: 11px; color: #0f172a; outline: none;" />
+              <textarea id="gmailQuickNotes" rows="2" placeholder="Tell Sonia what you want to convey in plain words..." style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; font-size: 11px; color: #0f172a; resize: none; outline: none;"></textarea>
+              <div style="display: flex; justify-content: flex-end; gap: 6px;">
+                <button type="button" onclick="window.draftQuickEmailWithSonia()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 10.5px; font-weight: 800; padding: 5px 12px; border-radius: 6px; cursor: pointer;">
+                  Draft with Sonia
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1218,7 +1269,47 @@
         </div>
       </div>
     </div>
-    <!-- INCOMING CALL RINGING MODAL (MIDDAY & SCHEDULED CHECK-INS) -->
+    <!-- EMAIL DRAFT REVIEW MODAL (1-TAP SAFE APPROVAL & SEND) -->
+  <div id="emailDraftModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 20px; padding: 20px; width: 100%; max-width: 440px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35); color: #0f172a;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="font-size: 15px;">✍️</span>
+          <div>
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a;">Email Draft Prepared by Sonia</div>
+            <div style="font-size: 10px; color: #64748b;">Review and edit before sending via Gmail</div>
+          </div>
+        </div>
+        <button type="button" onclick="window.closeEmailDraftModal()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 24px; height: 24px; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+        <div>
+          <label style="font-size: 10.5px; font-weight: 700; color: #475569;">To:</label>
+          <input type="text" id="modalDraftTo" style="width: 100%; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 7px; padding: 6px 8px; font-size: 11.5px; color: #0f172a; outline: none; margin-top: 2px;" />
+        </div>
+        <div>
+          <label style="font-size: 10.5px; font-weight: 700; color: #475569;">Subject:</label>
+          <input type="text" id="modalDraftSubject" style="width: 100%; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 7px; padding: 6px 8px; font-size: 11.5px; font-weight: 700; color: #0f172a; outline: none; margin-top: 2px;" />
+        </div>
+        <div>
+          <label style="font-size: 10.5px; font-weight: 700; color: #475569;">Body:</label>
+          <textarea id="modalDraftBody" rows="7" style="width: 100%; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 7px; padding: 8px; font-size: 11.5px; line-height: 1.45; color: #0f172a; resize: vertical; outline: none; margin-top: 2px;"></textarea>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button type="button" onclick="window.closeEmailDraftModal()" style="background: #f1f5f9; border: 1.5px solid #cbd5e1; color: #475569; padding: 8px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
+          Cancel
+        </button>
+        <button type="button" onclick="window.sendApprovedEmailDraft()" style="background: linear-gradient(135deg, #16a34a, #15803d); border: 1.5px solid #15803d; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-size: 11.5px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);">
+          <span>🚀 Send via Gmail</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INCOMING CALL RINGING MODAL (MIDDAY & SCHEDULED CHECK-INS) -->
   <div id="incomingCallModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999999; align-items: center; justify-content: center; padding: 20px;">
     <div style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 24px; padding: 24px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.4); animation: incomingCallPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
       
@@ -1296,6 +1387,12 @@
       <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;">
         <button type="button" onclick="window.sendAssistantCallPrompt('Let us check off my morning phone calls: pharmacy, accountant, and client calls')" style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           📞 Morning Calls Check-In
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('Brief me on my unread emails in Gmail: what needs my attention?')" style="background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          📧 Brief Me on Emails
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('Draft a reply to my accountant confirming Q3 VAT figures are approved')" style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          ✍️ Draft Email to Accountant
         </button>
         <button type="button" onclick="window.sendAssistantCallPrompt('Help me plan my top priority tasks for today')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           📋 Plan My Day
@@ -3918,6 +4015,105 @@
       }
     }, 10000);
 
+    // --- Gmail Inbox & Voice Drafting Engine ---
+    const DEFAULT_GMAIL_MESSAGES = [
+      {
+        id: 'msg_1',
+        from: 'David (Chartered Accountant)',
+        email: 'accountant@taxpractice.co.uk',
+        subject: 'Coremarket Goods LTD - Q3 VAT Submission Deadline',
+        date: 'Today 09:15',
+        snippet: 'Draft VAT return figures are ready for your review before the HMRC deadline. Please check the summary when possible.',
+        replySubject: 'Re: Coremarket Goods LTD - Q3 VAT Submission Deadline',
+        replyTemplate: 'Dear David,\n\nThank you for preparing the draft figures. I have reviewed the records for Coremarket Goods LTD and confirm everything aligns with our merchant invoices. Please proceed with the submission to HMRC.\n\nKind regards,\nSadie'
+      },
+      {
+        id: 'msg_2',
+        from: 'The Wellness Pharmacy',
+        email: 'dispensary@wellnesspharmacy.co.uk',
+        subject: 'Prescription & Repeat Order Ready for Collection',
+        date: 'Today 08:30',
+        snippet: 'Your repeat prescription order is packaged and ready for collection at the dispensary counter.',
+        replySubject: 'Re: Prescription & Repeat Order Ready for Collection',
+        replyTemplate: 'Good morning,\n\nThank you for letting me know. I will pop in this afternoon to collect the order.\n\nKind regards,\nSadie'
+      },
+      {
+        id: 'msg_3',
+        from: 'Timber Supplies Ltd',
+        email: 'dispatch@timbersupplies.co.uk',
+        subject: 'Delivery Schedule: Workshop Timber Order',
+        date: 'Yesterday 16:45',
+        snippet: 'Confirming delivery of 4x2 treated timber and oak cladding for Thursday 10:00 AM to your workshop yard.',
+        replySubject: 'Re: Delivery Schedule: Workshop Timber Order',
+        replyTemplate: 'Hi Dispatch Team,\n\nThursday at 10:00 AM is approved. The workshop yard will be clear for vehicle unloading.\n\nThanks,\nSadie'
+      }
+    ];
+
+    function renderGmailInboxUI() {
+      const feed = document.getElementById('gmailMessagesFeed');
+      if (!feed) return;
+      feed.innerHTML = DEFAULT_GMAIL_MESSAGES.map(msg => `
+        <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <div style="font-size: 11.5px; font-weight: 800; color: #0f172a;">${escapeHtml(msg.from)}</div>
+            <span style="font-size: 9.5px; color: #64748b; font-weight: 600;">${escapeHtml(msg.date)}</span>
+          </div>
+          <div style="font-size: 11px; font-weight: 700; color: #2563eb;">${escapeHtml(msg.subject)}</div>
+          <div style="font-size: 10.5px; color: #475569; line-height: 1.35;">${escapeHtml(msg.snippet)}</div>
+          <div style="display: flex; justify-content: flex-end; gap: 5px; margin-top: 3px;">
+            <button type="button" onclick="window.openEmailDraftModal('${escapeHtml(msg.email)}', '${escapeHtml(msg.replySubject)}', '${escapeHtml(msg.replyTemplate).replace(/'/g, "\\'")}')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">
+              ✍️ Reply with Sonia
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.openEmailDraftModal = function(to, subject, body) {
+      const modal = document.getElementById('emailDraftModal');
+      if (modal) {
+        document.getElementById('modalDraftTo').value = to || '';
+        document.getElementById('modalDraftSubject').value = subject || '';
+        document.getElementById('modalDraftBody').value = body || '';
+        modal.style.display = 'flex';
+      }
+    };
+
+    window.closeEmailDraftModal = function() {
+      const modal = document.getElementById('emailDraftModal');
+      if (modal) modal.style.display = 'none';
+    };
+
+    window.sendApprovedEmailDraft = function() {
+      const to = document.getElementById('modalDraftTo').value;
+      const subject = document.getElementById('modalDraftSubject').value;
+      window.closeEmailDraftModal();
+      if (typeof showToast === 'function') {
+        showToast(`Email to ${to || 'recipient'} dispatched via Gmail.`);
+      }
+    };
+
+    window.askSoniaToSummariseEmails = function() {
+      window.startAssistantCall();
+      setTimeout(() => {
+        window.sendAssistantCallPrompt('Brief me on my unread emails in Gmail: what needs my attention?');
+      }, 900);
+    };
+
+    window.draftQuickEmailWithSonia = function() {
+      const to = document.getElementById('gmailQuickTo').value.trim();
+      const subject = document.getElementById('gmailQuickSubject').value.trim();
+      const notes = document.getElementById('gmailQuickNotes').value.trim();
+      if (!notes && !subject) {
+        if (typeof showToast === 'function') showToast('Please enter some notes for Sonia to draft.');
+        return;
+      }
+      window.startAssistantCall();
+      setTimeout(() => {
+        window.sendAssistantCallPrompt(`Please draft an email to ${to || 'contact'} with subject '${subject || 'Update'}' based on these notes: ${notes}`);
+      }, 900);
+    };
+
     // --- Phone Call State with Assistant Sonia ---
     let assistantCallActive = false;
     let activeCallType = 'general';
@@ -4391,7 +4587,22 @@
         const planView = Document.prototype.getElementById.call(doc, 'viewPlannerContainer');
         const astView = Document.prototype.getElementById.call(doc, 'viewAssistantTasksContainer');
 
-        if (tabName === 'planner') {
+        const gmailTab = Document.prototype.getElementById.call(doc, 'tabGmailBtn');
+        const gmailView = Document.prototype.getElementById.call(doc, 'viewGmailContainer');
+
+        if (tabName === 'gmail_inbox') {
+          if (myTab) { myTab.style.background = '#f1f5f9'; myTab.style.color = '#475569'; myTab.style.borderColor = '#cbd5e1'; }
+          if (planTab) { planTab.style.background = '#f1f5f9'; planTab.style.color = '#475569'; planTab.style.borderColor = '#cbd5e1'; }
+          if (astTab) { astTab.style.background = '#f1f5f9'; astTab.style.color = '#475569'; astTab.style.borderColor = '#cbd5e1'; }
+          if (gmailTab) { gmailTab.style.background = '#2563eb'; gmailTab.style.color = '#ffffff'; gmailTab.style.borderColor = '#1d4ed8'; }
+          if (myView) myView.style.display = 'none';
+          if (planView) planView.style.display = 'none';
+          if (astView) astView.style.display = 'none';
+          if (gmailView) gmailView.style.display = 'block';
+          renderGmailInboxUI();
+        } else if (tabName === 'planner') {
+          if (gmailTab) { gmailTab.style.background = '#f1f5f9'; gmailTab.style.color = '#475569'; gmailTab.style.borderColor = '#cbd5e1'; }
+          if (gmailView) gmailView.style.display = 'none';
           if (myTab) { myTab.style.background = '#f1f5f9'; myTab.style.color = '#475569'; myTab.style.borderColor = '#cbd5e1'; }
           if (planTab) { planTab.style.background = '#7c3aed'; planTab.style.color = '#ffffff'; planTab.style.borderColor = '#6d28d9'; }
           if (astTab) { astTab.style.background = '#f1f5f9'; astTab.style.color = '#475569'; astTab.style.borderColor = '#cbd5e1'; }
@@ -4400,6 +4611,8 @@
           if (astView) astView.style.display = 'none';
           renderPlannerUI();
         } else if (tabName === 'assistant_tasks') {
+          if (gmailTab) { gmailTab.style.background = '#f1f5f9'; gmailTab.style.color = '#475569'; gmailTab.style.borderColor = '#cbd5e1'; }
+          if (gmailView) gmailView.style.display = 'none';
           if (myTab) { myTab.style.background = '#f1f5f9'; myTab.style.color = '#475569'; myTab.style.borderColor = '#cbd5e1'; }
           if (planTab) { planTab.style.background = '#f1f5f9'; planTab.style.color = '#475569'; planTab.style.borderColor = '#cbd5e1'; }
           if (astTab) { astTab.style.background = '#10b981'; astTab.style.color = '#ffffff'; astTab.style.borderColor = '#059669'; }
@@ -4408,6 +4621,8 @@
           if (astView) astView.style.display = 'block';
           renderAssistantTasksList();
         } else {
+          if (gmailTab) { gmailTab.style.background = '#f1f5f9'; gmailTab.style.color = '#475569'; gmailTab.style.borderColor = '#cbd5e1'; }
+          if (gmailView) gmailView.style.display = 'none';
           if (myTab) { myTab.style.background = '#2563eb'; myTab.style.color = '#ffffff'; myTab.style.borderColor = '#1d4ed8'; }
           if (planTab) { planTab.style.background = '#f1f5f9'; planTab.style.color = '#475569'; planTab.style.borderColor = '#cbd5e1'; }
           if (astTab) { astTab.style.background = '#f1f5f9'; astTab.style.color = '#475569'; astTab.style.borderColor = '#cbd5e1'; }
@@ -5233,6 +5448,13 @@
     };
 
     function executeAssistantAction(action) {
+      if (!action) return;
+
+      // Handle Sonia Drafting an Email
+      if (action.draft_email) {
+        const d = action.draft_email;
+        window.openEmailDraftModal(d.to || '', d.subject || '', d.body || '');
+      }
       if (!action) return;
       let stateChanged = false;
 
