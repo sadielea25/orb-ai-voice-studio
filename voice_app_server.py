@@ -1050,6 +1050,7 @@ class PWAHandler(BaseHTTPRequestHandler):
 
             try:
                 from api.index import query_assistant_call
+                planning = data.get("planning")
                 res = query_assistant_call(
                     user_text,
                     categories=categories,
@@ -1057,7 +1058,8 @@ class PWAHandler(BaseHTTPRequestHandler):
                     assistant_tasks=assistant_tasks,
                     active_category=active_cat,
                     active_task_title=active_task,
-                    call_history=call_history
+                    call_history=call_history,
+                    planning=planning
                 )
             except Exception as e:
                 res = {"reply": f"I am here to help Sadie. Let us look at {active_cat} and organise your top priorities.", "action": None}
@@ -1081,13 +1083,26 @@ class PWAHandler(BaseHTTPRequestHandler):
             mins = data.get("minutes", 5)
             focus_task = data.get("focus_task", "").strip()
             focus_sessions = data.get("focus_sessions", 0)
+            today_sessions = data.get("today_sessions", 0)
+            today_target = data.get("today_target", 4)
+
+            pacing_text = ""
+            if today_target and int(today_target) > 0:
+                diff = int(today_target) - int(today_sessions)
+                if diff <= 0:
+                    pacing_text = f" Daily focus goal achieved with {today_sessions} sessions."
+                elif diff == 1:
+                    pacing_text = f" You are on track with {today_sessions} of {today_target} sessions completed, just one to go."
+                else:
+                    pacing_text = f" You are on track with {today_sessions} of {today_target} sessions completed today."
+
             if focus_task:
                 if focus_sessions and int(focus_sessions) > 1:
-                    speak_text = f"Focus session complete for {focus_task}. That is {focus_sessions} sessions logged. DoStuff {mins} minute reset. {task_title}."
+                    speak_text = f"Focus session complete for {focus_task}. That is {focus_sessions} sessions logged.{pacing_text} DoStuff {mins} minute reset. {task_title}."
                 else:
-                    speak_text = f"Focus session complete for {focus_task}. DoStuff {mins} minute reset. {task_title}."
+                    speak_text = f"Focus session complete for {focus_task}.{pacing_text} DoStuff {mins} minute reset. {task_title}."
             else:
-                speak_text = f"DoStuff {mins} minute reset. {task_title}."
+                speak_text = f"Focus session complete.{pacing_text} DoStuff {mins} minute reset. {task_title}."
             if load_settings().get("enabled", True):
                 enqueue_speech_request(speak_text, label="DoStuff Break", cid="dostuff")
             self._set_headers(200)

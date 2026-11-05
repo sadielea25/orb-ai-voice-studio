@@ -734,7 +734,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.4</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.5</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -748,7 +748,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.4</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.5</span>
         </div>
       </div>
 
@@ -758,7 +758,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.4</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.5</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -814,12 +814,15 @@
       <div id="dostuffTaskModal" onclick="event.stopPropagation()" style="display: none; background: #ffffff; border: 2px solid #3b82f6; border-radius: 14px; padding: 12px; margin-bottom: 8px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08); position: relative; z-index: 100; color: #0f172a;">
         <!-- Top Nav Header with 2 Major Tabs -->
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #e2e8f0; flex-wrap: wrap;">
-          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" id="tabMyTasksBtn" onclick="window.switchTaskModalTab('my_tasks')" style="background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
-              📋 My Tasks & Priorities
+          <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+            <button type="button" id="tabMyTasksBtn" onclick="window.switchTaskModalTab('my_tasks')" style="background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; padding: 4px 9px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
+              📋 My Tasks
             </button>
-            <button type="button" id="tabAssistantTasksBtn" onclick="window.switchTaskModalTab('assistant_tasks')" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
-              🤝 Assistant's To-Do List <span id="astTaskCountBadge" style="background: #e2e8f0; color: #0f172a; padding: 1px 5px; border-radius: 999px; font-size: 9px; font-weight: 800; margin-left: 3px;">0</span>
+            <button type="button" id="tabPlannerBtn" onclick="window.switchTaskModalTab('planner')" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 9px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
+              📅 Week & Month Planner
+            </button>
+            <button type="button" id="tabAssistantTasksBtn" onclick="window.switchTaskModalTab('assistant_tasks')" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 9px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
+              🤝 Assistant <span id="astTaskCountBadge" style="background: #e2e8f0; color: #0f172a; padding: 1px 5px; border-radius: 999px; font-size: 9px; font-weight: 800; margin-left: 3px;">0</span>
             </button>
           </div>
           <div style="display: flex; align-items: center; gap: 6px;">
@@ -828,6 +831,17 @@
             </button>
             <button type="button" onclick="window.closeDoStuffTaskModal()" title="Close" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 24px; height: 24px; border-radius: 7px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
           </div>
+        </div>
+
+        <!-- Compact Pacing Summary Strip (1-tap access to Week & Month Planner) -->
+        <div id="plannerProgressSummaryStrip" onclick="window.switchTaskModalTab('planner')" style="margin-bottom: 8px; padding: 6px 9px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+            <span style="font-size: 10px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.3px;">🎯 Pacing:</span>
+            <span id="pacingTodayBadge" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 800;">Today: 0/4</span>
+            <span id="pacingWeekBadge" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 800;">Week: 0/20 • On Track 🟢</span>
+            <span id="pacingMonthBadge" style="background: #fdf4ff; border: 1px solid #f5d0fe; color: #a21caf; padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 800;">Month: 0/80</span>
+          </div>
+          <span style="font-size: 10px; font-weight: 800; color: #7c3aed; display: inline-flex; align-items: center; gap: 2px;">Plan Week 📅 →</span>
         </div>
 
         <!-- VIEW 1: MY TASKS & CATEGORIES -->
@@ -868,6 +882,12 @@
               <option value="phone">📱 Phone</option>
               <option value="offline">📝 Pen & Paper</option>
             </select>
+            <select id="newTaskPlanSessionsSelect" title="Planned Focus Sessions" style="width: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 5px 6px; font-size: 11px; font-weight: 700; color: #0f172a; cursor: pointer;">
+              <option value="1">🔥 1 session</option>
+              <option value="2" selected>🔥 2 sessions</option>
+              <option value="3">🔥 3 sessions</option>
+              <option value="4">🔥 4 sessions</option>
+            </select>
             <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;">Add</button>
           </div>
 
@@ -905,6 +925,100 @@
           <!-- Assistant Tasks List -->
           <div id="assistantTasksList" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
             <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- VIEW 3: WEEK & MONTH FOCUS PLANNER -->
+        <div id="viewPlannerContainer" style="display: none;">
+          <!-- 3 Pacing Target Cards (Day, Week, Month) -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; margin-bottom: 10px;">
+            <!-- Today Card -->
+            <div style="background: #ffffff; border: 1.5px solid #bfdbfe; border-radius: 9px; padding: 7px 9px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;">
+                <span style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Today</span>
+                <span id="planTodayStatusBadge" style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 999px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">On Track 🟢</span>
+              </div>
+              <div id="planTodayNumbers" style="font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">
+                0 / 4 <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (0%)</span>
+              </div>
+              <div style="background: #e2e8f0; border-radius: 999px; height: 5px; overflow: hidden; margin-bottom: 5px;">
+                <div id="planTodayProgressBar" style="background: #2563eb; width: 0%; height: 100%; border-radius: 999px; transition: width 0.3s ease;"></div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 9.5px; color: #64748b;">
+                <span>Target: <strong id="planTodayTargetVal" style="color: #0f172a;">4</strong></span>
+                <div style="display: flex; gap: 3px;">
+                  <button type="button" onclick="window.adjustPlanningTarget('today', -1)" title="Decrease daily target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">-</button>
+                  <button type="button" onclick="window.adjustPlanningTarget('today', 1)" title="Increase daily target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">+</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- This Week Card -->
+            <div style="background: #ffffff; border: 1.5px solid #a7f3d0; border-radius: 9px; padding: 7px 9px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;">
+                <span style="font-size: 10px; font-weight: 800; color: #065f46; text-transform: uppercase;">This Week</span>
+                <span id="planWeekStatusBadge" style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 999px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">On Track 🟢</span>
+              </div>
+              <div id="planWeekNumbers" style="font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">
+                0 / 20 <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (0%)</span>
+              </div>
+              <div style="background: #e2e8f0; border-radius: 999px; height: 5px; overflow: hidden; margin-bottom: 5px;">
+                <div id="planWeekProgressBar" style="background: #059669; width: 0%; height: 100%; border-radius: 999px; transition: width 0.3s ease;"></div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 9.5px; color: #64748b;">
+                <span>Target: <strong id="planWeekTargetVal" style="color: #0f172a;">20</strong></span>
+                <div style="display: flex; gap: 3px;">
+                  <button type="button" onclick="window.adjustPlanningTarget('week', -2)" title="Decrease weekly target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">-</button>
+                  <button type="button" onclick="window.adjustPlanningTarget('week', 2)" title="Increase weekly target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">+</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- This Month Card -->
+            <div style="background: #ffffff; border: 1.5px solid #f5d0fe; border-radius: 9px; padding: 7px 9px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;">
+                <span style="font-size: 10px; font-weight: 800; color: #86198f; text-transform: uppercase;">This Month</span>
+                <span id="planMonthStatusBadge" style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 999px; background: #fdf4ff; color: #a21caf; border: 1px solid #f5d0fe;">On Track 🟢</span>
+              </div>
+              <div id="planMonthNumbers" style="font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">
+                0 / 80 <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (0%)</span>
+              </div>
+              <div style="background: #e2e8f0; border-radius: 999px; height: 5px; overflow: hidden; margin-bottom: 5px;">
+                <div id="planMonthProgressBar" style="background: #a21caf; width: 0%; height: 100%; border-radius: 999px; transition: width 0.3s ease;"></div>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-size: 9.5px; color: #64748b;">
+                <span>Target: <strong id="planMonthTargetVal" style="color: #0f172a;">80</strong></span>
+                <div style="display: flex; gap: 3px;">
+                  <button type="button" onclick="window.adjustPlanningTarget('month', -5)" title="Decrease monthly target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">-</button>
+                  <button type="button" onclick="window.adjustPlanningTarget('month', 5)" title="Increase monthly target" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7-Day Interactive Week Schedule -->
+          <div style="margin-bottom: 10px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 9px; padding: 8px 9px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <div>
+                <span style="font-size: 11px; font-weight: 800; color: #0f172a;">📅 7-Day Weekly Focus Plan</span>
+                <span style="font-size: 9.5px; color: #64748b; margin-left: 5px;">Fill days with priority tasks</span>
+              </div>
+              <button type="button" onclick="window.startAssistantCall()" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">📞 Plan with Sonia</button>
+            </div>
+            <div id="plannerWeekDaysContainer" style="display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow-y: auto; padding-right: 2px;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Task Focus Session Allocator -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 9px; padding: 8px 9px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 11px; font-weight: 800; color: #0f172a;">🔥 Task Focus Session Allocator</span>
+              <span style="font-size: 9.5px; color: #64748b;">Set planned sessions per task</span>
+            </div>
+            <div id="plannerTaskAllocatorList" style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px;">
+              <!-- Rendered dynamically -->
+            </div>
           </div>
         </div>
 
@@ -3543,6 +3657,24 @@
       { id: 'admin', name: 'Admin & Tax', icon: '🏛️', color: '#d97706' }
     ];
 
+    function getDefaultPlanningState() {
+      return {
+        todayTargetSessions: 4,
+        weekTargetSessions: 20,
+        monthTargetSessions: 80,
+        history: {},
+        weekDays: {
+          Mon: { targetSessions: 4 },
+          Tue: { targetSessions: 4 },
+          Wed: { targetSessions: 4 },
+          Thu: { targetSessions: 4 },
+          Fri: { targetSessions: 4 },
+          Sat: { targetSessions: 0 },
+          Sun: { targetSessions: 0 }
+        }
+      };
+    }
+
     let dostuffState = {
       intervalMinutes: 5,
       remainingSeconds: 5 * 60,
@@ -3559,7 +3691,8 @@
       activeLocationFilter: 'all',
       categories: DEFAULT_TASK_CATEGORIES,
       focusTasks: [],
-      assistantTasks: []
+      assistantTasks: [],
+      planning: getDefaultPlanningState()
     };
 
     // --- Phone Call State with Assistant Sonia ---
@@ -3569,6 +3702,346 @@
     let assistantCallRecognition = null;
     let assistantCallHistory = [];
     let assistantIsSpeaking = false;
+
+    // --- Week & Month Planning and Pacing Engine ---
+    function getTodayDateString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getWeekDates() {
+      const now = new Date();
+      const currentDay = now.getDay(); // 0 is Sun, 1 is Mon
+      const distanceToMon = (currentDay + 6) % 7;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - distanceToMon);
+
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return days.map((dayKey, idx) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + idx);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+        const isToday = dateStr === getTodayDateString();
+        return {
+          dayKey: dayKey,
+          dateStr: dateStr,
+          label: `${dayKey} ${d.getDate()} ${months[d.getMonth()]}`,
+          isToday: isToday
+        };
+      });
+    }
+
+    function calculatePlanningStats() {
+      if (!dostuffState.planning) dostuffState.planning = getDefaultPlanningState();
+      const plan = dostuffState.planning;
+      if (!plan.history) plan.history = {};
+
+      const todayStr = getTodayDateString();
+      const todayCompleted = parseInt(plan.history[todayStr], 10) || 0;
+      const todayTarget = parseInt(plan.todayTargetSessions, 10) || 4;
+      const todayPct = Math.min(100, Math.round((todayCompleted / todayTarget) * 100));
+
+      let dayStatus = { label: 'Getting Started 🎯', color: '#64748b', bg: '#f1f5f9', border: '#cbd5e1' };
+      if (todayCompleted >= todayTarget) {
+        dayStatus = { label: 'Goal Met 🟢', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' };
+      } else if (todayCompleted >= Math.ceil(todayTarget / 2)) {
+        dayStatus = { label: 'On Track 🟢', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' };
+      } else if (todayCompleted > 0) {
+        const rem = todayTarget - todayCompleted;
+        dayStatus = { label: `${rem} left 🎯`, color: '#b45309', bg: '#fef3c7', border: '#fde68a' };
+      }
+
+      // Week calculations
+      const weekDates = getWeekDates();
+      let weekCompleted = 0;
+      weekDates.forEach(w => {
+        weekCompleted += (parseInt(plan.history[w.dateStr], 10) || 0);
+      });
+      const weekTarget = parseInt(plan.weekTargetSessions, 10) || 20;
+      const weekPct = Math.min(100, Math.round((weekCompleted / weekTarget) * 100));
+
+      const now = new Date();
+      const dayOfWeekIdx = (now.getDay() + 6) % 7 + 1; // 1 for Mon, 7 for Sun
+      const expectedWeekPace = Math.max(1, Math.round((dayOfWeekIdx / 5) * weekTarget));
+      let weekStatus = { label: 'In Progress 🟡', color: '#d97706', bg: '#fffbeb', border: '#fef3c7' };
+      if (weekCompleted >= weekTarget) {
+        weekStatus = { label: 'Target Met 🟢', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' };
+      } else if (weekCompleted >= expectedWeekPace) {
+        weekStatus = { label: 'On Track 🟢', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' };
+      }
+
+      // Month calculations
+      const monthPrefix = todayStr.slice(0, 7); // 'YYYY-MM'
+      let monthCompleted = 0;
+      Object.keys(plan.history).forEach(dKey => {
+        if (dKey.startsWith(monthPrefix)) {
+          monthCompleted += (parseInt(plan.history[dKey], 10) || 0);
+        }
+      });
+      const monthTarget = parseInt(plan.monthTargetSessions, 10) || 80;
+      const monthPct = Math.min(100, Math.round((monthCompleted / monthTarget) * 100));
+
+      let monthStatus = { label: 'In Progress 🟡', color: '#a21caf', bg: '#fdf4ff', border: '#f5d0fe' };
+      if (monthCompleted >= monthTarget) {
+        monthStatus = { label: 'Target Met 🟢', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' };
+      } else if (monthCompleted >= Math.round((now.getDate() / 28) * monthTarget)) {
+        monthStatus = { label: 'On Track 🟢', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' };
+      }
+
+      return {
+        todayCompleted,
+        todayTarget,
+        todayPct,
+        dayStatus,
+        weekCompleted,
+        weekTarget,
+        weekPct,
+        weekStatus,
+        monthCompleted,
+        monthTarget,
+        monthPct,
+        monthStatus
+      };
+    }
+
+    function savePlanningState() {
+      try {
+        localStorage.setItem('orb_dostuff_planning_state', JSON.stringify(dostuffState.planning));
+      } catch (e) {}
+    }
+
+    function updatePacingSummaryStrip() {
+      const stats = calculatePlanningStats();
+      getAllDoStuffDocs().forEach(doc => {
+        const todayEl = Document.prototype.getElementById.call(doc, 'pacingTodayBadge');
+        if (todayEl) todayEl.textContent = `Today: ${stats.todayCompleted}/${stats.todayTarget}`;
+
+        const weekEl = Document.prototype.getElementById.call(doc, 'pacingWeekBadge');
+        if (weekEl) weekEl.textContent = `Week: ${stats.weekCompleted}/${stats.weekTarget} • ${stats.weekStatus.label}`;
+
+        const monthEl = Document.prototype.getElementById.call(doc, 'pacingMonthBadge');
+        if (monthEl) monthEl.textContent = `Month: ${stats.monthCompleted}/${stats.monthTarget}`;
+
+        const streakEl = Document.prototype.getElementById.call(doc, 'dostuffStreakBadge');
+        if (streakEl) streakEl.textContent = `🔥 ${stats.todayCompleted}`;
+
+        const timeBadge = Document.prototype.getElementById.call(doc, 'dostuffTotalTimeBadge');
+        if (timeBadge) timeBadge.textContent = `🔥 Today: ${stats.todayCompleted}/${stats.todayTarget} sessions • Week: ${stats.weekCompleted}/${stats.weekTarget}`;
+      });
+    }
+
+    function renderPlannerUI() {
+      const stats = calculatePlanningStats();
+      const plan = dostuffState.planning;
+
+      getAllDoStuffDocs().forEach(doc => {
+        // 1. Update 3 Pacing Cards
+        const tNums = Document.prototype.getElementById.call(doc, 'planTodayNumbers');
+        if (tNums) tNums.innerHTML = `${stats.todayCompleted} / ${stats.todayTarget} <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (${stats.todayPct}%)</span>`;
+        const tBar = Document.prototype.getElementById.call(doc, 'planTodayProgressBar');
+        if (tBar) tBar.style.width = `${stats.todayPct}%`;
+        const tBadge = Document.prototype.getElementById.call(doc, 'planTodayStatusBadge');
+        if (tBadge) {
+          tBadge.textContent = stats.dayStatus.label;
+          tBadge.style.color = stats.dayStatus.color;
+          tBadge.style.background = stats.dayStatus.bg;
+          tBadge.style.borderColor = stats.dayStatus.border;
+        }
+        const tVal = Document.prototype.getElementById.call(doc, 'planTodayTargetVal');
+        if (tVal) tVal.textContent = stats.todayTarget;
+
+        const wNums = Document.prototype.getElementById.call(doc, 'planWeekNumbers');
+        if (wNums) wNums.innerHTML = `${stats.weekCompleted} / ${stats.weekTarget} <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (${stats.weekPct}%)</span>`;
+        const wBar = Document.prototype.getElementById.call(doc, 'planWeekProgressBar');
+        if (wBar) wBar.style.width = `${stats.weekPct}%`;
+        const wBadge = Document.prototype.getElementById.call(doc, 'planWeekStatusBadge');
+        if (wBadge) {
+          wBadge.textContent = stats.weekStatus.label;
+          wBadge.style.color = stats.weekStatus.color;
+          wBadge.style.background = stats.weekStatus.bg;
+          wBadge.style.borderColor = stats.weekStatus.border;
+        }
+        const wVal = Document.prototype.getElementById.call(doc, 'planWeekTargetVal');
+        if (wVal) wVal.textContent = stats.weekTarget;
+
+        const mNums = Document.prototype.getElementById.call(doc, 'planMonthNumbers');
+        if (mNums) mNums.innerHTML = `${stats.monthCompleted} / ${stats.monthTarget} <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (${stats.monthPct}%)</span>`;
+        const mBar = Document.prototype.getElementById.call(doc, 'planMonthProgressBar');
+        if (mBar) mBar.style.width = `${stats.monthPct}%`;
+        const mBadge = Document.prototype.getElementById.call(doc, 'planMonthStatusBadge');
+        if (mBadge) {
+          mBadge.textContent = stats.monthStatus.label;
+          mBadge.style.color = stats.monthStatus.color;
+          mBadge.style.background = stats.monthStatus.bg;
+          mBadge.style.borderColor = stats.monthStatus.border;
+        }
+        const mVal = Document.prototype.getElementById.call(doc, 'planMonthTargetVal');
+        if (mVal) mVal.textContent = stats.monthTarget;
+
+        // 2. Render 7-Day Schedule
+        const daysContainer = Document.prototype.getElementById.call(doc, 'plannerWeekDaysContainer');
+        if (daysContainer) {
+          const weekDates = getWeekDates();
+          let daysHtml = '';
+          weekDates.forEach(w => {
+            const dayKey = w.dayKey;
+            const dayTarget = (plan.weekDays && plan.weekDays[dayKey] && typeof plan.weekDays[dayKey].targetSessions === 'number') ? plan.weekDays[dayKey].targetSessions : 4;
+            const completedOnDate = parseInt(plan.history[w.dateStr], 10) || 0;
+            const assignedTasks = dostuffState.focusTasks.filter(t => (t.plannedDay || 'today').toLowerCase() === dayKey.toLowerCase() || (w.isToday && (t.plannedDay || 'today') === 'today'));
+
+            daysHtml += `
+              <div style="background: ${w.isToday ? '#eff6ff' : '#ffffff'}; border: ${w.isToday ? '1.5px solid #3b82f6' : '1px solid #cbd5e1'}; border-radius: 8px; padding: 6px 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 4px;">
+                  <div style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-size: 11px; font-weight: 800; color: ${w.isToday ? '#1d4ed8' : '#0f172a'};">${w.label}</span>
+                    ${w.isToday ? '<span style="font-size: 8.5px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1px 5px; border-radius: 999px;">TODAY</span>' : ''}
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 10px; font-weight: 800; color: #b45309;">🔥 ${completedOnDate}/${dayTarget}</span>
+                    <div style="display: flex; gap: 2px;">
+                      <button type="button" onclick="window.adjustDayTarget('${dayKey}', -1)" title="Decrease target" style="width: 16px; height: 16px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 3px; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">-</button>
+                      <button type="button" onclick="window.adjustDayTarget('${dayKey}', 1)" title="Increase target" style="width: 16px; height: 16px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 3px; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;">+</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Assigned Tasks for this Day -->
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                  ${assignedTasks.length === 0 ? '<div style="font-size: 9.5px; color: #94a3b8; font-style: italic;">No tasks assigned yet.</div>' : ''}
+                  ${assignedTasks.map(t => `
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; padding: 3px 6px;">
+                      <div style="display: flex; align-items: center; gap: 4px; min-width: 0; flex: 1;">
+                        <span style="font-size: 9px; font-weight: 800; color: #64748b;">${getCategoryMeta(t.category).icon}</span>
+                        <span style="font-size: 10.5px; font-weight: 700; color: #0f172a; white-space: normal; break-words; line-height: 1.2;">${escapeHtml(t.title)}</span>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                        <span style="font-size: 9px; font-weight: 800; color: #b45309;">🔥 ${t.sessions || 0}/${t.plannedSessions || 2}</span>
+                        <button type="button" onclick="window.selectDoStuffFocusTask('${t.id}')" title="Set Working On" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 1px 4px; border-radius: 4px; font-size: 8.5px; font-weight: 800; cursor: pointer;">🎯</button>
+                        <button type="button" onclick="window.unassignTaskFromDay('${t.id}')" title="Unassign from day" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 9px; padding: 0;">✕</button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <!-- Quick Assign Task Dropdown -->
+                <div style="margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                  <select onchange="if(this.value){ window.setTaskPlannedDay(this.value, '${dayKey}'); this.value=''; }" style="width: 100%; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 5px; padding: 2px 5px; font-size: 9.5px; font-weight: 600; color: #475569; cursor: pointer;">
+                    <option value="">+ Assign task to ${dayKey}...</option>
+                    ${dostuffState.focusTasks.filter(x => !assignedTasks.some(at => at.id === x.id)).map(x => `<option value="${x.id}">[${getCategoryMeta(x.category).name}] ${escapeHtml(x.title)}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+            `;
+          });
+          daysContainer.innerHTML = daysHtml;
+        }
+
+        // 3. Render Task Allocator List
+        const allocList = Document.prototype.getElementById.call(doc, 'plannerTaskAllocatorList');
+        if (allocList) {
+          if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) {
+            allocList.innerHTML = '<div style="text-align: center; padding: 10px; color: #94a3b8; font-size: 10.5px;">No tasks available to allocate. Add tasks in My Tasks first.</div>';
+          } else {
+            let allocHtml = '';
+            dostuffState.focusTasks.forEach(task => {
+              const planned = task.plannedSessions || 2;
+              const currentDay = (task.plannedDay || 'today').toLowerCase();
+
+              allocHtml += `
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 5px 8px; border-radius: 7px; background: #f8fafc; border: 1px solid #e2e8f0; flex-wrap: wrap;">
+                  <div style="min-width: 0; flex: 1 1 140px;">
+                    <div style="font-size: 11px; font-weight: 700; color: #0f172a; white-space: normal; break-words; line-height: 1.25;">
+                      <span style="font-size: 9.5px; color: #64748b; font-weight: 800;">${getCategoryMeta(task.category).icon}</span> ${escapeHtml(task.title)}
+                    </div>
+                    <div style="font-size: 9.5px; font-weight: 700; color: #b45309; margin-top: 2px;">
+                      🔥 Completed: ${task.sessions || 0} of ${planned} planned
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+                    <!-- Planned Sessions Stepper -->
+                    <div style="display: flex; align-items: center; gap: 2px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 1px 3px;">
+                      <button type="button" onclick="window.adjustTaskPlannedSessions('${task.id}', -1)" title="Decrease planned sessions" style="background: none; border: none; font-size: 10px; font-weight: 800; cursor: pointer; color: #475569; padding: 0 3px;">-</button>
+                      <span style="font-size: 10px; font-weight: 800; color: #0f172a; min-width: 14px; text-align: center;">${planned}</span>
+                      <button type="button" onclick="window.adjustTaskPlannedSessions('${task.id}', 1)" title="Increase planned sessions" style="background: none; border: none; font-size: 10px; font-weight: 800; cursor: pointer; color: #475569; padding: 0 3px;">+</button>
+                    </div>
+                    <!-- Day Selector -->
+                    <select onchange="window.setTaskPlannedDay('${task.id}', this.value)" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 2px 4px; font-size: 9.5px; font-weight: 700; color: #0f172a; cursor: pointer;">
+                      <option value="today" ${currentDay === 'today' ? 'selected' : ''}>Today</option>
+                      <option value="mon" ${currentDay === 'mon' ? 'selected' : ''}>Mon</option>
+                      <option value="tue" ${currentDay === 'tue' ? 'selected' : ''}>Tue</option>
+                      <option value="wed" ${currentDay === 'wed' ? 'selected' : ''}>Wed</option>
+                      <option value="thu" ${currentDay === 'thu' ? 'selected' : ''}>Thu</option>
+                      <option value="fri" ${currentDay === 'fri' ? 'selected' : ''}>Fri</option>
+                      <option value="sat" ${currentDay === 'sat' ? 'selected' : ''}>Sat</option>
+                      <option value="sun" ${currentDay === 'sun' ? 'selected' : ''}>Sun</option>
+                      <option value="unassigned" ${currentDay === 'unassigned' ? 'selected' : ''}>Unassigned</option>
+                    </select>
+                  </div>
+                </div>
+              `;
+            });
+            allocList.innerHTML = allocHtml;
+          }
+        }
+      });
+    }
+
+    window.adjustPlanningTarget = function(timeframe, delta) {
+      if (!dostuffState.planning) dostuffState.planning = getDefaultPlanningState();
+      if (timeframe === 'today') {
+        dostuffState.planning.todayTargetSessions = Math.max(1, (dostuffState.planning.todayTargetSessions || 4) + delta);
+      } else if (timeframe === 'week') {
+        dostuffState.planning.weekTargetSessions = Math.max(1, (dostuffState.planning.weekTargetSessions || 20) + delta);
+      } else if (timeframe === 'month') {
+        dostuffState.planning.monthTargetSessions = Math.max(1, (dostuffState.planning.monthTargetSessions || 80) + delta);
+      }
+      savePlanningState();
+      renderPlannerUI();
+      updatePacingSummaryStrip();
+    };
+
+    window.adjustDayTarget = function(dayKey, delta) {
+      if (!dostuffState.planning) dostuffState.planning = getDefaultPlanningState();
+      if (!dostuffState.planning.weekDays) dostuffState.planning.weekDays = {};
+      if (!dostuffState.planning.weekDays[dayKey]) dostuffState.planning.weekDays[dayKey] = { targetSessions: 4 };
+      dostuffState.planning.weekDays[dayKey].targetSessions = Math.max(0, (dostuffState.planning.weekDays[dayKey].targetSessions || 4) + delta);
+      savePlanningState();
+      renderPlannerUI();
+    };
+
+    window.adjustTaskPlannedSessions = function(taskId, delta) {
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (task) {
+        task.plannedSessions = Math.max(1, (task.plannedSessions || 2) + delta);
+        saveDoStuffFocusTasks();
+        renderDoStuffTaskList();
+        renderPlannerUI();
+      }
+    };
+
+    window.setTaskPlannedDay = function(taskId, dayKey) {
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (task) {
+        task.plannedDay = dayKey;
+        saveDoStuffFocusTasks();
+        renderDoStuffTaskList();
+        renderPlannerUI();
+      }
+    };
+
+    window.unassignTaskFromDay = function(taskId) {
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (task) {
+        task.plannedDay = 'unassigned';
+        saveDoStuffFocusTasks();
+        renderDoStuffTaskList();
+        renderPlannerUI();
+      }
+    };
 
     function initDoStuffFocusTasks() {
       // 1. Load Categories
@@ -3664,6 +4137,12 @@
       return dostuffState.categories.find(c => c.id === dostuffState.activeCategoryId) || dostuffState.categories[0] || { id: 'accounts', name: 'Accounts', icon: '📊' };
     }
 
+    function getCategoryMeta(catId) {
+      if (!dostuffState.categories) return { id: catId, name: catId, icon: '📋' };
+      const found = dostuffState.categories.find(c => c.id === catId);
+      return found || { id: catId, name: catId || 'General', icon: '📋' };
+    }
+
     function getActiveFocusTask() {
       if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) return null;
       if (dostuffState.activeFocusTaskId) {
@@ -3682,20 +4161,34 @@
       dostuffState.activeTab = tabName;
       getAllDoStuffDocs().forEach(doc => {
         const myTab = Document.prototype.getElementById.call(doc, 'tabMyTasksBtn');
+        const planTab = Document.prototype.getElementById.call(doc, 'tabPlannerBtn');
         const astTab = Document.prototype.getElementById.call(doc, 'tabAssistantTasksBtn');
         const myView = Document.prototype.getElementById.call(doc, 'viewMyTasksContainer');
+        const planView = Document.prototype.getElementById.call(doc, 'viewPlannerContainer');
         const astView = Document.prototype.getElementById.call(doc, 'viewAssistantTasksContainer');
 
-        if (tabName === 'assistant_tasks') {
+        if (tabName === 'planner') {
           if (myTab) { myTab.style.background = '#f1f5f9'; myTab.style.color = '#475569'; myTab.style.borderColor = '#cbd5e1'; }
+          if (planTab) { planTab.style.background = '#7c3aed'; planTab.style.color = '#ffffff'; planTab.style.borderColor = '#6d28d9'; }
+          if (astTab) { astTab.style.background = '#f1f5f9'; astTab.style.color = '#475569'; astTab.style.borderColor = '#cbd5e1'; }
+          if (myView) myView.style.display = 'none';
+          if (planView) planView.style.display = 'block';
+          if (astView) astView.style.display = 'none';
+          renderPlannerUI();
+        } else if (tabName === 'assistant_tasks') {
+          if (myTab) { myTab.style.background = '#f1f5f9'; myTab.style.color = '#475569'; myTab.style.borderColor = '#cbd5e1'; }
+          if (planTab) { planTab.style.background = '#f1f5f9'; planTab.style.color = '#475569'; planTab.style.borderColor = '#cbd5e1'; }
           if (astTab) { astTab.style.background = '#10b981'; astTab.style.color = '#ffffff'; astTab.style.borderColor = '#059669'; }
           if (myView) myView.style.display = 'none';
+          if (planView) planView.style.display = 'none';
           if (astView) astView.style.display = 'block';
           renderAssistantTasksList();
         } else {
           if (myTab) { myTab.style.background = '#2563eb'; myTab.style.color = '#ffffff'; myTab.style.borderColor = '#1d4ed8'; }
+          if (planTab) { planTab.style.background = '#f1f5f9'; planTab.style.color = '#475569'; planTab.style.borderColor = '#cbd5e1'; }
           if (astTab) { astTab.style.background = '#f1f5f9'; astTab.style.color = '#475569'; astTab.style.borderColor = '#cbd5e1'; }
           if (myView) myView.style.display = 'block';
+          if (planView) planView.style.display = 'none';
           if (astView) astView.style.display = 'none';
           renderDoStuffTaskList();
         }
@@ -3784,6 +4277,7 @@
       let title = '';
       let priority = 'normal';
       let location = 'laptop';
+      let plannedSessions = 2;
       getAllDoStuffDocs().forEach(doc => {
         const input = Document.prototype.getElementById.call(doc, 'dostuffNewTaskInput');
         if (input && input.value && input.value.trim()) {
@@ -3798,8 +4292,9 @@
         if (locSel && locSel.value) {
           location = locSel.value;
         }
-        if (prioSel && prioSel.value) {
-          priority = prioSel.value;
+        const planSel = Document.prototype.getElementById.call(doc, 'newTaskPlanSessionsSelect');
+        if (planSel && planSel.value) {
+          plannedSessions = parseInt(planSel.value, 10) || 2;
         }
       });
       if (!title) return;
@@ -3810,6 +4305,8 @@
         category: dostuffState.activeCategoryId,
         priority: priority,
         location: (typeof location !== 'undefined' ? location : 'laptop'),
+        plannedSessions: plannedSessions,
+        plannedDay: 'today',
         order: catTasks.length,
         sessions: 0,
         totalMinutes: 0,
@@ -4210,7 +4707,10 @@
                     <button type="button" onclick="window.toggleTaskLocation('${task.id}', event)" title="Click to cycle location: Laptop, Home Physical, Out & About, Phone, Pen & Paper" style="background: ${getLocationMeta(task.location).bg}; border: 1px solid ${getLocationMeta(task.location).border}; color: ${getLocationMeta(task.location).color}; font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 999px; cursor: pointer; white-space: nowrap;">
                       ${getLocationMeta(task.location).icon} ${getLocationMeta(task.location).short}
                     </button>
-                    <span style="font-size: 9.5px; font-weight: 800; color: #b45309;">🔥 ${task.sessions || 0} • ${(task.totalMinutes || 0)}m</span>
+                    <!-- Planned Sessions & Day Badge -->
+                    <span style="font-size: 9px; font-weight: 800; background: #fef3c7; border: 1px solid #fde68a; color: #b45309; padding: 1px 6px; border-radius: 999px; white-space: nowrap;">🔥 ${task.sessions || 0}/${task.plannedSessions || 2} sessions</span>
+                    <button type="button" onclick="window.adjustTaskPlannedSessions('${task.id}', 1)" title="Add planned focus session" style="background: #ffffff; border: 1px solid #cbd5e1; color: #475569; font-size: 8.5px; font-weight: 800; padding: 0 4px; border-radius: 4px; cursor: pointer;">+ Plan</button>
+                    ${task.plannedDay && task.plannedDay !== 'unassigned' ? `<span style="font-size: 8.5px; font-weight: 800; background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; padding: 1px 5px; border-radius: 999px;">📅 ${task.plannedDay.toUpperCase()}</span>` : ''}
                     ${isActive ? '<span style="font-size: 9px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1px 6px; border-radius: 999px; text-transform: uppercase;">Working On</span>' : ''}
                   </div>
                 </div>
@@ -4420,7 +4920,16 @@
           assistant_tasks: dostuffState.assistantTasks,
           active_category: dostuffState.activeCategoryId,
           active_task_title: getActiveFocusTask() ? getActiveFocusTask().title : '',
-          call_history: assistantCallHistory
+          call_history: assistantCallHistory,
+          planning: {
+            todayTargetSessions: calculatePlanningStats().todayTarget,
+            todayCompletedSessions: calculatePlanningStats().todayCompleted,
+            weekTargetSessions: calculatePlanningStats().weekTarget,
+            weekCompletedSessions: calculatePlanningStats().weekCompleted,
+            monthTargetSessions: calculatePlanningStats().monthTarget,
+            monthCompletedSessions: calculatePlanningStats().monthCompleted,
+            weekDays: dostuffState.planning ? dostuffState.planning.weekDays : {}
+          }
         })
       })
       .then(r => r.json())
@@ -4528,6 +5037,26 @@
             stateChanged = true;
           }
         });
+      }
+
+      // 5. Adjust Targets (Day, Week, Month)
+      if (action.adjust_targets) {
+        if (!dostuffState.planning) dostuffState.planning = getDefaultPlanningState();
+        if (action.adjust_targets.today) dostuffState.planning.todayTargetSessions = parseInt(action.adjust_targets.today, 10);
+        if (action.adjust_targets.week) dostuffState.planning.weekTargetSessions = parseInt(action.adjust_targets.week, 10);
+        if (action.adjust_targets.month) dostuffState.planning.monthTargetSessions = parseInt(action.adjust_targets.month, 10);
+        savePlanningState();
+        stateChanged = true;
+      }
+
+      // 6. Schedule Task to Day
+      if (action.schedule_task && action.schedule_task.task_title) {
+        const found = dostuffState.focusTasks.find(x => x.title.toLowerCase().includes(action.schedule_task.task_title.toLowerCase()));
+        if (found) {
+          if (action.schedule_task.day) found.plannedDay = action.schedule_task.day.toLowerCase();
+          if (action.schedule_task.planned_sessions) found.plannedSessions = parseInt(action.schedule_task.planned_sessions, 10);
+          stateChanged = true;
+        }
       }
 
       if (stateChanged) {
@@ -4855,8 +5384,10 @@
         if (banner) {
           if (activeFocus) {
             banner.style.display = 'block';
+            const planned = activeFocus.plannedSessions || 2;
+            const stats = calculatePlanningStats();
             if (bannerTitle) bannerTitle.textContent = activeFocus.title;
-            if (bannerStats) bannerStats.textContent = `🔥 Session ${activeFocus.sessions} finished • ${activeFocus.totalMinutes || 0}m total logged on this task`;
+            if (bannerStats) bannerStats.textContent = `🔥 Session ${activeFocus.sessions} of ${planned} planned • Today: ${stats.todayCompleted}/${stats.todayTarget} (${stats.dayStatus.label})`;
           } else {
             banner.style.display = 'none';
           }
@@ -4883,7 +5414,11 @@
           minutes: dostuffState.intervalMinutes,
           voice: getCurrentVoiceId(),
           focus_task: activeFocus ? activeFocus.title : '',
-          focus_sessions: activeFocus ? activeFocus.sessions : 0
+          focus_sessions: activeFocus ? activeFocus.sessions : 0,
+          today_sessions: calculatePlanningStats().todayCompleted,
+          today_target: calculatePlanningStats().todayTarget,
+          week_sessions: calculatePlanningStats().weekCompleted,
+          week_target: calculatePlanningStats().weekTarget
         })
       }).then(r => r.json()).then(data => {
         if (data && data.audio_url) {
@@ -4905,6 +5440,15 @@
         activeFocus.totalMinutes = (activeFocus.totalMinutes || 0) + (dostuffState.intervalMinutes || 5);
         saveDoStuffFocusTasks();
       }
+
+      // Automatically increment planning pacing stats
+      if (!dostuffState.planning) dostuffState.planning = getDefaultPlanningState();
+      if (!dostuffState.planning.history) dostuffState.planning.history = {};
+      const todayDateStr = getTodayDateString();
+      dostuffState.planning.history[todayDateStr] = (parseInt(dostuffState.planning.history[todayDateStr], 10) || 0) + 1;
+      savePlanningState();
+      updatePacingSummaryStrip();
+      renderPlannerUI();
 
       const task = pickNextDoStuffTask(dostuffState.currentTask ? dostuffState.currentTask.id : null);
       enterDoStuffFullscreen();

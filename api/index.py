@@ -30,7 +30,7 @@ VOICE_SETTINGS = {
 CONVERSATION_HISTORY = [
     {
         "role": "assistant",
-        "text": "Hello Sadie. Orb AI Voice Studio v3.4 is live and connected in the cloud.",
+        "text": "Hello Sadie. Orb AI Voice Studio v3.5 is live and connected in the cloud.",
         "time": time.strftime("%H:%M")
     }
 ]
@@ -133,7 +133,7 @@ def query_gemini(prompt, history=None, context=None):
 
 
 
-def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None):
+def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
     models = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
 
@@ -146,7 +146,7 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
             prio = t.get("priority", "normal")
             status = "completed" if t.get("completed") else "pending"
             loc = t.get("location", "laptop")
-            tasks_summary.append(f"- [{cat.upper()}] {t.get('title', '')} (Priority: {prio}, Location: {loc}, Status: {status})")
+            tasks_summary.append(f"- [{cat.upper()}] {t.get('title', '')} (Priority: {prio}, Location: {loc}, Sessions: {t.get('sessions', 0)}/{t.get('plannedSessions', 2)}, Day: {t.get('plannedDay', 'today')}, Status: {status})")
     tasks_str = "\n".join(tasks_summary) if tasks_summary else "No tasks logged yet."
 
     ast_summary = []
@@ -155,6 +155,34 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
             st = at.get("status", "queued")
             ast_summary.append(f"- {at.get('title', '')} (Status: {st})")
     ast_str = "\n".join(ast_summary) if ast_summary else "No assistant tasks currently queued."
+
+    planning_summary = []
+    if planning:
+        today_done = planning.get("todayCompletedSessions", 0)
+        today_target = planning.get("todayTargetSessions", 4)
+        week_done = planning.get("weekCompletedSessions", 0)
+        week_target = planning.get("weekTargetSessions", 20)
+        month_done = planning.get("monthCompletedSessions", 0)
+        month_target = planning.get("monthTargetSessions", 80)
+
+        day_status = "ahead of schedule" if today_done > today_target else ("goal reached" if today_done == today_target else ("on track" if today_done >= 1 else "ready to start"))
+        week_status = "ahead of schedule" if week_done > week_target else ("target reached" if week_done == week_target else ("on track" if week_done >= 1 else "in progress"))
+        month_status = "on track" if month_done >= 1 else "in progress"
+
+        planning_summary.append(f"- Today: {today_done}/{today_target} focus sessions completed ({day_status}).")
+        planning_summary.append(f"- This Week: {week_done}/{week_target} focus sessions completed ({week_status}).")
+        planning_summary.append(f"- This Month: {month_done}/{month_target} focus sessions completed ({month_status}).")
+
+        week_days = planning.get("weekDays")
+        if week_days:
+            day_items = []
+            for d in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]:
+                d_info = week_days.get(d) or {}
+                t_count = len(d_info.get("tasks", []))
+                s_count = d_info.get("targetSessions", 0)
+                day_items.append(f"{d}: target {s_count} sessions ({t_count} tasks assigned)")
+            planning_summary.append("- 7-Day Plan: " + "; ".join(day_items))
+    planning_str = "\n".join(planning_summary) if planning_summary else "Daily target: 4 sessions, Weekly target: 20 sessions, Monthly target: 80 sessions."
 
     sys_prompt = f"""You are Sonia, executive virtual assistant and ADHD daily planning partner for Sadie (Coremarket Goods / ORB).
 Sadie is calling you directly on a live phone call inside the app.
@@ -167,13 +195,19 @@ Your goals:
    - phone: Phone Call Task
    - offline: Pen & Paper / No Internet Task (offline planning, sketching, reading)
 2. Help Sadie prioritise tasks in order of importance so she is never overwhelmed (focusing on one task at a time).
-3. Plan Sadie's priority tasks for the day.
-4. Take on tasks delegated to you ("do stuff for Sadie") and track them on your own assistant to-do list.
+3. Help Sadie prioritise tasks in order of importance so she is never overwhelmed (focusing on one task at a time).
+4. Plan Sadie's week and month with focus sessions filled with tasks:
+   - Review her day/week/month pacing: answer questions like "Am I on track for this week?" or "How am I pacing for the month?".
+   - Help her allocate focus blocks across the week (Mon to Sun).
+5. Take on tasks delegated to you ("do stuff for Sadie") and track them on your own assistant to-do list.
 
 Current Working On: "{active_task_title or 'None selected'}" (Category: {active_category})
 
-Sadie's Tasks:
+Sadie's Tasks & Planned Sessions:
 {tasks_str}
+
+Sadie's Focus Session Planning & Pacing:
+{planning_str}
 
 Your Assistant Delegated To-Do List:
 {ast_str}
@@ -311,7 +345,7 @@ class handler(BaseHTTPRequestHandler):
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v3.4",
+                "app_version": "v3.5",
                 "active_chat_title": "Orb AI Cloud Studio",
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
@@ -374,7 +408,7 @@ class handler(BaseHTTPRequestHandler):
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "v3.4",
+            "version": "v3.5",
             "status": "online",
             "cloud": True
         }).encode("utf-8"))
@@ -489,6 +523,7 @@ class handler(BaseHTTPRequestHandler):
             if not user_text:
                 user_text = "Hello Sonia, help me organise and plan my priority tasks for today."
 
+            planning = data.get("planning")
             res = query_assistant_call(
                 user_text,
                 categories=categories,
@@ -496,7 +531,8 @@ class handler(BaseHTTPRequestHandler):
                 assistant_tasks=assistant_tasks,
                 active_category=active_cat,
                 active_task_title=active_task,
-                call_history=call_history
+                call_history=call_history,
+                planning=planning
             )
 
             reply = res.get("reply", "I am here to help you organise your tasks.")
@@ -516,13 +552,26 @@ class handler(BaseHTTPRequestHandler):
             mins = data.get("minutes", 5)
             focus_task = data.get("focus_task", "").strip()
             focus_sessions = data.get("focus_sessions", 0)
+            today_sessions = data.get("today_sessions", 0)
+            today_target = data.get("today_target", 4)
+
+            pacing_text = ""
+            if today_target and int(today_target) > 0:
+                diff = int(today_target) - int(today_sessions)
+                if diff <= 0:
+                    pacing_text = f" Daily focus goal achieved with {today_sessions} sessions."
+                elif diff == 1:
+                    pacing_text = f" You are on track with {today_sessions} of {today_target} sessions completed, just one to go."
+                else:
+                    pacing_text = f" You are on track with {today_sessions} of {today_target} sessions completed today."
+
             if focus_task:
                 if focus_sessions and int(focus_sessions) > 1:
-                    spoken = f"Focus session complete for {focus_task}. That is {focus_sessions} sessions logged. DoStuff {mins} minute reset. {task_title}."
+                    spoken = f"Focus session complete for {focus_task}. That is {focus_sessions} sessions logged.{pacing_text} DoStuff {mins} minute reset. {task_title}."
                 else:
-                    spoken = f"Focus session complete for {focus_task}. DoStuff {mins} minute reset. {task_title}."
+                    spoken = f"Focus session complete for {focus_task}.{pacing_text} DoStuff {mins} minute reset. {task_title}."
             else:
-                spoken = f"DoStuff {mins} minute reset. {task_title}."
+                spoken = f"Focus session complete.{pacing_text} DoStuff {mins} minute reset. {task_title}."
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             audio_url = f"/api/tts?text={urllib.parse.quote(spoken)}&voice={urllib.parse.quote(voice)}"
             self._set_headers(200)
