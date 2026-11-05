@@ -549,6 +549,39 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
             return
 
+        elif "sync" in target or "sync" in raw:
+            try:
+                from api.sync_engine import get_cloud_sync_state
+            except ImportError:
+                try:
+                    from sync_engine import get_cloud_sync_state
+                except ImportError:
+                    get_cloud_sync_state = lambda: None
+            state = get_cloud_sync_state()
+            if not state:
+                state = {
+                    "focus_tasks": [
+                        {"id": "f-1", "title": "Bank feed and transaction reconciliation", "category": "accounts", "priority": "high", "order": 0, "sessions": 0, "totalMinutes": 0, "completed": False, "createdAt": int(time.time()*1000), "source": "default"},
+                        {"id": "f-2", "title": "Sort incoming invoices and VAT receipts", "category": "accounts", "priority": "high", "order": 1, "sessions": 0, "totalMinutes": 0, "completed": False, "createdAt": int(time.time()*1000), "source": "default"},
+                        {"id": "f-3", "title": "HMRC Confirmation Statement and tax review", "category": "admin", "priority": "high", "order": 0, "sessions": 0, "totalMinutes": 0, "completed": False, "createdAt": int(time.time()*1000), "source": "default"}
+                    ],
+                    "assistant_tasks": [
+                        {"id": "ast-1", "title": "Draft overdue invoice reminder email for client", "category": "accounts", "status": "in_progress", "notes": "Drafting polite British reminder with payment links.", "createdAt": int(time.time()*1000)},
+                        {"id": "ast-2", "title": "Organise top 3 priorities for Sadie today", "category": "admin", "status": "completed", "notes": "Prioritised accounts and pharmacy calls.", "createdAt": int(time.time()*1000)}
+                    ],
+                    "categories": [
+                        {"id": "accounts", "name": "Accounts & VAT", "icon": "📊"},
+                        {"id": "admin", "name": "Admin & HMRC", "icon": "📁"},
+                        {"id": "app", "name": "Option B Mobile", "icon": "📱"},
+                        {"id": "client_work", "name": "Client Work", "icon": "💼"}
+                    ],
+                    "messages": CONVERSATION_HISTORY,
+                    "updated_at": int(time.time() * 1000)
+                }
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "state": state}).encode("utf-8"))
+            return
+
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
@@ -695,6 +728,24 @@ class handler(BaseHTTPRequestHandler):
             }).encode("utf-8"))
             return
 
+        elif "sync" in target or "sync" in raw:
+            try:
+                from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+            except ImportError:
+                try:
+                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+                except ImportError:
+                    get_cloud_sync_state = lambda: None
+                    save_cloud_sync_state = lambda s: None
+                    merge_sync_states = lambda a, b: b
+            incoming = data.get("state", data)
+            existing = get_cloud_sync_state() or {}
+            merged = merge_sync_states(existing, incoming)
+            save_cloud_sync_state(merged)
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "state": merged}).encode("utf-8"))
+            return
+
         elif "assistant_call" in target or "assistant_call" in raw:
             user_text = data.get("text", "").strip()
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
@@ -728,6 +779,30 @@ class handler(BaseHTTPRequestHandler):
 
             reply = res.get("reply", "I am here to help you organise your tasks.")
             action = res.get("action")
+            
+            # Record into shared conversation history
+            CONVERSATION_HISTORY.append({"role": "user", "text": user_text, "time": time.strftime("%H:%M")})
+            CONVERSATION_HISTORY.append({"role": "assistant", "text": reply, "time": time.strftime("%H:%M")})
+            
+            # Sync interaction to cloud blob
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+                existing = get_cloud_sync_state() or {}
+                incoming_sync = {"messages": [{"role": "user", "text": user_text, "time": time.strftime("%H:%M")}, {"role": "assistant", "text": reply, "time": time.strftime("%H:%M")}]}
+                if action and action.get("add_my_task"):
+                    task_info = action["add_my_task"]
+                    incoming_sync["focus_tasks"] = [{"id": f"t_{int(time.time()*1000)}", "title": task_info.get("title", ""), "category": task_info.get("category", "accounts"), "priority": task_info.get("priority", "high"), "completed": False, "createdAt": int(time.time()*1000)}]
+                if action and action.get("delegate_to_assistant"):
+                    ast_info = action["delegate_to_assistant"]
+                    incoming_sync["assistant_tasks"] = [{"id": f"ast_{int(time.time()*1000)}", "title": ast_info.get("title", ""), "category": ast_info.get("category", "accounts"), "status": "in_progress", "notes": ast_info.get("notes", ""), "createdAt": int(time.time()*1000)}]
+                merged = merge_sync_states(existing, incoming_sync)
+                save_cloud_sync_state(merged)
+            except Exception as se:
+                print(f"[ASSISTANT-SYNC-WARN]: {se}", flush=True)
+
             audio_url = f"/api/tts?text={urllib.parse.quote(reply)}&voice={urllib.parse.quote(voice)}"
             self._set_headers(200)
             self.wfile.write(json.dumps({

@@ -30,3 +30,7 @@ voice_settings.json
 test_*.py
 # Local secrets written by `elevenlabs onboard`
 /.env.local
+
+.env*
+
+scratch/

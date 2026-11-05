@@ -748,7 +748,12 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.9</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v4.1</span>
+        <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Instant cloud sync between desktop and phone" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 4px;">
+          <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #10b981; display: inline-block;"></span>
+          <span id="syncStatusLabel">Synced</span>
+          <svg style="width: 10px; height: 10px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -762,7 +767,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.9</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.1</span>
         </div>
       </div>
 
@@ -772,7 +777,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.9</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.1</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -4712,7 +4717,126 @@
         dostuffState.activeFocusTaskId = firstActive ? firstActive.id : (dostuffState.focusTasks[0] ? dostuffState.focusTasks[0].id : null);
       }
       saveDoStuffFocusTasks();
+      setTimeout(() => { if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false); }, 150);
     }
+
+    let isSyncingWithCloud = false;
+    let lastCloudSyncTimestamp = 0;
+
+    window.syncWithCloud = async function(forcePush = false) {
+      if (isSyncingWithCloud) return;
+      isSyncingWithCloud = true;
+
+      const statusLabel = document.getElementById('syncStatusLabel');
+      const syncDot = document.getElementById('syncPulseDot');
+      if (statusLabel) statusLabel.textContent = forcePush ? 'Pushing...' : 'Syncing...';
+
+      const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+      const isCloudHost = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      const primaryBase = (isCap || isCloudHost) ? 'https://orbai.appsolutelydone.com' : '';
+      const endpoints = primaryBase ? [`${primaryBase}/api/sync`, '/api/sync'] : ['/api/sync', 'https://orbai.appsolutelydone.com/api/sync'];
+
+      let success = false;
+      let remoteState = null;
+
+      for (const ep of endpoints) {
+        try {
+          if (forcePush) {
+            const payload = {
+              state: {
+                focus_tasks: dostuffState.focusTasks || [],
+                categories: dostuffState.categories || [],
+                assistant_tasks: dostuffState.assistantTasks || [],
+                active_category_id: dostuffState.activeCategoryId || 'accounts',
+                active_focus_task_id: dostuffState.activeFocusTaskId || '',
+                planning: dostuffState.planning || {},
+                calendar_events: (cachedCalendarEvents || []),
+                midday_call_active: (typeof middayCallActive !== 'undefined') ? middayCallActive : true,
+                updated_at: Date.now()
+              }
+            };
+
+    // Auto-sync tasks and workspace between Desktop and Android
+    setInterval(() => {
+      if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false);
+    }, 12000);
+
+    window.addEventListener('focus', () => {
+      if (typeof window.syncWithCloud === 'function') window.syncWithCloud(false);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && typeof window.syncWithCloud === 'function') {
+        window.syncWithCloud(false);
+      }
+    });
+            const res = await fetch(ep, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res && res.ok) {
+              const data = await res.json();
+              remoteState = data.state;
+              success = true;
+              break;
+            }
+          } else {
+            const res = await fetch(ep, { method: 'GET' });
+            if (res && res.ok) {
+              const data = await res.json();
+              remoteState = data.state;
+              success = true;
+              break;
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (success && remoteState) {
+        lastCloudSyncTimestamp = remoteState.updated_at || Date.now();
+
+        if (Array.isArray(remoteState.focus_tasks) && remoteState.focus_tasks.length > 0) {
+          dostuffState.focusTasks = remoteState.focus_tasks;
+        }
+        if (Array.isArray(remoteState.categories) && remoteState.categories.length > 0) {
+          dostuffState.categories = remoteState.categories;
+        }
+        if (Array.isArray(remoteState.assistant_tasks) && remoteState.assistant_tasks.length > 0) {
+          dostuffState.assistantTasks = remoteState.assistant_tasks;
+        }
+        if (remoteState.active_category_id) dostuffState.activeCategoryId = remoteState.active_category_id;
+        if (remoteState.active_focus_task_id) dostuffState.activeFocusTaskId = remoteState.active_focus_task_id;
+        if (remoteState.planning) dostuffState.planning = remoteState.planning;
+
+        try {
+          localStorage.setItem('orb_dostuff_categories', JSON.stringify(dostuffState.categories));
+          localStorage.setItem('orb_dostuff_active_cat_id', dostuffState.activeCategoryId || 'accounts');
+          localStorage.setItem('orb_dostuff_focus_tasks', JSON.stringify(dostuffState.focusTasks));
+          localStorage.setItem('orb_dostuff_active_task_id', dostuffState.activeFocusTaskId || '');
+          localStorage.setItem('orb_dostuff_assistant_tasks', JSON.stringify(dostuffState.assistantTasks));
+        } catch (e) {}
+
+        if (Array.isArray(remoteState.calendar_events) && remoteState.calendar_events.length > 0) {
+          cachedCalendarEvents = remoteState.calendar_events;
+          if (typeof renderGoogleCalendarFeed === 'function') renderGoogleCalendarFeed();
+        }
+
+        if (typeof renderDoStuffCategories === 'function') renderDoStuffCategories();
+        if (typeof renderDoStuffTaskList === 'function') renderDoStuffTaskList();
+        if (typeof renderCategoryPills === 'function') renderCategoryPills();
+        if (typeof renderAssistantTasksList === 'function') renderAssistantTasksList();
+        if (typeof updateDoStuffUI === 'function') updateDoStuffUI();
+
+        if (statusLabel) statusLabel.textContent = 'Synced';
+        if (syncDot) syncDot.style.background = '#10b981';
+      } else {
+        if (statusLabel) statusLabel.textContent = 'Offline';
+        if (syncDot) syncDot.style.background = '#f59e0b';
+      }
+
+      isSyncingWithCloud = false;
+    };
 
     function saveDoStuffFocusTasks() {
       try {
@@ -4722,6 +4846,9 @@
         localStorage.setItem('orb_dostuff_active_task_id', dostuffState.activeFocusTaskId || '');
         localStorage.setItem('orb_dostuff_assistant_tasks', JSON.stringify(dostuffState.assistantTasks));
       } catch (e) {}
+      if (typeof window.syncWithCloud === 'function') {
+        window.syncWithCloud(true);
+      }
     }
 
     function getActiveCategory() {

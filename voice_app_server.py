@@ -798,6 +798,25 @@ class PWAHandler(BaseHTTPRequestHandler):
             cfg = load_chat_voices()
             self._set_headers(200)
             self.wfile.write(json.dumps(cfg).encode("utf-8"))
+        elif url_path == "/api/sync":
+            try:
+                import sync_engine
+                state = sync_engine.get_cloud_sync_state()
+            except Exception as se:
+                print(f"[LOCAL-SYNC-GET-ERR]: {se}", flush=True)
+                state = None
+            if not state:
+                conv = get_conversation_history(100)
+                state = {
+                    "focus_tasks": [],
+                    "assistant_tasks": [],
+                    "categories": [],
+                    "messages": conv,
+                    "updated_at": int(time.time() * 1000)
+                }
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "state": state}).encode("utf-8"))
+            return
         elif url_path.startswith("/Bank_Statements"):
             import mimetypes
             rel = url_path.lstrip("/").replace("%20", " ")
@@ -1247,6 +1266,19 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "ok", "total_pause": total_pause, "enabled": settings["enabled"]}).encode("utf-8"))
 
+        elif url_path == "/api/sync":
+            try:
+                import sync_engine
+                existing = sync_engine.get_cloud_sync_state() or {}
+                incoming = data.get("state", data)
+                merged = sync_engine.merge_sync_states(existing, incoming)
+                sync_engine.save_cloud_sync_state(merged)
+            except Exception as se:
+                print(f"[LOCAL-SYNC-POST-ERR]: {se}", flush=True)
+                merged = data.get("state", data)
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "state": merged}).encode("utf-8"))
+            return
         elif url_path in ("/api/read_ai_reply", "/api/speak_last", "/api/kickstart"):
             settings = load_settings()
             settings["enabled"] = True
