@@ -1,56 +1,6 @@
 [
   {
     "role": "user",
-    "text": "That works perfectly. Instead of a sharp line between the background images, could we implement a black gradient fade? This will create a smoother transition between the sections and prevent any harsh visual splits.",
-    "time": "18:10"
-  },
-  {
-    "role": "user",
-    "text": "Also, let's ensure that all background images across the website are positioned to center on the faces. We want to avoid awkward crops\u2014like randomly zooming in on a forehead or a jacket\u2014and keep the full face visible. Additionally, let's slightly reduce the overlay opacity towards the center of the background images, creating a subtle radial fade so the details of the image can glimmer through more clearly.",
-    "time": "18:12"
-  },
-  {
-    "role": "user",
-    "text": "Let's ensure we avoid any awkward cropping on the background images by keeping the faces perfectly centered within each section strip.",
-    "time": "18:13"
-  },
-  {
-    "role": "user",
-    "text": "I just ran into the issue again: after using the polish feature, some of the text disappears when clicking the send button. Additionally, it isn't fully capturing the current chat context, only the most recent message.",
-    "time": "18:14"
-  },
-  {
-    "role": "user",
-    "text": "Let's slightly increase the vertical height of the section strips to ensure none of the faces in the background images get cropped or cut off.",
-    "time": "18:14"
-  },
-  {
-    "role": "user",
-    "text": "Make sure no faces are getting cut off",
-    "time": "18:16"
-  },
-  {
-    "role": "user",
-    "text": "Make sure no faces are getting cut off",
-    "time": "18:16"
-  },
-  {
-    "role": "user",
-    "text": "From spook studio",
-    "time": "18:17"
-  },
-  {
-    "role": "user",
-    "text": "If a background image requires more vertical space to keep the face fully visible, let's dynamically adjust the section strip height to accommodate it.",
-    "time": "18:17"
-  },
-  {
-    "role": "user",
-    "text": "We should focus strictly on framing the faces. Currently, some of the taller background images are stretching the sections too much, resulting in unnecessary vertical space that displays clothing, like long jackets.",
-    "time": "18:20"
-  },
-  {
-    "role": "user",
     "text": "There seems to be a glitch in Spook Studio where clicking the \"Polish\" button just opens the website instead of sending the message into that specific chat.",
     "time": "18:20"
   },
@@ -198,5 +148,55 @@
     "role": "user",
     "text": "So am I writing thinking that this apple only work locally properly",
     "time": "17:24"
+  },
+  {
+    "role": "user",
+    "text": "I just want to confirm whether I can legally use this for makeup bookings.",
+    "time": "17:20"
+  },
+  {
+    "role": "user",
+    "text": "Testing",
+    "time": "17:51"
+  },
+  {
+    "role": "user",
+    "text": "How can I ensure my password manager remains secure and synchronized, allowing me to access my credentials even if I lose my laptop?",
+    "time": "11:20"
+  },
+  {
+    "role": "user",
+    "text": "Can you condense this reply into a single, concise sentence?",
+    "time": "11:22"
+  },
+  {
+    "role": "user",
+    "text": "Which cloud folder should I use to save it?",
+    "time": "11:24"
+  },
+  {
+    "role": "user",
+    "text": "Which cloud folder should I use?",
+    "time": "11:24"
+  },
+  {
+    "role": "user",
+    "text": "Would it be better to save it in Google Drive or OneDrive, and which one is easier and more reliable to access?",
+    "time": "11:27"
+  },
+  {
+    "role": "user",
+    "text": "Are you able to automatically save it to Google Drive for me, since I already have it linked as an app?",
+    "time": "11:31"
+  },
+  {
+    "role": "user",
+    "text": "Since the voice output doesn't sound natural, perhaps we should try ElevenLabs.",
+    "time": "15:30"
+  },
+  {
+    "role": "user",
+    "text": "I just finished a call, but I didn't receive a text with the feedback afterward.",
+    "time": "15:30"
   }
 ]

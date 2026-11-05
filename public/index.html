@@ -734,7 +734,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.5</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.6</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -748,7 +748,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.5</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.6</span>
         </div>
       </div>
 
@@ -758,7 +758,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.5</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.6</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -1137,8 +1137,11 @@
           </div>
           <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
             <select id="selectVoice" onchange="onVoiceSelected(true)" title="Switch AI Speaking Voice" style="width: auto !important; min-width: 0; padding: 5px 8px; border-radius: 8px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.45); color: #e0f2fe; font-size: 11.5px; font-weight: 700; cursor: pointer;">
-              <option value="en-GB-LibbyNeural" selected>🇬🇧 Libby</option>
-              <option value="en-GB-SoniaNeural">🇬🇧 Sonia</option>
+              <option value="eleven:alice">✨ ElevenLabs Alice (British Assistant)</option>
+              <option value="eleven:sarah">✨ ElevenLabs Sarah (Natural British)</option>
+              <option value="eleven:george">✨ ElevenLabs George (British Male)</option>
+              <option value="en-GB-SoniaNeural" selected>🇬🇧 Sonia</option>
+              <option value="en-GB-LibbyNeural">🇬🇧 Libby</option>
               <option value="en-GB-RyanNeural">🇬🇧 Ryan</option>
               <option value="en-GB-ThomasNeural">🇬🇧 Thomas</option>
               <option value="en-US-AvaNeural">🇺🇸 Ava</option>
@@ -1409,6 +1412,33 @@
     }
 
     const PERSONAS = [
+      {
+        id: "eleven:alice",
+        name: "Alice",
+        accent: "British",
+        flag: "✨",
+        gender: "Female",
+        tag: "ElevenLabs Hyper-Realistic Executive Assistant",
+        avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=160&auto=format&fit=crop&q=80"
+      },
+      {
+        id: "eleven:sarah",
+        name: "Sarah",
+        accent: "British",
+        flag: "✨",
+        gender: "Female",
+        tag: "ElevenLabs Natural Conversational British",
+        avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=160&auto=format&fit=crop&q=80"
+      },
+      {
+        id: "eleven:george",
+        name: "George",
+        accent: "British",
+        flag: "✨",
+        gender: "Male",
+        tag: "ElevenLabs Warm Raspy British Male",
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=160&auto=format&fit=crop&q=80"
+      },
       {
         id: "en-GB-LibbyNeural",
         name: "Libby",
@@ -1980,8 +2010,11 @@
       }, 150);
     }
 
-    function playCloudAudio(url, spokenText = '') {
-      if (!url) return;
+    function playCloudAudio(url, spokenText = '', onComplete = null) {
+      if (!url) {
+        if (onComplete) onComplete();
+        return;
+      }
       if (currentPreviewAudio) {
         try { currentPreviewAudio.pause(); currentPreviewAudio.currentTime = 0; } catch (e) {}
       }
@@ -1995,16 +2028,19 @@
         isAISpeaking = false;
         setOrbState(isConnected ? 'listening' : 'paused');
         if (title) title.innerText = isConnected ? 'Listening for Voice...' : 'Microphone Idle';
+        if (onComplete) onComplete();
       };
       audio.onerror = () => {
         isAISpeaking = false;
         if (spokenText) speakTextInBrowser(spokenText, currentVoiceId);
         setOrbState(isConnected ? 'listening' : 'paused');
+        if (onComplete) onComplete();
       };
       audio.play().catch(() => {
         if (spokenText) speakTextInBrowser(spokenText, currentVoiceId);
         isAISpeaking = false;
         setOrbState(isConnected ? 'listening' : 'paused');
+        if (onComplete) onComplete();
       });
     }
 
@@ -4909,7 +4945,10 @@
         try { assistantCallRecognition.stop(); } catch (e) {}
       }
 
-      fetch('/api/assistant_call', {
+      const isCapacitorEnv = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+      const assistantEndpoint = isCapacitorEnv ? 'https://orb-ai-voice-studio.vercel.app/api/assistant_call' : '/api/assistant_call';
+
+      fetch(assistantEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -4957,7 +4996,11 @@
 
         // Play Sonia's Voice Audio
         if (data.audio_url) {
-          playCloudAudio(data.audio_url, reply, () => {
+          let playUrl = data.audio_url;
+          if (isCapacitorEnv && playUrl.startsWith('/')) {
+            playUrl = 'https://orb-ai-voice-studio.vercel.app' + playUrl;
+          }
+          playCloudAudio(playUrl, reply, () => {
             assistantIsSpeaking = false;
             getAllDoStuffDocs().forEach(doc => {
               const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');

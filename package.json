@@ -4,7 +4,8 @@
   "description": "Orb AI Live Voice Studio - Hands-Free Conversational Voice Assistant v1.0",
   "main": "web_app/index.html",
   "scripts": {
-    "start": "python voice_app_server.py",
+    "start": "node --env-file=.env.local voice_service.js",
+    "dev": "python voice_app_server.py",
     "build": "echo Build complete"
   },
   "keywords": [
@@ -16,6 +17,9 @@
   ],
   "author": "Sadie (COREMARKET GOODS LTD)",
   "license": "MIT",
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.31.0"
+  },
   "devDependencies": {
     "@capacitor/android": "^8.6.0",
     "@capacitor/cli": "^8.6.0",

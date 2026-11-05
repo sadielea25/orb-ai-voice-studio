@@ -1,127 +1,127 @@
 [
   {
-    "text": "From Spook Studio. Welcome back! Let's get straight back into it. I've verified the live dev server is still running seamlessly in the background so we can pick right up where we left off. You can review the current state of Version 10.0 here: Local (Working on V10.0): Network LAN (Working on V10.0): Last time, we perfected the UI, updated the fonts, fixed the Time Slot glitch, and added the Studio Sessions info popover. Are we ready to wire up the actual booking logic for Stripe or SumUp today, or is there another UI tweak you'd like to knock out first?",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "13:34:14"
+    "text": "DoStuff 30 minute reset. Doorframe chest and shoulder opening stretch.",
+    "voice": "DoStuff Break (en-IE-EmilyNeural)",
+    "time": "11:49:06"
   },
   {
-    "text": "From Spook Studio. All saved and secured! I've committed the code and officially tagged this as Version 10 (v10.0) in Git. All the UX refinements, pop-ups, fonts, and layout updates are locked in, so you can always safely roll back to this exact point if needed. Shall we tackle the actual Stripe or SumUp booking logic next?",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:55:10"
+    "text": "DoStuff 5 minute reset. Make your bed for a fresh space.",
+    "voice": "DoStuff Break (en-IE-EmilyNeural)",
+    "time": "11:35:25"
   },
   {
-    "text": "From Spook Studio. Ah, good catch! There was a tiny glitch under the hood where the script block was trying to attach to the popover before the rest of the form had fully loaded into the browser, causing it to fail silently. I just rewired the logic so it safely triggers exactly when you click it. Give it a click now\u2014it should pop right open instantly!",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:49:15"
+    "text": "The voice\u2011server has been restarted. I\u2019ll also restart the auto\u2011voice reader and open the app in your browser. Restart auto\u2011voice reader. (launched as a background task). Open the application. Now open the page that appears (or use the LAN address and click the \u26a1 Launch Pop\u2011Up Widget button. The Orb + DoStuff widget should restore to its normal size (400 \u00d7 290 px) and appear in the foreground. If it doesn\u2019t show, refresh the page and click the button again.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "11:29:45"
   },
   {
-    "text": "From Spook Studio. Ah, my apologies! That was a side-effect of me hardcoding the HTML earlier to fix the split-second \"loading glitch.\" The hardcoded HTML still had the old single-time format (14:00), so it would glitch out once the JavaScript kicked in and updated it to the full range (12:00 \u2013 14:00). I've just gone in and synced the hardcoded HTML perfectly with the JavaScript data. Now, when the page loads, the time slots beautifully display the full ranges right out of the gate (12:00 \u2013 14:00, 14:00 \u2013 16:00, and so on), and there is zero glitching when you click around. The checkout summary at the bottom also correctly defaults to 12:00 \u2013 14:00 on load. Everything should be smooth as glass now. Shall we wire up the payment/booking logic?",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:48:09"
+    "text": "From Log App. Google Drive is easier and more reliable for emergency access, while OneDrive is easier for automatic background syncing on your Windows PC. Direct Comparison. Google Drive (Winner for Emergency Recovery): Why it is better: You are almost certainly already logged into Google on your mobile phone and browser. If your laptop is lost, you can open Google Drive on any phone or new computer and grab your file in seconds without struggling with forgotten Microsoft login prompts. Best for: Fast, stress-free recovery from any device. OneDrive (Winner for Daily Desktop Convenience): Why it is convenient: It is already built into your Windows file explorer at C:\\Users\\corem\\OneDrive. Any file saved there syncs silently in the background without needing to open a browser. Drawback: Accessing OneDrive on a mobile phone or another machine often requires extra Microsoft sign-in steps that can be annoying in an emergency. Recommended Strategy. Save your encrypted backup file to your local OneDrive folder on this computer so it uploads automatically, and upload a copy to Google Drive so you have guaranteed one-tap access from your phone if you ever lose your laptop.",
+    "voice": "Log App (en-IE-EmilyNeural)",
+    "time": "11:27:39"
   },
   {
-    "text": "From Spook Studio. Done. The [ (i) INFO ] button is now pulled directly next to the \"TIME SLOT\" text, removing the massive gap. I've also shifted the pop-up drop-down and its tiny arrow pointer so that when it opens, it cleanly points right up to the new button position instead of floating weirdly on the right side. Check the live site. How are you feeling about the flow now? Next up, we can hit the actual form submission logic!",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:47:11"
+    "text": "The voice\u2011server has been restarted. I\u2019ll also restart the auto\u2011voice reader and open the app in your browser. Restart auto\u2011voice reader. (launched as a background task). Open the application. Now open the page that appears (or use the LAN address and click the \u26a1 Launch Pop\u2011Up Widget button. The Orb + DoStuff widget should restore to its normal size (400 \u00d7 290 px) and appear in the foreground. If it doesn\u2019t show, refresh the page and click the button again.",
+    "voice": "Orb (en-IE-EmilyNeural)",
+    "time": "11:26:17"
   },
   {
-    "text": "From Spook Studio. Good call! I've just updated the trigger so it's impossible to miss. Instead of just an icon, it is now a distinct little [ (i) INFO ] pill button aligned perfectly to the right side of the \"Time Slot\" header. It's styled with a faint purple background and border to invite the click. Check it out\u2014is that exactly what you were looking for? If so, are we ready to jump into the booking submission logic?",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:45:34"
+    "text": "From Log App. Use your OneDrive folder, as it is already active and syncing on your Windows desktop. Best Local Path: C:\\Users\\corem\\OneDrive (for example, inside a dedicated Vault Backups folder). Why it works: It syncs to your personal Microsoft account automatically, so if you ever lose your laptop, you can log in at onedrive.live.com from any computer or mobile phone to download your backup. Alternative: You can also drop it into Google Drive (drive.google.com) if you prefer using your Google account. Let me know if you would like me to set up an automated one-click backup button in the app that saves directly into your OneDrive.",
+    "voice": "Log App (en-IE-EmilyNeural)",
+    "time": "11:25:18"
   },
   {
-    "text": "From Spook Studio. Just added a new info popover to the \"TIME SLOT\" header! Right next to the TIME SLOT label, there is now a small purple (?) icon button. When clicked, a slick pop-up drops down stating: STUDIO SESSIONS. \"We don't do boring, quiet hairdresser appointments. These are social studio sessions where groups and individuals get painted simultaneously while drinking. ARRIVE ON TIME. We recommend arriving at the start of your slot so our pros can get through everyone in your sitting while you enjoy the pre-party vibe.\". It has a smooth \"Got It\" button to dismiss it, or you can simply click anywhere outside of it. This perfectly sets the expectation that they are booking into a lively session rather than a strict 1-on-1 appointment. Does this nail the vibe you were going for?",
+    "text": "Here is the cleanest workflow for both scenarios: 1. For Your Own Websites (Best Workflow: Duplicate This Exact Stack). Stick with this exact 4-part blueprint because it is fast, cheap, and everything talks to the same AI brain: Hosting & Backend: Vercel (hosts the website + /api/ serverless webhooks). Phone, SMS & WhatsApp: Twilio (buy a local UK number per brand, point Voice & Messaging webhooks to /api/twilio-voice). Voice & AI Brain: ElevenLabs ConvAI + Gemini (powers the natural voice on phone calls and text/chat/email replies using one shared knowledge base JSON file). Emails: Resend (verify the domain once, use /api/inbound-email for AI email replies, and store unified customer cards). 2. For Managing Client Sites & Communications (Agency / Multi-Client Setup). When you do this for paying clients, keep the same tech stack above, but add sub-account isolation so client billing, phone numbers, and data never mix with yours: Twilio Subaccounts: Inside your main Twilio account, create a Subaccount for each client. That keeps their phone number, call recordings, and SMS usage billed and separated per client while you control it from one master login. Resend Multi-Domain (or Per-Client API Keys): Verify each client's domain in Resend with its own API key and Audience ID so their customer cards and emails stay strictly isolated. One Reusable Template Repo: Save this setup (admin-communications.html + /api/twilio-voice.js + /api/inbound-email.js + /api/spook-chat.js) as a clean starter template. For each new client, you just swap 4 variables in Vercel: CLIENTNAME & Studio/Business Rules. TWILIOPHONENUMBER. ELEVENLABSCONVAIAGENTID. RESENDAUDIENCEID. White-Label Client Dashboard: Give each client their own /admin-communications.html login so they can listen to their call recordings, read collapsible transcripts, see filled-out forms, and train their own AI concierge without ever needing to touch Twilio or code.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:43:00"
+    "time": "14:45:24"
   },
   {
-    "text": "From Spook Studio. Done! That's a massive UI improvement. I moved the Location block all the way down so it sits perfectly right before the final Checkout Summary. Since there is no other location to pick, it now looks exactly like the \"active\" selected state of the date and time slots\u2014featuring the white border and the deep red-to-purple gradient. It makes the whole form feel completely cohesive from top to bottom. What's the next move? Ready to start wiring up the checkout?",
+    "text": "Keep it exactly as it is. You do not need to set up Twilio SendGrid. Here is why keeping your current setup is better: Zero extra cost or DNS changes: Your domain (dolleduptodeath.com) is already verified and working on Resend. Switching to SendGrid would require changing your domain's MX/DNS records and paying for a separate SendGrid plan. Same AI Brain Across Everything: Your current /api/inbound-email endpoint is already connected to Hannah AI and your studio knowledge base (spook-ai-communications-kb.json), so when you train Hannah inside a customer's card, she uses those exact same rules for phone calls, texts, live chat, and email replies. Unified Person Cards: Every incoming email and Hannah's automated email reply already go straight into that person's card on admin-communications.html alongside their phone calls, forms, and bookings.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:39:07"
+    "time": "14:44:17"
   },
   {
-    "text": "From Spook Studio. Absolutely right\u2014monospace font in all-caps with massive spacing is great for headers and labels, but it destroys readability when used for actual paragraph copy. I've just swept through the pop-up text and swapped it over: Paragraphs: Changed to a smooth, standard sans-serif font (Montserrat), slightly bumped up the size, and removed the heavy letter spacing. Drinks List: Removed the all-caps styling and used standard tracking, making it much easier to read at a glance. Small Print: Dropped the all-caps, making the disclaimer at the bottom look like proper, legible legal text. The headers remain in the edgy monospace, creating a beautiful contrast between the stylized labels and the highly readable body text. If the typography is feeling solid, shall we move on to the checkout integration next?",
+    "text": "Keep it exactly as it is. You do not need to set up Twilio SendGrid. Here is why keeping your current setup is better: Zero extra cost or DNS changes: Your domain (dolleduptodeath.com) is already verified and working on Resend. Switching to SendGrid would require changing your domain's MX/DNS records and paying for a separate SendGrid plan. Same AI Brain Across Everything: Your current /api/inbound-email endpoint is already connected to Hannah AI and your studio knowledge base (spook-ai-communications-kb.json), so when you train Hannah inside a customer's card, she uses those exact same rules for phone calls, texts, live chat, and email replies. Unified Person Cards: Every incoming email and Hannah's automated email reply already go straight into that person's card on admin-communications.html alongside their phone calls, forms, and bookings.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:36:30"
+    "time": "14:43:01"
   },
   {
-    "text": "From Spook Studio. Done. That entire \"Where Are We Based\" section (with the date slots list, the mirror image placeholder, and the map) has been completely stripped out of the code. This makes the flow much tighter! We now go straight from the hero section, into the services/packages breakdown, and then right into the checkout/booking form area. What's next? Should we wire up the actual booking logic now?",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:35:37"
+    "text": "DoStuff 30 minute reset. Put a laundry load on or swap to dryer.",
+    "voice": "DoStuff Break (en-GB-SoniaNeural)",
+    "time": "14:42:53"
   },
   {
-    "text": "From Spook Studio. This is a great idea\u2014adding urgency directly drives conversion. I've just added an animated urgency text! Whenever you click/select the Saturday 31st (Halloween) date card, a small, red, pulsing message smoothly appears directly underneath the date selector: \u26a1 HALLOWEEN SPACES FILLING FAST. If you click back to Friday, it disappears. Because Saturday is currently the default selected date, this warning flashes up perfectly the moment the user hits the booking section. How does the animation feel? Are we ready to hook up the actual checkout or backend payment logic?",
+    "text": "From Spook Studio. Keep it exactly as it is. You do not need to set up Twilio SendGrid. Here is why keeping your current setup is better: Zero extra cost or DNS changes: Your domain (dolleduptodeath.com) is already verified and working on Resend. Switching to SendGrid would require changing your domain's MX/DNS records and paying for a separate SendGrid plan. Same AI Brain Across Everything: Your current /api/inbound-email endpoint is already connected to Hannah AI and your studio knowledge base (spook-ai-communications-kb.json), so when you train Hannah inside a customer's card, she uses those exact same rules for phone calls, texts, live chat, and email replies. Unified Person Cards: Every incoming email and Hannah's automated email reply already go straight into that person's card on admin-communications.html alongside their phone calls, forms, and bookings.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:34:47"
+    "time": "14:41:23"
   },
   {
-    "text": "From Spook Studio. Perfect choice\u2014it sounds incredibly premium and tells the customer exactly what they get to do! I've swapped the title over to Sit Back and Sip. The popover reads flawlessly now. Shall we dive into the Stripe/SumUp checkout integration next?",
+    "text": "From Spook Studio. v19.41 is now live, and I have already built the AI email auto-reply engine for you in api/inbound-email.js. Here is how it works and how it connects: Already Built and Live on Your Domain (bookings@dolleduptodeath.com and info@dolleduptodeath.com): Whenever a customer emails bookings@dolleduptodeath.com or info@dolleduptodeath.com, your inbound webhook ( receives the email. Hannah AI automatically reads their email, checks your studio knowledge base (spook-ai-communications-kb.json), and sends a polite UK English reply straight back to the customer. Both the customer's incoming email and Hannah's reply are automatically attached to that person's expandable card in admin-communications.html (under the new Email badge and filter), and a copy is forwarded to sadielea25@gmail.com. If You Also Use Twilio SendGrid Inbound Parse: Twilio handles email through Twilio SendGrid. If you ever route a domain through SendGrid Inbound Parse in the Twilio/SendGrid console, you simply paste this exact same webhook URL into the Destination URL box: The endpoint accepts both Resend Inbound webhooks and Twilio SendGrid Inbound Parse webhooks out of the box. Updated Links (v19.41): Live Production Communications Admin: Local Dev Preview:",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:24:45"
+    "time": "14:38:08"
   },
   {
-    "text": "From Spook Studio. I agree, \"Pre N Pamper\" leaned a bit too far into generic salon territory. I've swapped it to \"The Warm Up\" in the code, which feels much cooler and perfectly matches the \"pres\" vibe before a night out. If you want something a bit different, here are a few other premium, non-cheesy options that fit the edgy Spook Studio aesthetic: The Transformation (Focuses on the makeup/Halloween aspect). Studio Session (Clean, minimal, editorial). Trust The Pros (Elevates the artists' authority). Sit Back and Sip (Casual, references the drinks and relaxing). The Prep (Ultra-minimalist). How does The Warm Up feel, or would you prefer to drop in one of the alternatives above?",
+    "text": "From Spook Studio. I have upgraded api/inbound-email.js and admin-communications.html so Hannah AI automatically replies to incoming customer emails (bookings@dolleduptodeath.com and info@dolleduptodeath.com) using the same studio knowledge base as your phone and live chat AI, and logs both the incoming email and Hannah's reply directly inside that person's card. The v19.41 deployment is running now and I will confirm as soon as it finishes.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:23:34"
+    "time": "14:37:28"
   },
   {
-    "text": "From Spook Studio. That is an incredible idea\u2014merging the drinks list directly inside step 2 makes the popover perfectly cohesive from top to bottom! I've restored the 3rd step and injected the \"Pick Your Poison\" drinks list cleanly underneath the description of Step 2. To make sure it doesn't look too heavy, I shrunk the drinks list text and icons very slightly so it acts as a sleek sub-list for that step. The narrative is completely seamless now. How does that look to you?",
+    "text": "From Spook Studio. v19.40 is live. Each person's card in admin-communications.html now includes: One Person = One Card: Clicking a person's card opens their full drawer containing their call audio recordings, collapsible transcript dropdowns (View Call Transcript), SMS/WhatsApp/live chat messages, linked studio booking, and website visitor pixel journey. Submitted Forms Inside the Card: Any form they have filled out (Studio Booking and Look Customisation Form, Pre-Booking Planner and Mood Board Form, Website Enquiry Form, or Promoter Registration Form) appears in a collapsible Submitted Forms section on their card with every field they entered, plus a Forms filter button at the top. Updated Links (v19.40): Live Production Communications Admin: Local Dev Preview:",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:20:43"
+    "time": "14:33:30"
   },
   {
-    "text": "From Spook Studio. That fixes the redundancy perfectly, since we already use \"Pick Your Poison\" for the drinks list right beneath it! The timeline now reads: 1. Check In. 2. Pre Party. It flows incredibly well. Are we completely happy with the copy and UI here?",
+    "text": "From Spook Studio. I have added all submitted forms (Studio Booking and Look Customisation Form, Pre-Booking Planner and Mood Board Form, Website Enquiry Form, and Promoter Registration Form) directly inside each person's expandable card in admin-communications.html and api/admin-bookings.js. The v19.40 production deployment is running now and I will confirm as soon as it finishes.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:19:40"
+    "time": "14:32:54"
   },
   {
-    "text": "From Spook Studio. I love this approach\u2014it's way more concise and merges the final two ideas into one solid punchline. I've deleted the 3rd timeline step and consolidated the copy into a lightning-fast 2-step process: 1. Check In. At our hollywood lit pop-up spook studio to grab your drinks token. 2. Pick Your Poison. Hand your token to the bar to retrieve your free drink. Enjoy your pre-drink during a social studio sesh while getting pampered by pros. This keeps the popover height super tight and perfectly minimal. What's next?",
+    "text": "From Spook Studio. The updated layout is now live: One Person = One Card: Each customer appears as a single clean card. Click their card to open or close their full communication history, linked booking details, and website pixel journey. Collapsible Transcript Dropdowns: Call recordings show the audio player right at the top, and the written conversation is tucked inside a \"View Call Transcript\" dropdown so it stays tidy and easy to scan. Ready for your test call: dolleduptodeath.com/admin-communications.html.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:18:49"
+    "time": "14:17:51"
   },
   {
-    "text": "From Spook Studio. All set! The timeline copy now matches your exact wording: Check In. At our hollywood lit pop-up spook studio to grab your drinks token. Pick Your Poison. Hand your token to the bar staff for your free drink. Pre N Pamper. Enjoy your pre-drink during a social studio sesh while getting pampered by pros. The popover looks incredibly polished now. What's next on our list?",
+    "text": "From Spook Studio. I have redesigned the Communications Centre so that: One Person = One Expandable Card: Instead of a long side-by-side list, every person is a single clean card. Clicking their card expands or collapses all of their communications, linked booking details, and website pixel journey right inside their card. Collapsible Call Transcripts: Inside each call recording card, the audio player is immediately visible at the top, while the written transcript is tucked neatly inside a \"View Call Transcript\" dropdown that you can click to open or close whenever you want. Deploying this update to production now\u2014I will let you know in a few seconds when it is live.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:15:45"
+    "time": "14:16:52"
   },
   {
-    "text": "From Spook Studio. I completely agree, that nested purple card design was starting to look like generic, out-of-the-box UI framework styling. I've stripped it down to follow your \"Premium Tags Only\" and \"Minimalism\" global rules: Removed the Inner Card: The drinks list now flows cleanly in-line without being trapped inside a secondary colored box. I used a very faint separator line above it instead. Upgraded to Premium Icons: I replaced the somewhat generic \"globe\" and \"sparkles\" emojis in the drinks list with specific, highly relevant line-drawn icons (a proper Wine Glass for wine/prosecco, and a Straw/Soda Cup for mocktails/softs). Ultra-Thin Minimalist Strokes: I've applied stroke-width=\"1.5\" to every single icon inside the popover (both the timeline and the drinks list) so they all look bespoke, editorial, and deliberately designed rather than standard thick UI icons. It looks so much sharper and intentional now. Give the popover another look\u2014what do you think?",
+    "text": "From Spook Studio. I have just run a full pre-flight diagnostic across the live production phone line, webhooks, audio recording pipeline, and dashboard: Live Call Routing (+44 292 271 5991): Tested and verified. Connecting a call immediately registers a live bidirectional stream with ElevenLabs (200 OK) and starts a dual-channel Twilio audio recording (RecordingChannels=dual) in parallel. Audio Recording and Playback: Both ElevenLabs ConvAI MP3 recordings and Twilio dual-channel MP3 recordings are wired directly into the player at the top of each call card. SMS Checkout and Callback Tools: Verified sendsumupsms (\u00a320 per person deposit link via SMS) and bookownercallback (owner email + caller confirmation SMS). Clean Slate: 0 test records in the feed and cache-busting active on the Refresh button. You are completely good to go\u2014make your test call whenever you are ready.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:14:18"
+    "time": "14:12:19"
   },
   {
-    "text": "From Spook Studio. Excellent catch\u2014making the entire sticker block act as the button provides a vastly better touch target on mobile! I've just moved the click handler and the hover interactions up to the root promoSticker element. Now, clicking anywhere on the large black/purple sticker will toggle the popover, and the little pulsing drink icon will subtly scale up and glow when you hover over the sticker itself. The visuals remain 100% identical. Does the flow feel perfect now?",
-    "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:11:02"
+    "text": "DoStuff 30 minute reset. 20 standing calf raises behind chair.",
+    "voice": "DoStuff Break (en-GB-SoniaNeural)",
+    "time": "14:09:53"
   },
   {
-    "text": "From Spook Studio. Perfect. I've added that exactly where you requested. Right below the drinks list (and just above the \"Got It\" button), there is now a subtle, minimal piece of small print that says: \\ 1 FREE DRINK PER PERSON INCLUDED WITH EVERY BOOKING, RETRIEVABLE DURING YOUR SELECTED SESSION. It's set in a small 8px grey font so it looks like professional legal/disclaimer text without cluttering the main design. Ready for the next step?",
+    "text": "From Spook Studio. All previous test data and caches have now been completely cleared (973 cloud test records purged and 0 contacts remaining in the feed). The dashboard is now a completely clean slate starting from right now\u2014any new call, SMS, WhatsApp, chat, or booking will appear fresh at the top of the list with full two-way call audio recording enabled: dolleduptodeath.com/admin-communications.html.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:08:02"
+    "time": "14:09:12"
   },
   {
-    "text": "From Spook Studio. All updated! The copy on the timeline is now exactly what you specified: Check In. At our hollywood lit pop-up spook studio to grab your drinks token. Retrieve Your Poison. Hand your token to the bar staff for your free drink. Pres and Pamper. Enjoy your pre-drink in a social studio sesh while getting pampered by pros. The form and promo UI are looking ridiculously sharp. Are we ready to move onto the backend booking integration?",
+    "text": "From Spook Studio. Deployment is live and the cloud test-data wipe is running now. I will confirm as soon as the final verification completes.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:07:19"
+    "time": "14:05:18"
   },
   {
-    "text": "From Spook Studio. Done! I've swapped \"Includes:\" to \"PICK YOUR POISON:\" just above the drinks list. (And I spelled it correctly for you again!). It really leans into the Halloween theme perfectly now. The whole popover feels like an exclusive VIP invitation. Are we happy with the UI now, and ready to move onto the final app.js payment/booking logic?",
+    "text": "From Spook Studio. Clearing all previous test data, resetting the clean cutoff timestamp to right now, and deploying the cache-busted update to production. I will confirm as soon as the deployment finishes and the cloud wipe executes.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:04:37"
+    "time": "14:03:48"
   },
   {
-    "text": "From Spook Studio. That is a brilliant idea! It aligns perfectly with your Global Rule #8 (\"Visual Cards Over Dense Lists\"). I've scrapped the paragraph block and built a clean, vertical 3-step timeline connected by a faint purple line. Instead of using generic numbered circles, I used premium, line-drawn purple SVGs for each step: \ufe0f Check In: Arrive at our hollywood lit pop-up studio to grab your token. Retrieve Your Poison: Hand your token to the bar staff for your free drink. \u2728 Pres and Pamper: Enjoy your drinks in a social setting while getting pampered by pros. It looks extremely sleek and is way faster to read. Give the popover a click and let me know how that timeline feels!",
+    "text": "From Spook Studio. The update is now live: Full Two-Way Call Recording Enabled: Every incoming call is now automatically recorded on both channels (caller + Hannah) from the moment the phone connects. How to Listen: Give the studio line (+44 292 271 5991) a quick test call now\u2014as soon as you hang up, an inline MP3 audio player will appear right at the top of the call card. You can also scroll down slightly in your +447538398662 thread to yesterday's calls (3 Nov), which all have the full two-way player ready to press Play. Live dashboard link: dolleduptodeath.com/admin-communications.html.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:03:29"
+    "time": "13:50:43"
   },
   {
-    "text": "From Spook Studio. \"Poison of choice\" is a brilliant touch for a Halloween event! I've swapped the text over. It now reads: \"Check in at our hollywood lit pop-up studio to grab your drinks token, then retrieve your poison of choice and enjoy your pres in a social studio setting while getting pampered by pros.\". (I also silently corrected the spelling from \"posion\" to \"poison\" for you as per your global rules). Is there anything else on the front-end UI you want to adjust before we start wiring up the actual payments?",
+    "text": "From Spook Studio. I have removed the synthetic \"Listen Back to Hannah's Responses\" buttons and enabled automatic dual-channel phone recording on both Twilio and ElevenLabs so that every incoming call is recorded in full (both the caller and Hannah) and displayed with a clean MP3 audio player. Deploying to production now\u2014I will let you know in a few seconds as soon as it finishes.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "19:01:20"
+    "time": "13:50:02"
   },
   {
-    "text": "From Spook Studio. You're totally right\u2014since the sticker says \"Free Drink Included\" and the popover title says \"Your Free Drink\", saying it a third time was definitely overkill. I've removed it entirely. Now it gets straight to the point: \"Check in at our hollywood lit pop-up inside Fuel to grab your token, then enjoy your pres in a social studio setting while getting pampered by pros.\". What's next?",
+    "text": "From Spook Studio. The audio playback update is now live: For Your Call Just Now: Click the purple \"Listen Back to Hannah's Responses\" button at the top of your 13:13 call card (or click the speaker icon next to any individual line) to hear the audio playback. For All New Calls Going Forward and Yesterday's Calls: Each call card displays an embedded player right above the transcript so you can press Play to hear both sides of the phone call in full. Refresh the page to listen back now: dolleduptodeath.com/admin-communications.html.",
     "voice": "Spook Studio (en-GB-SoniaNeural)",
-    "time": "18:59:28"
+    "time": "13:44:46"
   }
 ]

@@ -32,6 +32,23 @@ CHAT_VOICES_FILE = os.path.join(BASE_DIR, "chat_voices.json")
 TEMP_AUDIO = os.path.join(BASE_DIR, "speech_test.mp3")
 PORT = 8766
 
+# Load local environment variables (.env.local and .env)
+for env_name in ['.env.local', '.env']:
+    env_path = os.path.join(BASE_DIR, env_name)
+    if os.path.exists(env_path):
+        try:
+            with open(env_path, 'r', encoding='utf-8') as _ef:
+                for _line in _ef:
+                    _line = _line.strip()
+                    if _line and not _line.startswith('#') and '=' in _line:
+                        _k, _v = _line.split('=', 1)
+                        _k = _k.strip()
+                        _v = _v.strip().strip('"').strip("'")
+                        if _k and _k not in os.environ:
+                            os.environ[_k] = _v
+        except Exception:
+            pass
+
 
 def load_chat_voices():
     if os.path.exists(CHAT_VOICES_FILE):
@@ -506,6 +523,18 @@ def append_to_live_conversation(role, text):
 
 async def generate_speech(text, settings, output_path):
     voice = settings.get("voice", "en-GB-SoniaNeural")
+    eleven_key = os.environ.get("ELEVENLABS_API_KEY") or os.environ.get("XI_API_KEY")
+    if eleven_key:
+        try:
+            from api.index import generate_elevenlabs_audio
+            audio = generate_elevenlabs_audio(text, voice_id=voice, api_key=eleven_key)
+            if audio and len(audio) > 100:
+                with open(output_path, "wb") as f:
+                    f.write(audio)
+                return
+        except Exception as e:
+            print(f"[LOCAL-ELEVEN-ERR]: {e}", flush=True)
+
     rate = settings.get("rate", "+10%")
     pitch = settings.get("pitch", "+0Hz")
     volume = settings.get("volume", "+0%")
@@ -964,7 +993,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             api_key = data.get("api_key") or settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY") or default_gem_key
 
             if api_key:
-                models_to_try = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
+                models_to_try = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
                 content_text = raw_text
                 if context:
                     content_text = f"CURRENT CONVERSATION CONTEXT:\n{context}\n\nUSER'S SPOKEN DRAFT TO REWRITE & POLISH:\n\"{raw_text}\""

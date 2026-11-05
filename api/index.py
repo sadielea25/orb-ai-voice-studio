@@ -30,7 +30,7 @@ VOICE_SETTINGS = {
 CONVERSATION_HISTORY = [
     {
         "role": "assistant",
-        "text": "Hello Sadie. Orb AI Voice Studio v3.5 is live and connected in the cloud.",
+        "text": "Hello Sadie. Orb AI Voice Studio v3.6 is live and connected in the cloud.",
         "time": time.strftime("%H:%M")
     }
 ]
@@ -38,10 +38,75 @@ CONVERSATION_HISTORY = [
 DEFAULT_GEM_KEY = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=").decode()
 
 
+ELEVEN_VOICE_MAP = {
+    "alice": "Xb7hH8MSUJpSbSDYk0k2",        # British Female Executive Assistant (Sonia)
+    "sarah": "EXAVITQu4vr4xnSDxMaL",        # British/International Soft & Natural
+    "lily": "pFZP5JQG7iQjIQuC4Bku",         # British Warm Narrator
+    "george": "JBFqnCBsd6RMkjVDRZzb",       # British Warm Raspy Male
+    "charlotte": "XB0fDUnXU5powFXDhCwa",    # British Confident Female
+    "rachel": "21m00Tcm4TlvDq8ikWAM",       # Professional American/International
+    "en-gb-sonianeural": "Xb7hH8MSUJpSbSDYk0k2",
+    "en-gb-ryanneural": "JBFqnCBsd6RMkjVDRZzb",
+    "en-gb-libbyneural": "EXAVITQu4vr4xnSDxMaL"
+}
+
+
+def generate_elevenlabs_audio(text, voice_id="Xb7hH8MSUJpSbSDYk0k2", api_key=None):
+    clean_key = api_key or os.environ.get("ELEVENLABS_API_KEY") or os.environ.get("XI_API_KEY")
+    if not clean_key:
+        return b""
+    clean_text = text.strip()
+    if not clean_text:
+        return b""
+
+    v_clean = voice_id.replace("eleven:", "").strip().lower()
+    vid = ELEVEN_VOICE_MAP.get(v_clean, voice_id.replace("eleven:", "").strip())
+    if len(vid) < 15:
+        vid = "Xb7hH8MSUJpSbSDYk0k2"
+
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{vid}?output_format=mp3_44100_128"
+    payload = {
+        "text": clean_text,
+        "model_id": "eleven_turbo_v2_5",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.85,
+            "style": 0.0,
+            "use_speaker_boost": True
+        }
+    }
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "xi-api-key": clean_key,
+                "Content-Type": "application/json",
+                "Accept": "audio/mpeg"
+            },
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            data = resp.read()
+            if data and len(data) > 100:
+                return data
+    except Exception as e:
+        print(f"[ELEVENLABS-ERR]: {e}", flush=True)
+        return b""
+    return b""
+
+
 def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
     clean_text = text.strip()
     if not clean_text:
         return b""
+
+    # Attempt 0: ElevenLabs Hyper-realistic human speech
+    eleven_key = os.environ.get("ELEVENLABS_API_KEY") or os.environ.get("XI_API_KEY")
+    if eleven_key:
+        audio = generate_elevenlabs_audio(clean_text, voice_id=voice_id, api_key=eleven_key)
+        if audio and len(audio) > 100:
+            return audio
 
     # Attempt 1: High-reliability Google TTS (gTTS) - 100% reliable on cloud datacenter IPs
     try:
@@ -82,7 +147,7 @@ def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
 
 def query_gemini(prompt, history=None, context=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
-    models = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
+    models = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
 
     sys_prompt = (
         "You are Orb, an elite conversational AI voice assistant for Sadie. "
@@ -135,7 +200,7 @@ def query_gemini(prompt, history=None, context=None):
 
 def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
-    models = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
+    models = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
 
     cat_summary = ", ".join([c.get("name", c.get("id", "")) for c in (categories or [])]) if categories else "Accounts, ORB App, Client Work, Admin"
     
@@ -242,7 +307,7 @@ If no action is triggered, leave action fields null or omit them. Return ONLY va
     payload = {
         "system_instruction": {"parts": [{"text": sys_prompt}]},
         "contents": contents,
-        "generationConfig": {"response_mime_type": "application/json", "maxOutputTokens": 512, "temperature": 0.5}
+        "generationConfig": {"response_mime_type": "application/json", "maxOutputTokens": 1024, "temperature": 0.4}
     }
 
     for mod in models:
@@ -259,10 +324,21 @@ If no action is triggered, leave action fields null or omit them. Return ONLY va
                 cand = res_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
                 if cand:
                     cand = cand.replace("!", ".")
+                    import re
+                    clean_json = re.sub(r'^```(?:json)?\s*', '', cand.strip(), flags=re.MULTILINE)
+                    clean_json = re.sub(r'```\s*$', '', clean_json.strip()).strip()
                     try:
-                        return json.loads(cand)
+                        parsed = json.loads(clean_json)
+                        if isinstance(parsed, dict) and "reply" in parsed:
+                            return parsed
                     except Exception:
-                        return {"reply": cand, "action": None}
+                        pass
+                    # If JSON was partially truncated, extract reply field
+                    match = re.search(r'"reply"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"', clean_json)
+                    if match:
+                        clean_reply = match.group(1).encode().decode('unicode-escape', 'ignore')
+                        return {"reply": clean_reply, "action": None}
+                    return {"reply": cand, "action": None}
         except Exception:
             continue
 
@@ -345,7 +421,7 @@ class handler(BaseHTTPRequestHandler):
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v3.5",
+                "app_version": "v3.6",
                 "active_chat_title": "Orb AI Cloud Studio",
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
@@ -408,7 +484,7 @@ class handler(BaseHTTPRequestHandler):
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "v3.5",
+            "version": "v3.6",
             "status": "online",
             "cloud": True
         }).encode("utf-8"))
