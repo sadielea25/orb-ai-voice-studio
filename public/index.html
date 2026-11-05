@@ -644,7 +644,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.0</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.1</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -658,7 +658,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.0</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.1</span>
         </div>
       </div>
 
@@ -668,7 +668,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.0</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.1</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -697,6 +697,59 @@
         </div>
       </div>
 
+      <!-- DOSTUFF FOCUS MODE BAR (Select task, track sessions, stay anchored) -->
+      <div id="dostuffFocusStrip" style="background: rgba(15, 23, 42, 0.78); border: 1px solid rgba(59, 130, 246, 0.32); border-radius: 10px; padding: 4px 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);">
+        <!-- Active Focus Task Trigger -->
+        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to choose or manage focus tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 7px; padding: 3px 8px; color: #f8fafc; font-size: 11px; font-weight: 700; cursor: pointer; text-align: left;">
+          <span style="font-size: 12px; line-height: 1; flex-shrink: 0;">🎯</span>
+          <span style="font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Focus:</span>
+          <span id="dostuffActiveTaskTitle" style="white-space: normal; break-words; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; flex: 1; min-width: 0; color: #e2e8f0;">Select a focus task...</span>
+          <span id="dostuffTaskSessionsBadge" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.45); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 1.5px 5.5px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;">🔥 0 • 0m</span>
+          <span style="font-size: 9px; color: #94a3b8; flex-shrink: 0;">▾</span>
+        </button>
+
+        <!-- Right Quick Action Buttons -->
+        <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+          <button type="button" id="dostuffSyncTodoBtn" onclick="window.importTasksFromTodoHub()" title="Sync tasks from main to-do list" style="background: rgba(139, 92, 246, 0.18); border: 1px solid rgba(139, 92, 246, 0.4); color: #c4b5fd; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+            📋 Sync
+          </button>
+          <button type="button" id="dostuffQuickAddBtn" onclick="window.openQuickAddTaskInput()" title="Add a new task to focus on" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+            + Task
+          </button>
+        </div>
+      </div>
+
+      <!-- DOSTUFF FOCUS TASKS INLINE POPOVER -->
+      <div id="dostuffTaskModal" style="display: none; background: #0f172a; border: 1.5px solid rgba(59, 130, 246, 0.5); border-radius: 12px; padding: 10px; margin-bottom: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); position: relative; z-index: 100;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 13px;">🎯</span>
+            <span style="font-size: 11.5px; font-weight: 800; color: #f8fafc; letter-spacing: -0.2px;">Choose Focus Task</span>
+            <span id="dostuffTotalTimeBadge" style="font-size: 9.5px; font-weight: 800; background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(59, 130, 246, 0.35); color: #93c5fd; padding: 1.5px 6px; border-radius: 999px;">0 sessions logged</span>
+          </div>
+          <button type="button" onclick="window.closeDoStuffTaskModal()" title="Close" style="background: rgba(255, 255, 255, 0.08); border: none; color: #94a3b8; width: 22px; height: 22px; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+        </div>
+
+        <!-- Add Task Input Row -->
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <input type="text" id="dostuffNewTaskInput" placeholder="Add task to focus on..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1; min-width: 0; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 7px; padding: 5px 8px; font-size: 11px; color: #ffffff; outline: none;" />
+          <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #60a5fa; color: #ffffff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 7px; cursor: pointer; white-space: nowrap;">Add</button>
+        </div>
+
+        <!-- Task List Container -->
+        <div id="dostuffTasksList" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px;">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Footer Actions in Popover -->
+        <div style="margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 6px;">
+          <button type="button" onclick="window.importTasksFromTodoHub()" style="background: none; border: none; color: #a78bfa; font-size: 10.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
+            <span>📋</span> Sync from To-Do list
+          </button>
+          <span style="font-size: 10px; color: #64748b;">Select one to anchor your focus</span>
+        </div>
+      </div>
+
       <!-- DOSTUFF FULL-SCREEN TAKEOVER OVERLAY (Shown when timer hits 00:00 or Break clicked) -->
       <div id="dostuffBreakCard" style="display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 999990; background: radial-gradient(circle at center, rgba(6, 78, 59, 0.96) 0%, rgba(15, 23, 42, 0.99) 100%); backdrop-filter: blur(14px); flex-direction: column; align-items: center; justify-content: center; padding: clamp(8px, 3vh, 32px) clamp(10px, 4vw, 32px); box-sizing: border-box; text-align: center;">
         <div style="width: min(560px, 100%); max-height: 100%; background: linear-gradient(145deg, rgba(6, 78, 59, 0.92), rgba(15, 23, 42, 0.96)); border: 2px solid #10b981; border-radius: clamp(14px, 2.5vw, 24px); padding: clamp(10px, 3.5vh, 32px) clamp(12px, 4vw, 36px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(16, 185, 129, 0.35); display: flex; flex-direction: column; justify-content: center; box-sizing: border-box;">
@@ -707,6 +760,12 @@
               <button type="button" onclick="window.snoozeDoStuffBreak(2)" title="Snooze break for 2 minutes" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #e2e8f0; padding: clamp(4px, 1vh, 8px) clamp(8px, 1.5vw, 14px); border-radius: 9px; font-size: clamp(10px, 1.4vh, 13px); font-weight: 700; cursor: pointer; white-space: nowrap;">⏳ 2m Snooze</button>
               <button type="button" onclick="window.dismissDoStuffBreak()" title="Dismiss break" style="background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.45); color: #fca5a5; padding: clamp(4px, 1vh, 8px) clamp(8px, 1.5vw, 14px); border-radius: 9px; font-size: clamp(10.5px, 1.4vh, 13px); font-weight: 800; cursor: pointer; white-space: nowrap;">✕</button>
             </div>
+          </div>
+          <!-- Focus Session Accomplishment Card -->
+          <div id="dostuffFocusAccomplishmentBanner" style="display: none; background: rgba(59, 130, 246, 0.22); border: 1.5px solid rgba(96, 165, 250, 0.55); border-radius: 12px; padding: 8px 12px; margin-bottom: 12px; text-align: center; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);">
+            <div style="font-size: 10px; font-weight: 800; color: #93c5fd; text-transform: uppercase; letter-spacing: 0.5px;">🎯 Focus Session Complete</div>
+            <div id="dostuffAccomplishedTaskTitle" style="font-size: 14px; font-weight: 800; color: #ffffff; margin: 3px 0 2px 0;">[Task Title]</div>
+            <div id="dostuffAccomplishedTaskStats" style="font-size: 11px; font-weight: 700; color: #fde68a;">🔥 Session 1 finished • 5m total logged</div>
           </div>
           <div id="dostuffBreakIcon" style="font-size: clamp(32px, 8vh, 72px); line-height: 1.1; margin: clamp(2px, 1vh, 10px) 0 clamp(6px, 1.8vh, 16px);">💧</div>
           <div id="dostuffBreakTitle" style="font-size: clamp(15px, 3.2vh, 28px); font-weight: 800; color: #ffffff; line-height: 1.25; margin-bottom: clamp(4px, 1.2vh, 12px);">Drink a tall glass of crisp cold water</div>
@@ -904,6 +963,8 @@
   </footer>
 
   <script>
+    let currentVoiceId = 'en-GB-SoniaNeural';
+    function getCurrentVoiceId() { const sel = document.getElementById('selectVoice'); return (sel && sel.value) ? sel.value : (currentVoiceId || 'en-GB-SoniaNeural'); }
 // Single-instance coordinator: ensure multiple open tabs never spawn a barrage of conflicting widgets
     const widgetSyncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('orb_voice_widget_sync') : null;
     if (widgetSyncChannel) {
@@ -3242,8 +3303,269 @@
       lastCategory: 'exercise',
       todayCount: 0,
       lastDate: new Date().toISOString().slice(0, 10),
-      currentTask: null
+      currentTask: null,
+      focusMode: true,
+      activeFocusTaskId: null,
+      focusTasks: []
     };
+
+    function initDoStuffFocusTasks() {
+      try {
+        const saved = localStorage.getItem('orb_dostuff_focus_tasks');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            dostuffState.focusTasks = parsed;
+          }
+        }
+      } catch (e) {}
+
+      // If empty, attempt import from main todo list (thermo_milestone_goals)
+      if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) {
+        try {
+          const storedMilestones = localStorage.getItem('thermo_milestone_goals');
+          if (storedMilestones) {
+            const goals = JSON.parse(storedMilestones);
+            if (Array.isArray(goals)) {
+              goals.forEach(g => {
+                (g.tasks || []).forEach(t => {
+                  dostuffState.focusTasks.push({
+                    id: t.id || ('todo-' + Math.random().toString(36).substr(2, 7)),
+                    title: t.text || t.title,
+                    sessions: 0,
+                    totalMinutes: 0,
+                    completed: !!t.done,
+                    createdAt: Date.now(),
+                    source: 'main_todo'
+                  });
+                });
+              });
+            }
+          }
+        } catch (e) {}
+      }
+
+      // If still empty, seed default high-priority accounting & admin tasks
+      if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) {
+        dostuffState.focusTasks = [
+          { id: 'f-1', title: 'Bank feed and transaction reconciliation', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-2', title: 'Sort incoming invoices and VAT receipts', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-3', title: 'HMRC Confirmation Statement and tax review', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-4', title: 'Update monthly balance spreadsheet', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-5', title: 'Clear pending client correspondence', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' }
+        ];
+      }
+
+      const savedActiveId = localStorage.getItem('orb_dostuff_active_task_id');
+      if (savedActiveId && dostuffState.focusTasks.some(t => t.id === savedActiveId)) {
+        dostuffState.activeFocusTaskId = savedActiveId;
+      } else {
+        const firstActive = dostuffState.focusTasks.find(t => !t.completed);
+        dostuffState.activeFocusTaskId = firstActive ? firstActive.id : (dostuffState.focusTasks[0] ? dostuffState.focusTasks[0].id : null);
+      }
+      saveDoStuffFocusTasks();
+    }
+
+    function saveDoStuffFocusTasks() {
+      try {
+        localStorage.setItem('orb_dostuff_focus_tasks', JSON.stringify(dostuffState.focusTasks));
+        localStorage.setItem('orb_dostuff_active_task_id', dostuffState.activeFocusTaskId || '');
+      } catch (e) {}
+    }
+
+    function getActiveFocusTask() {
+      if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) return null;
+      if (dostuffState.activeFocusTaskId) {
+        const found = dostuffState.focusTasks.find(t => t.id === dostuffState.activeFocusTaskId);
+        if (found) return found;
+      }
+      const firstActive = dostuffState.focusTasks.find(t => !t.completed);
+      if (firstActive) {
+        dostuffState.activeFocusTaskId = firstActive.id;
+        return firstActive;
+      }
+      return dostuffState.focusTasks[0] || null;
+    }
+
+    window.toggleDoStuffTaskModal = function() {
+      getAllDoStuffDocs().forEach(doc => {
+        const modal = Document.prototype.getElementById.call(doc, 'dostuffTaskModal');
+        if (!modal) return;
+        const isHidden = modal.style.display === 'none' || !modal.style.display;
+        modal.style.display = isHidden ? 'block' : 'none';
+        if (isHidden) {
+          renderDoStuffTaskList();
+          const input = Document.prototype.getElementById.call(doc, 'dostuffNewTaskInput');
+          if (input) setTimeout(() => input.focus(), 60);
+        }
+      });
+    };
+
+    window.closeDoStuffTaskModal = function() {
+      getAllDoStuffDocs().forEach(doc => {
+        const modal = Document.prototype.getElementById.call(doc, 'dostuffTaskModal');
+        if (modal) modal.style.display = 'none';
+      });
+    };
+
+    window.selectDoStuffFocusTask = function(taskId) {
+      dostuffState.activeFocusTaskId = taskId;
+      saveDoStuffFocusTasks();
+      updateDoStuffUI();
+      renderDoStuffTaskList();
+      window.closeDoStuffTaskModal();
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (task) {
+        showToast('🎯 Focus anchored to: ' + task.title);
+      }
+    };
+
+    window.addDoStuffFocusTask = function() {
+      let title = '';
+      getAllDoStuffDocs().forEach(doc => {
+        const input = Document.prototype.getElementById.call(doc, 'dostuffNewTaskInput');
+        if (input && input.value && input.value.trim()) {
+          title = input.value.trim();
+          input.value = '';
+        }
+      });
+      if (!title) return;
+      const newTask = {
+        id: 'f-' + Date.now(),
+        title: title,
+        sessions: 0,
+        totalMinutes: 0,
+        completed: false,
+        createdAt: Date.now(),
+        source: 'custom'
+      };
+      dostuffState.focusTasks.unshift(newTask);
+      dostuffState.activeFocusTaskId = newTask.id;
+      saveDoStuffFocusTasks();
+      updateDoStuffUI();
+      renderDoStuffTaskList();
+      window.closeDoStuffTaskModal();
+      showToast('🎯 Added and focusing on: ' + title);
+    };
+
+    window.toggleDoStuffTaskDone = function(taskId, event) {
+      if (event) event.stopPropagation();
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.completed = !task.completed;
+      if (task.completed) {
+        playDoStuffChime([659.25, 783.99, 1046.50], [0.15, 0.15, 0.35]);
+        showToast('✅ Task completed: ' + task.title);
+        if (dostuffState.activeFocusTaskId === taskId) {
+          const nextActive = dostuffState.focusTasks.find(t => !t.completed);
+          if (nextActive) dostuffState.activeFocusTaskId = nextActive.id;
+        }
+      }
+      saveDoStuffFocusTasks();
+      updateDoStuffUI();
+      renderDoStuffTaskList();
+    };
+
+    window.deleteDoStuffFocusTask = function(taskId, event) {
+      if (event) event.stopPropagation();
+      dostuffState.focusTasks = dostuffState.focusTasks.filter(t => t.id !== taskId);
+      if (dostuffState.activeFocusTaskId === taskId) {
+        const nextActive = dostuffState.focusTasks.find(t => !t.completed);
+        dostuffState.activeFocusTaskId = nextActive ? nextActive.id : (dostuffState.focusTasks[0] ? dostuffState.focusTasks[0].id : null);
+      }
+      saveDoStuffFocusTasks();
+      updateDoStuffUI();
+      renderDoStuffTaskList();
+      showToast('🗑 Task removed');
+    };
+
+    window.openQuickAddTaskInput = function() {
+      window.toggleDoStuffTaskModal();
+    };
+
+    window.importTasksFromTodoHub = function() {
+      let importedCount = 0;
+      try {
+        const storedMilestones = localStorage.getItem('thermo_milestone_goals');
+        if (storedMilestones) {
+          const goals = JSON.parse(storedMilestones);
+          if (Array.isArray(goals)) {
+            goals.forEach(g => {
+              (g.tasks || []).forEach(t => {
+                const title = t.text || t.title;
+                if (!title) return;
+                const exists = dostuffState.focusTasks.some(existing => existing.title.toLowerCase() === title.toLowerCase());
+                if (!exists) {
+                  dostuffState.focusTasks.push({
+                    id: t.id || ('todo-' + Math.random().toString(36).substr(2, 7)),
+                    title: title,
+                    sessions: 0,
+                    totalMinutes: 0,
+                    completed: !!t.done,
+                    createdAt: Date.now(),
+                    source: 'main_todo'
+                  });
+                  importedCount++;
+                }
+              });
+            });
+          }
+        }
+      } catch (e) {}
+
+      saveDoStuffFocusTasks();
+      updateDoStuffUI();
+      renderDoStuffTaskList();
+      showToast(importedCount > 0 ? `📋 Synced ${importedCount} tasks from main to-do list` : '📋 All to-do tasks already synced');
+    };
+
+    function renderDoStuffTaskList() {
+      const activeFocus = getActiveFocusTask();
+      const activeId = activeFocus ? activeFocus.id : null;
+      getAllDoStuffDocs().forEach(doc => {
+        const listEl = Document.prototype.getElementById.call(doc, 'dostuffTasksList');
+        if (!listEl) return;
+        if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) {
+          listEl.innerHTML = `
+            <div style="text-align: center; padding: 14px 8px; color: #94a3b8; font-size: 11px;">
+              No focus tasks yet. Type a task above or click Sync from To-Do list.
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        dostuffState.focusTasks.forEach(task => {
+          const isActive = task.id === activeId;
+          const isDone = !!task.completed;
+          html += `
+            <div onclick="window.selectDoStuffFocusTask('${task.id}')" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 9px; border-radius: 8px; background: ${isActive ? 'rgba(59, 130, 246, 0.18)' : 'rgba(30, 41, 59, 0.55)'}; border: 1px solid ${isActive ? 'rgba(96, 165, 250, 0.65)' : 'rgba(255, 255, 255, 0.08)'}; cursor: pointer; transition: all 0.15s ease;">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                <button type="button" onclick="window.toggleDoStuffTaskDone('${task.id}', event)" title="${isDone ? 'Mark as active' : 'Mark as completed'}" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 13px; line-height: 1; color: ${isDone ? '#34d399' : '#64748b'};">
+                  ${isDone ? '✅' : '⚪'}
+                </button>
+                <div style="min-width: 0; flex: 1;">
+                  <div style="font-size: 11.5px; font-weight: ${isActive ? '800' : '600'}; color: ${isDone ? '#94a3b8' : (isActive ? '#60a5fa' : '#f8fafc')}; text-decoration: ${isDone ? 'line-through' : 'none'}; white-space: normal; break-words; line-height: 1.3;">
+                    ${escapeHtml(task.title)}
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                    <span style="font-size: 9.5px; font-weight: 700; color: #fbbf24;">🔥 ${task.sessions || 0} sessions • ${(task.totalMinutes || 0)}m</span>
+                    ${isActive ? '<span style="font-size: 8.5px; font-weight: 800; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 0.5px 5px; border-radius: 999px; text-transform: uppercase;">Active</span>' : ''}
+                    ${task.source === 'main_todo' ? '<span style="font-size: 8.5px; color: #c4b5fd;">To-Do Sync</span>' : ''}
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="event.stopPropagation()">
+                <button type="button" onclick="window.deleteDoStuffFocusTask('${task.id}', event)" title="Delete task" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; width: 22px; height: 22px; border-radius: 5px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                  🗑
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+      });
+    }
 
     function getAllDoStuffDocs() {
       const docs = [document];
@@ -3357,6 +3679,10 @@
 
     function updateDoStuffUI() {
       const timeStr = formatDoStuffTime(dostuffState.remainingSeconds);
+      const activeFocus = getActiveFocusTask();
+      const totalSessions = dostuffState.focusTasks.reduce((acc, t) => acc + (t.sessions || 0), 0);
+      const totalMins = dostuffState.focusTasks.reduce((acc, t) => acc + (t.totalMinutes || 0), 0);
+
       getAllDoStuffDocs().forEach(doc => {
         const txt = Document.prototype.getElementById.call(doc, 'dostuffCountdownText');
         if (txt) txt.textContent = timeStr;
@@ -3381,6 +3707,28 @@
         if (sel) {
           const targetVal = dostuffState.isRunning ? String(dostuffState.intervalMinutes) : (sel.value === '0' ? '0' : String(dostuffState.intervalMinutes));
           if (sel.value !== targetVal) sel.value = targetVal;
+        }
+
+        // Focus Mode Strip Updates
+        const activeTitleEl = Document.prototype.getElementById.call(doc, 'dostuffActiveTaskTitle');
+        if (activeTitleEl) {
+          activeTitleEl.textContent = activeFocus ? activeFocus.title : 'Select a focus task...';
+          activeTitleEl.title = activeFocus ? activeFocus.title : 'Select a focus task';
+        }
+
+        const activeSessionsBadge = Document.prototype.getElementById.call(doc, 'dostuffTaskSessionsBadge');
+        if (activeSessionsBadge) {
+          if (activeFocus) {
+            activeSessionsBadge.textContent = `🔥 ${activeFocus.sessions || 0} • ${(activeFocus.totalMinutes || 0)}m`;
+            activeSessionsBadge.title = `${activeFocus.sessions || 0} focus sessions completed on this task (${(activeFocus.totalMinutes || 0)} minutes total)`;
+          } else {
+            activeSessionsBadge.textContent = '🔥 0 • 0m';
+          }
+        }
+
+        const totalTimeBadge = Document.prototype.getElementById.call(doc, 'dostuffTotalTimeBadge');
+        if (totalTimeBadge) {
+          totalTimeBadge.textContent = `${totalSessions} sessions (${totalMins}m logged)`;
         }
       });
     }
@@ -3448,6 +3796,7 @@
 
     function renderDoStuffBreakCard(task) {
       dostuffState.currentTask = task;
+      const activeFocus = getActiveFocusTask();
       getAllDoStuffDocs().forEach(doc => {
         if (doc.body) doc.body.classList.add('dostuff-break-active');
         const card = Document.prototype.getElementById.call(doc, 'dostuffBreakCard');
@@ -3455,7 +3804,20 @@
         const icon = Document.prototype.getElementById.call(doc, 'dostuffBreakIcon');
         const title = Document.prototype.getElementById.call(doc, 'dostuffBreakTitle');
         const tip = Document.prototype.getElementById.call(doc, 'dostuffBreakTip');
+        const banner = Document.prototype.getElementById.call(doc, 'dostuffFocusAccomplishmentBanner');
+        const bannerTitle = Document.prototype.getElementById.call(doc, 'dostuffAccomplishedTaskTitle');
+        const bannerStats = Document.prototype.getElementById.call(doc, 'dostuffAccomplishedTaskStats');
+
         if (card) card.style.display = 'flex';
+        if (banner) {
+          if (activeFocus) {
+            banner.style.display = 'block';
+            if (bannerTitle) bannerTitle.textContent = activeFocus.title;
+            if (bannerStats) bannerStats.textContent = `🔥 Session ${activeFocus.sessions} finished • ${activeFocus.totalMinutes || 0}m total logged on this task`;
+          } else {
+            banner.style.display = 'none';
+          }
+        }
         if (badge) {
           badge.textContent = task.category === 'exercise' ? '🏃 Movement Boost' : '🌱 Physical Reset';
         }
@@ -3469,15 +3831,22 @@
       if (!task || isTotalPaused) return;
       const isLocal = window.location.port === '8766' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const url = isLocal ? '/api/dostuff_break' : '/api/dostuff_break';
+      const activeFocus = getActiveFocusTask();
       fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: task.title, minutes: dostuffState.intervalMinutes, voice: currentVoiceId })
+        body: JSON.stringify({
+          title: task.title,
+          minutes: dostuffState.intervalMinutes,
+          voice: getCurrentVoiceId(),
+          focus_task: activeFocus ? activeFocus.title : '',
+          focus_sessions: activeFocus ? activeFocus.sessions : 0
+        })
       }).then(r => r.json()).then(data => {
         if (data && data.audio_url) {
           playCloudAudio(data.audio_url, data.spoken);
         } else if (data && data.spoken) {
-          speakTextInBrowser(data.spoken, currentVoiceId);
+          speakTextInBrowser(data.spoken, getCurrentVoiceId());
         }
       }).catch(() => {});
     }
@@ -3485,6 +3854,15 @@
     window.triggerDoStuffBreak = function() {
       dostuffState.isRunning = false;
       dostuffState.targetEndTime = null;
+
+      // Automatically increment focus session for the active task
+      const activeFocus = getActiveFocusTask();
+      if (activeFocus) {
+        activeFocus.sessions = (activeFocus.sessions || 0) + 1;
+        activeFocus.totalMinutes = (activeFocus.totalMinutes || 0) + (dostuffState.intervalMinutes || 5);
+        saveDoStuffFocusTasks();
+      }
+
       const task = pickNextDoStuffTask(dostuffState.currentTask ? dostuffState.currentTask.id : null);
       enterDoStuffFullscreen();
       renderDoStuffBreakCard(task);
@@ -3633,7 +4011,24 @@
         }
       } catch (e) {}
 
+      initDoStuffFocusTasks();
       updateDoStuffUI();
+      renderDoStuffTaskList();
+
+      // Dismiss task popover on outside click or Esc
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') window.closeDoStuffTaskModal();
+      });
+      document.addEventListener('click', (e) => {
+        const modal = document.getElementById('dostuffTaskModal');
+        const btn = document.getElementById('dostuffActiveTaskBtn');
+        const qbtn = document.getElementById('dostuffQuickAddBtn');
+        if (modal && modal.style.display === 'block') {
+          if (!modal.contains(e.target) && !btn.contains(e.target) && (!qbtn || !qbtn.contains(e.target))) {
+            window.closeDoStuffTaskModal();
+          }
+        }
+      });
 
       if (window.__dostuffTimerInterval) {
         clearInterval(window.__dostuffTimerInterval);

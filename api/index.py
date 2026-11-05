@@ -30,7 +30,7 @@ VOICE_SETTINGS = {
 CONVERSATION_HISTORY = [
     {
         "role": "assistant",
-        "text": "Hello Sadie! Orb AI Voice Studio v3.0 is live and connected in the cloud.",
+        "text": "Hello Sadie. Orb AI Voice Studio v3.1 is live and connected in the cloud.",
         "time": time.strftime("%H:%M")
     }
 ]
@@ -206,7 +206,7 @@ class handler(BaseHTTPRequestHandler):
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v3.0",
+                "app_version": "v3.1",
                 "active_chat_title": "Orb AI Cloud Studio",
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
@@ -269,7 +269,7 @@ class handler(BaseHTTPRequestHandler):
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "v3.0",
+            "version": "v3.1",
             "status": "online",
             "cloud": True
         }).encode("utf-8"))
@@ -374,7 +374,15 @@ class handler(BaseHTTPRequestHandler):
         elif "dostuff_break" in target or "dostuff_break" in raw:
             task_title = data.get("title", "Take a 60 second movement break").strip()
             mins = data.get("minutes", 5)
-            spoken = f"DoStuff {mins} minute reset. {task_title}."
+            focus_task = data.get("focus_task", "").strip()
+            focus_sessions = data.get("focus_sessions", 0)
+            if focus_task:
+                if focus_sessions and int(focus_sessions) > 1:
+                    spoken = f"Focus session complete for {focus_task}. That is {focus_sessions} sessions logged. DoStuff {mins} minute reset. {task_title}."
+                else:
+                    spoken = f"Focus session complete for {focus_task}. DoStuff {mins} minute reset. {task_title}."
+            else:
+                spoken = f"DoStuff {mins} minute reset. {task_title}."
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             audio_url = f"/api/tts?text={urllib.parse.quote(spoken)}&voice={urllib.parse.quote(voice)}"
             self._set_headers(200)

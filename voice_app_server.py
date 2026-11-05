@@ -17,7 +17,7 @@ import pyperclip
 import urllib.parse
 import urllib.request
 import glob
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
 import edge_tts
 
 BRAIN_DIR = r"C:\Users\corem\.gemini\antigravity\brain"
@@ -103,15 +103,18 @@ def format_project_title(raw):
         else:
             formatted.append(w.capitalize())
     res = " ".join(formatted)
-    return res if len(res) <= 38 else res[:38] + "..."
+    return res
 
 def is_garbage_title(cand):
     if not cand or len(cand) < 2:
         return True
     cl = cand.lower().strip()
-    if any(cl.startswith(s) for s in ("i am ", "i want", "can you", "could you", "please", "agent ", "assistant", "http", "v1", "laptop", "tablet")):
+    if any(cl.startswith(s) for s in (
+        "i am ", "i want", "can you", "could you", "please", "agent ", "assistant",
+        "http", "v1", "laptop", "tablet", "continuing previous", "new conversation", "untitled"
+    )):
         return True
-    if any(ch in cand for ch in ("?", "=", "!", "{", "}", ";")):
+    if "..." in cand or any(ch in cand for ch in ("?", "=", "!", "{", "}", ";")):
         return True
     return False
 
@@ -181,23 +184,11 @@ def extract_chat_title(transcript_path):
             except Exception:
                 pass
 
-    # 3. Third priority: Custom label from chat_voices.json (if clean and not a sentence)
-    if os.path.exists(CHAT_VOICES_FILE):
-        try:
-            with open(CHAT_VOICES_FILE, "r", encoding="utf-8") as f:
-                cfg = json.load(f)
-                chat = cfg.get("chats", {}).get(cid, {})
-                cand = chat.get("label") or chat.get("title")
-                if cand and not is_garbage_title(cand):
-                    return cand
-        except Exception:
-            pass
-
-    return "Coremarket Goods Accounting"
+    return "Orb"
 
 
 def find_matching_transcript(search_title, transcripts):
-    if not search_title or search_title.strip() == "Orb AI Project": return None
+    if not search_title or search_title.strip() in ("Orb AI Project", "Live Chat Ready"): return None
     clean_search = re.sub(r'[^a-zA-Z0-9 ]', '', search_title.lower()).strip()
     search_words = set(clean_search.split())
     if not search_words: return None
@@ -230,17 +221,20 @@ def get_active_chat_title_and_transcript(target_title=""):
         transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
         transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
 
-        if target_title and target_title.strip() != "Orb AI Project":
+        if target_title and target_title.strip() not in ("Orb AI Project", "Live Chat Ready"):
             matched_p = find_matching_transcript(target_title, transcripts)
             if matched_p:
-                return target_title, matched_p
+                clean_t = extract_chat_title(matched_p)
+                return (clean_t if is_garbage_title(target_title) else target_title), matched_p
 
         u32 = ctypes.windll.user32
         k32 = ctypes.windll.kernel32
         h_desk = u32.OpenDesktopW("Default", 0, False, 0x01FF)
         if h_desk: u32.SetThreadDesktop(h_desk)
         
-        title_box = [""]
+        fg_hwnd = u32.GetForegroundWindow()
+        found_titles = []
+        fg_title = [""]
         def enum_cb(hwnd, lparam):
             if u32.IsWindowVisible(hwnd):
                 pid = wintypes.DWORD()
@@ -258,8 +252,10 @@ def get_active_chat_title_and_transcript(target_title=""):
                                     buff = ctypes.create_unicode_buffer(length + 1)
                                     u32.GetWindowTextW(hwnd, buff, length + 1)
                                     t = buff.value.strip()
-                                    if t and not title_box[0]:
-                                        title_box[0] = t
+                                    if t:
+                                        if hwnd == fg_hwnd and not fg_title[0]:
+                                            fg_title[0] = t
+                                        found_titles.append(t)
                     finally:
                         k32.CloseHandle(h_proc)
             return True
@@ -267,22 +263,24 @@ def get_active_chat_title_and_transcript(target_title=""):
         cb = EnumWindowsProc(enum_cb)
         u32.EnumWindows(cb, 0)
 
-        window_title = title_box[0]
+        window_title = fg_title[0] or (found_titles[0] if found_titles else "")
 
         if window_title and window_title.lower() not in ("antigravity", "antigravity.exe", "cursor", "cursor.exe", "code", "code.exe", "visual studio code"):
-            display_title = window_title.split("-")[0].strip() if "-" in window_title else window_title
-            matched_p = find_matching_transcript(window_title, transcripts)
-            if matched_p:
-                return display_title, matched_p
-                
-            return display_title, transcripts[0] if transcripts else FALLBACK_LOG
+            raw_display = window_title.split("-")[0].strip() if "-" in window_title else window_title
+            matched_p = find_matching_transcript(window_title, transcripts) if not is_garbage_title(raw_display) else None
+            best_p = matched_p or (transcripts[0] if transcripts else FALLBACK_LOG)
+            if is_garbage_title(raw_display):
+                display_title = extract_chat_title(best_p) or "Orb"
+            else:
+                display_title = format_project_title(raw_display) or extract_chat_title(best_p) or raw_display
+            return display_title, best_p
 
         if transcripts:
             friendly_title = extract_chat_title(transcripts[0])
-            return friendly_title or "Orb AI Project", transcripts[0]
+            return friendly_title or "Orb", transcripts[0]
     except Exception:
         pass
-    return "Orb AI Project", FALLBACK_LOG
+    return "Orb", FALLBACK_LOG
 
 
 def get_latest_transcript_path(target_title=""):
@@ -331,7 +329,7 @@ def load_live_state():
         try:
             with open(STATE_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                if data.get("is_speaking", False) and (time.time() - data.get("timestamp", 0) > 10):
+                if data.get("is_speaking", False) and (time.time() - data.get("timestamp", 0) > 30):
                     data["is_speaking"] = False
                     data["current_text"] = ""
                 return data
@@ -455,7 +453,7 @@ def get_conversation_history(limit=100, target_title=""):
                             "text": clean_cnt,
                             "time": t_str
                         })
-                    elif src == "MODEL" and typ == "PLANNER_RESPONSE":
+                    elif src == "MODEL" and typ == "PLANNER_RESPONSE" and not d.get("tool_calls") and "tool_calls" not in (d.get("truncated_fields") or []):
                         t_str = d.get("created_at", "")
                         if "T" in t_str:
                             t_str = t_str.split("T")[1].split(".")[0][:5]
@@ -574,13 +572,15 @@ INCOMING_QUEUE_FILE = os.path.join(BASE_DIR, "speech_queue_incoming.jsonl")
 def enqueue_speech_request(text, label="Orb AI Assistant", cid="manual"):
     if not text or not text.strip():
         return False
+    clean_txt = text.strip()
     req = {
         "cid": cid,
         "label": label,
-        "text": text.strip(),
+        "text": clean_txt,
         "queued_at": time.time()
     }
     try:
+        update_live_state(is_speaking=True, current_text=clean_txt, stop_requested=False)
         with open(INCOMING_QUEUE_FILE, "a", encoding="utf-8") as f:
             f.write(json.dumps(req) + "\n")
         return True
@@ -597,11 +597,34 @@ def trigger_replay_last_ai_reply():
             last_reply = m.get("text")
             break
     if not last_reply:
+        try:
+            transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
+            transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+            for p in transcripts[:5]:
+                with open(p, "r", encoding="utf-8", errors="ignore") as f:
+                    for line in reversed(f.readlines()[-120:]):
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            d = json.loads(line)
+                            if d.get("source") == "MODEL" and d.get("type") == "PLANNER_RESPONSE" and not d.get("tool_calls") and "tool_calls" not in (d.get("truncated_fields") or []):
+                                cnt = (d.get("content") or "").strip()
+                                if cnt:
+                                    last_reply = cnt
+                                    break
+                        except Exception:
+                            pass
+                if last_reply:
+                    break
+        except Exception:
+            pass
+    if not last_reply:
         return {"status": "no_reply_found"}
 
     cleaned = clean_markdown_for_speech(last_reply)
     if len(cleaned) > 2500:
-        cleaned = cleaned[:2500] + "..."
+        cleaned = cleaned[:2500]
 
     active_title, _ = get_active_chat_title_and_transcript()
     label = active_title or "Orb AI Assistant"
@@ -610,6 +633,12 @@ def trigger_replay_last_ai_reply():
 
 
 class PWAHandler(BaseHTTPRequestHandler):
+    def handle_one_request(self):
+        try:
+            super().handle_one_request()
+        except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
+            self.close_connection = True
+
     def _set_headers(self, status=200, content_type="application/json"):
         self.send_response(status)
         self.send_header("Content-Type", content_type)
@@ -619,6 +648,7 @@ class PWAHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Private-Network", "true")
         self.end_headers()
 
     def do_OPTIONS(self):
@@ -759,11 +789,28 @@ class PWAHandler(BaseHTTPRequestHandler):
                 self.wfile.write(audio_data)
             else:
                 self._set_headers(404)
+        elif url_path in ["/Orb.exe", "/Orb.apk"]:
+            exe_path = r"D:\app APK.S Live Updates\Orb Voice Keyboard V1 (Option B - Live Updates).exe"
+            apk_path = os.path.join(WEB_DIR, "Orb.apk")
+            target_bin = apk_path if (url_path == "/Orb.apk" and os.path.exists(apk_path)) else (exe_path if os.path.exists(exe_path) else None)
+            if target_bin and os.path.exists(target_bin):
+                with open(target_bin, "rb") as f:
+                    bin_data = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/octet-stream")
+                self.send_header("Content-Disposition", f'attachment; filename="{os.path.basename(target_bin)}"')
+                self.end_headers()
+                self.wfile.write(bin_data)
+            else:
+                self.send_response(302)
+                self.send_header("Location", "/")
+                self.end_headers()
         else:
             self._set_headers(404)
             self.wfile.write(b'{"error": "Not found"}')
 
     def do_POST(self):
+        url_path = self.path.split("?")[0]
         content_length = int(self.headers.get("Content-Length", 0))
         body = self.rfile.read(content_length).decode("utf-8")
         try:
@@ -771,14 +818,14 @@ class PWAHandler(BaseHTTPRequestHandler):
         except Exception:
             data = {}
 
-        if self.path == "/api/settings":
+        if url_path == "/api/settings":
             settings = load_settings()
             settings.update(data)
             save_settings(settings)
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "saved", "settings": settings}).encode("utf-8"))
 
-        elif self.path == "/api/chat_voices":
+        elif url_path == "/api/chat_voices":
             cfg = load_chat_voices()
             if "announce_chat" in data:
                 cfg["announce_chat"] = bool(data["announce_chat"])
@@ -794,7 +841,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "saved", "chat_voices": cfg}).encode("utf-8"))
 
-        elif self.path == "/api/speech_input":
+        elif url_path == "/api/speech_input":
             text = data.get("text", "").strip()
             source = data.get("source", "app")
             if text:
@@ -828,7 +875,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(b'{"status": "received"}')
 
-        elif self.path == "/api/polish_text":
+        elif url_path == "/api/polish_text":
             raw_text = data.get("text", "").strip()
             if not raw_text:
                 self._set_headers(200)
@@ -893,7 +940,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             api_key = data.get("api_key") or settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY") or default_gem_key
 
             if api_key:
-                models_to_try = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"]
+                models_to_try = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
                 content_text = raw_text
                 if context:
                     content_text = f"CURRENT CONVERSATION CONTEXT:\n{context}\n\nUSER'S SPOKEN DRAFT TO REWRITE & POLISH:\n\"{raw_text}\""
@@ -947,7 +994,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "ok", "polished": polished}).encode("utf-8"))
 
-        elif self.path == "/api/stop":
+        elif url_path == "/api/stop":
             update_live_state(is_speaking=False, current_text="", stop_requested=True)
             try:
                 import sounddevice as sd
@@ -964,7 +1011,24 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(b'{"status": "stopped"}')
 
-        elif self.path == "/api/pause_total":
+        elif url_path == "/api/dostuff_break":
+            task_title = data.get("title", "Take a 60 second movement break").strip()
+            mins = data.get("minutes", 5)
+            focus_task = data.get("focus_task", "").strip()
+            focus_sessions = data.get("focus_sessions", 0)
+            if focus_task:
+                if focus_sessions and int(focus_sessions) > 1:
+                    speak_text = f"Focus session complete for {focus_task}. That is {focus_sessions} sessions logged. DoStuff {mins} minute reset. {task_title}."
+                else:
+                    speak_text = f"Focus session complete for {focus_task}. DoStuff {mins} minute reset. {task_title}."
+            else:
+                speak_text = f"DoStuff {mins} minute reset. {task_title}."
+            if load_settings().get("enabled", True):
+                enqueue_speech_request(speak_text, label="DoStuff Break", cid="dostuff")
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "announced", "spoken": speak_text}).encode("utf-8"))
+
+        elif url_path == "/api/pause_total":
             total_pause = data.get("total_pause", True)
             settings = load_settings()
             settings["enabled"] = not total_pause
@@ -994,7 +1058,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "ok", "total_pause": total_pause, "enabled": settings["enabled"]}).encode("utf-8"))
 
-        elif self.path in ("/api/read_ai_reply", "/api/speak_last", "/api/kickstart"):
+        elif url_path in ("/api/read_ai_reply", "/api/speak_last", "/api/kickstart"):
             settings = load_settings()
             settings["enabled"] = True
             save_settings(settings)
@@ -1009,7 +1073,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(json.dumps(res).encode("utf-8"))
 
-        elif self.path == "/api/scan_all_chats":
+        elif url_path == "/api/scan_all_chats":
             try:
                 with open(os.path.join(BASE_DIR, "scan_all_chats.signal"), "w", encoding="utf-8") as f:
                     f.write("1")
@@ -1018,31 +1082,33 @@ class PWAHandler(BaseHTTPRequestHandler):
             self._set_headers(200)
             self.wfile.write(b'{"status": "scan_requested"}')
 
-        elif self.path == "/api/test":
-            text = data.get("text", "Hello Sadie! This is your voice preview.")
+        elif url_path == "/api/test":
+            text = data.get("text", "Hello Sadie, this is your voice preview.")
             req_voice = data.get("voice")
             settings = load_settings()
+            settings["enabled"] = True
             if req_voice:
                 settings["voice"] = req_voice
-                save_settings(settings)
+            save_settings(settings)
 
             enqueue_speech_request(text, label="Voice Preview", cid="preview")
             self._set_headers(200)
             self.wfile.write(json.dumps({"status": "queued"}).encode("utf-8"))
 
-        elif self.path == "/api/pin_taskbar":
+        elif url_path == "/api/pin_taskbar":
             import subprocess
             import tempfile
             desktop_dir = os.path.join(os.path.expanduser("~"), "Desktop")
             tb_dir = os.path.expandvars(r"%APPDATA%\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar")
+            chrome_exe = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
             edge_exe = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
             if not os.path.exists(edge_exe):
                 edge_exe = r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"
-            chrome_exe = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-            browser_exe = edge_exe if os.path.exists(edge_exe) else (chrome_exe if os.path.exists(chrome_exe) else "msedge.exe")
+            browser_exe = chrome_exe if os.path.exists(chrome_exe) else (edge_exe if os.path.exists(edge_exe) else "msedge.exe")
 
+            profile_dir = os.path.join(BASE_DIR, ".orb_app_profile")
             app_target_url = "http://localhost:8766"
-            app_args = f'--app={app_target_url} --window-size=460,720'
+            app_args = f'--user-data-dir="{profile_dir}" --app={app_target_url} --window-size=400,290'
 
             shortcut_created = False
             for target_dir in [desktop_dir, tb_dir]:
@@ -1066,24 +1132,20 @@ class PWAHandler(BaseHTTPRequestHandler):
                 except Exception as se:
                     print(f"[PIN-SC-ERR]: {se}", flush=True)
 
-            # Launch standalone window so user can immediately see it on taskbar
-            try:
-                subprocess.Popen([browser_exe, f"--app={app_target_url}", "--window-size=460,720"])
-            except Exception as le:
-                print(f"[PIN-LAUNCH-ERR]: {le}", flush=True)
-                bat_path = os.path.join(BASE_DIR, "LAUNCH_FLOATING_ORB.bat")
-                try:
-                    subprocess.Popen(["cmd.exe", "/c", bat_path], shell=False)
-                except Exception:
-                    pass
+            resize_or_launch_orb_window("compact")
 
             self._set_headers(200)
             self.wfile.write(json.dumps({
                 "status": "ok",
                 "shortcut_created": shortcut_created,
-                "message": "Standalone app launched! Right-click the Orb icon on your Windows Taskbar and click 'Pin to taskbar'."
+                "message": "Standalone app launched. Right-click the Orb icon on your Windows Taskbar and click 'Pin to taskbar'."
             }).encode("utf-8"))
-        elif self.path in ["/api/upload-statement", "/api/delete-statement"]:
+        elif url_path == "/api/float_window":
+            mode = data.get("mode", "toggle")
+            resized_mode = resize_or_launch_orb_window(mode)
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "mode": resized_mode}).encode("utf-8"))
+        elif url_path in ["/api/upload-statement", "/api/delete-statement"]:
             try:
                 proxy_url = f"http://127.0.0.1:5500{self.path}"
                 req = urllib.request.Request(proxy_url, data=body.encode("utf-8"), headers={"Content-Type": "application/json"})
@@ -1102,6 +1164,195 @@ class PWAHandler(BaseHTTPRequestHandler):
         return
 
 
+class STARTUPINFOW(ctypes.Structure):
+    _fields_ = [
+        ("cb", wintypes.DWORD), ("lpReserved", wintypes.LPWSTR), ("lpDesktop", wintypes.LPWSTR),
+        ("lpTitle", wintypes.LPWSTR), ("dwX", wintypes.DWORD), ("dwY", wintypes.DWORD),
+        ("dwXSize", wintypes.DWORD), ("dwYSize", wintypes.DWORD), ("dwXCountChars", wintypes.DWORD),
+        ("dwYCountChars", wintypes.DWORD), ("dwFillAttribute", wintypes.DWORD), ("dwFlags", wintypes.DWORD),
+        ("wShowWindow", wintypes.WORD), ("cbReserved2", wintypes.WORD), ("lpReserved2", ctypes.POINTER(ctypes.c_byte)),
+        ("hStdInput", wintypes.HANDLE), ("hStdOutput", wintypes.HANDLE), ("hStdError", wintypes.HANDLE)
+    ]
+
+
+class PROCESS_INFORMATION(ctypes.Structure):
+    _fields_ = [("hProcess", wintypes.HANDLE), ("hThread", wintypes.HANDLE), ("dwProcessId", wintypes.DWORD), ("dwThreadId", wintypes.DWORD)]
+
+
+def launch_orb_standalone_on_default_desktop(w=400, h=290):
+    try:
+        k32 = ctypes.windll.kernel32
+        chrome_exe = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+        edge_exe = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+        if not os.path.exists(edge_exe):
+            edge_exe = r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"
+        browser_exe = chrome_exe if os.path.exists(chrome_exe) else edge_exe
+        profile_dir = os.path.join(BASE_DIR, ".orb_app_profile")
+        os.makedirs(profile_dir, exist_ok=True)
+
+        si = STARTUPINFOW()
+        si.cb = ctypes.sizeof(si)
+        si.lpDesktop = "winsta0\\default"
+        pi = PROCESS_INFORMATION()
+
+        cmd = f'"{browser_exe}" --user-data-dir="{profile_dir}" --app=http://localhost:{PORT} --window-size={w},{h}'
+        buf = ctypes.create_unicode_buffer(cmd)
+        res = k32.CreateProcessW(None, buf, None, None, False, 0, None, None, ctypes.byref(si), ctypes.byref(pi))
+        if res:
+            if pi.hProcess:
+                k32.CloseHandle(pi.hProcess)
+            if pi.hThread:
+                k32.CloseHandle(pi.hThread)
+            return True
+    except Exception as e:
+        print(f"[LAUNCH-ORB-ERR]: {e}", flush=True)
+    return False
+
+
+PREV_ORB_RECT = {"x": None, "y": None, "w": 400, "h": 290}
+
+
+def _restore_and_position_hwnd(u32, hwnd, x, y, w, h, bring_to_front=True, allow_zoomed=False):
+    k32 = ctypes.windll.kernel32
+    if u32.IsIconic(hwnd):
+        u32.ShowWindowAsync(hwnd, 9)
+        u32.ShowWindow(hwnd, 9)  # SW_RESTORE from minimised
+        time.sleep(0.08)
+    if not allow_zoomed and u32.IsZoomed(hwnd):
+        u32.ShowWindowAsync(hwnd, 9)
+        u32.ShowWindow(hwnd, 9)  # SW_RESTORE from maximised
+        time.sleep(0.08)
+
+    flags = 0x0040 if bring_to_front else (0x0010 | 0x0040)
+    u32.SetWindowPos(hwnd, -1, x, y, w, h, flags)
+
+    if bring_to_front:
+        try:
+            fg_hwnd = u32.GetForegroundWindow()
+            fg_tid = u32.GetWindowThreadProcessId(fg_hwnd, None) if fg_hwnd else 0
+            cur_tid = k32.GetCurrentThreadId()
+            target_tid = u32.GetWindowThreadProcessId(hwnd, None)
+            if fg_tid and fg_tid != cur_tid:
+                u32.AttachThreadInput(cur_tid, fg_tid, True)
+            if target_tid and target_tid != cur_tid:
+                u32.AttachThreadInput(cur_tid, target_tid, True)
+            u32.BringWindowToTop(hwnd)
+            u32.SetForegroundWindow(hwnd)
+            if target_tid and target_tid != cur_tid:
+                u32.AttachThreadInput(cur_tid, target_tid, False)
+            if fg_tid and fg_tid != cur_tid:
+                u32.AttachThreadInput(cur_tid, fg_tid, False)
+        except Exception:
+            pass
+        u32.SetWindowPos(hwnd, -1, x, y, w, h, 0x0040)
+
+
+def resize_or_launch_orb_window(mode="toggle"):
+    global PREV_ORB_RECT
+    try:
+        u32 = ctypes.windll.user32
+        h_desk = u32.OpenDesktopW("Default", 0, False, 0x01FF)
+        if h_desk:
+            u32.SetThreadDesktop(h_desk)
+
+        u32.SetWindowPos.argtypes = [wintypes.HWND, wintypes.HWND, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint]
+        u32.SetWindowPos.restype = wintypes.BOOL
+        EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+
+        found_hwnds = []
+
+        def enum_cb(hwnd, lparam):
+            if u32.IsWindowVisible(hwnd) or u32.IsIconic(hwnd):
+                length = u32.GetWindowTextLengthW(hwnd)
+                if length > 0:
+                    buff = ctypes.create_unicode_buffer(length + 1)
+                    u32.GetWindowTextW(hwnd, buff, length + 1)
+                    t = buff.value.lower()
+                    if ("orb ai" in t or "orb voice studio" in t or "orb + dostuff" in t) and "microsoft" not in t and "google chrome" not in t:
+                        found_hwnds.append(hwnd)
+            return True
+
+        u32.EnumWindows(EnumWindowsProc(enum_cb), 0)
+
+        screen_w = u32.GetSystemMetrics(0) or 1536
+        screen_h = u32.GetSystemMetrics(1) or 864
+
+        if found_hwnds:
+            hwnd = found_hwnds[0]
+            was_iconic = bool(u32.IsIconic(hwnd))
+            was_zoomed = bool(u32.IsZoomed(hwnd))
+            rect = wintypes.RECT()
+            u32.GetWindowRect(hwnd, ctypes.byref(rect))
+            cur_w = rect.right - rect.left
+            cur_h = rect.bottom - rect.top
+            target_mode = mode
+            if mode == "toggle":
+                if was_iconic or was_zoomed:
+                    target_mode = "compact"
+                else:
+                    target_mode = "studio" if cur_h <= 380 else "compact"
+
+            if target_mode == "fullscreen":
+                if not was_iconic and not was_zoomed and (cur_w < screen_w - 60 or cur_h < screen_h - 60):
+                    PREV_ORB_RECT = {"x": rect.left, "y": rect.top, "w": cur_w, "h": cur_h}
+                _restore_and_position_hwnd(u32, hwnd, 0, 0, screen_w, screen_h, bring_to_front=True, allow_zoomed=True)
+                return "fullscreen"
+
+            elif target_mode == "restore":
+                w = PREV_ORB_RECT.get("w") or 400
+                h = PREV_ORB_RECT.get("h") or 290
+                if w >= screen_w - 60 and h >= screen_h - 60:
+                    w, h = 400, 290
+                x = PREV_ORB_RECT.get("x")
+                y = PREV_ORB_RECT.get("y")
+                if x is None or y is None or x < 0 or y < 0:
+                    x = max(20, screen_w - w - 16)
+                    y = max(20, screen_h - h - 55)
+                _restore_and_position_hwnd(u32, hwnd, x, y, w, h, bring_to_front=False, allow_zoomed=False)
+                return "restored"
+
+            elif target_mode == "compact":
+                w, h = 400, 290
+                x = max(20, screen_w - w - 16)
+                y = max(20, screen_h - h - 55)
+                PREV_ORB_RECT = {"x": x, "y": y, "w": w, "h": h}
+            else:
+                w, h = 460, 720
+                x = max(20, screen_w - w - 24)
+                y = max(20, (screen_h - h) // 2)
+                PREV_ORB_RECT = {"x": x, "y": y, "w": w, "h": h}
+
+            _restore_and_position_hwnd(u32, hwnd, x, y, w, h, bring_to_front=True, allow_zoomed=False)
+            return target_mode
+        else:
+            if mode == "fullscreen":
+                w, h = screen_w, screen_h
+                x, y = 0, 0
+                target_mode = "fullscreen"
+            elif mode == "studio":
+                w, h = 460, 720
+                x = max(20, screen_w - w - 24)
+                y = max(20, (screen_h - h) // 2)
+                target_mode = "studio"
+            else:
+                w, h = 400, 290
+                x = max(20, screen_w - w - 16)
+                y = max(20, screen_h - h - 55)
+                target_mode = "compact"
+            launch_orb_standalone_on_default_desktop(w, h)
+            for _ in range(15):
+                time.sleep(0.15)
+                u32.EnumWindows(EnumWindowsProc(enum_cb), 0)
+                if found_hwnds:
+                    hwnd = found_hwnds[0]
+                    _restore_and_position_hwnd(u32, hwnd, x, y, w, h, bring_to_front=True, allow_zoomed=(target_mode == "fullscreen"))
+                    break
+            return target_mode
+    except Exception as e:
+        print(f"[FLOAT-WIN-ERR]: {e}", flush=True)
+        return "error"
+
+
 def keep_orb_pinned_loop():
     try:
         u32 = ctypes.windll.user32
@@ -1113,28 +1364,44 @@ def keep_orb_pinned_loop():
         u32.SetWindowPos.restype = wintypes.BOOL
         u32.GetWindowLongPtrW.argtypes = [wintypes.HWND, ctypes.c_int]
         u32.GetWindowLongPtrW.restype = ctypes.c_ssize_t
+        u32.GetWindow.argtypes = [wintypes.HWND, ctypes.c_uint]
+        u32.GetWindow.restype = wintypes.HWND
 
         HWND_TOPMOST = -1
+        HWND_NOTOPMOST = -2
+        HWND_BOTTOM = 1
         SWP_NOSIZE = 0x0001
         SWP_NOMOVE = 0x0002
         SWP_NOACTIVATE = 0x0010
+        SWP_SHOWWINDOW = 0x0040
         WS_EX_TOPMOST = 0x00000008
+        GW_OWNER = 4
+        SW_SHOWNOACTIVATE = 4
 
         EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
 
         while True:
             try:
                 def enum_cb(hwnd, lparam):
-                    if u32.IsWindowVisible(hwnd):
-                        length = u32.GetWindowTextLengthW(hwnd)
-                        if length > 0:
-                            buff = ctypes.create_unicode_buffer(length + 1)
-                            u32.GetWindowTextW(hwnd, buff, length + 1)
-                            t = buff.value.lower()
-                            if "orb ai" in t or "orb voice studio" in t or "orb floating" in t:
+                    length = u32.GetWindowTextLengthW(hwnd)
+                    if length > 0:
+                        buff = ctypes.create_unicode_buffer(length + 1)
+                        u32.GetWindowTextW(hwnd, buff, length + 1)
+                        t = buff.value.lower()
+                        if ("orb ai" in t or "orb voice studio" in t or "orb floating" in t or "orb + dostuff" in t) and "microsoft" not in t and "google chrome" not in t:
+                            # If owner browser window was minimized, un-minimize it silently at bottom of Z-order so Windows DWM keeps PiP widget visible
+                            owner_hwnd = u32.GetWindow(hwnd, GW_OWNER)
+                            if owner_hwnd:
+                                owner_ex = u32.GetWindowLongPtrW(owner_hwnd, -20)
+                                if owner_ex & WS_EX_TOPMOST:
+                                    u32.SetWindowPos(owner_hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE)
+                                if u32.IsIconic(owner_hwnd):
+                                    u32.ShowWindow(owner_hwnd, SW_SHOWNOACTIVATE)
+                                    u32.SetWindowPos(owner_hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE)
+                            if u32.IsWindowVisible(hwnd):
                                 ex = u32.GetWindowLongPtrW(hwnd, -20)
                                 if not (ex & WS_EX_TOPMOST):
-                                    u32.SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE)
+                                    u32.SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW)
                     return True
                 u32.EnumWindows(EnumWindowsProc(enum_cb), 0)
             except Exception:
@@ -1200,13 +1467,20 @@ def handle_earbud_resume_gesture():
         trigger_replay_last_ai_reply()
 
 
+class ThreadedOrbServer(ThreadingHTTPServer):
+    daemon_threads = True
+    request_queue_size = 64
+    allow_reuse_address = True
+
+
 def run():
     threading.Thread(target=keep_orb_pinned_loop, daemon=True).start()
     threading.Thread(target=earbud_gesture_listener_loop, daemon=True).start()
+    threading.Timer(0.6, lambda: resize_or_launch_orb_window("compact")).start()
     server_address = ("0.0.0.0", PORT)
     while True:
         try:
-            httpd = HTTPServer(server_address, PWAHandler)
+            httpd = ThreadedOrbServer(server_address, PWAHandler)
             print(f"Orb AI Voice Assistant live at http://localhost:{PORT}", flush=True)
             httpd.serve_forever()
         except KeyboardInterrupt:
