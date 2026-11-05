@@ -1,0 +1,13 @@
+{
+  "appId": "com.orbai.voicestudio",
+  "appName": "Orb AI Voice Studio",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://orb-ai-voice-studio.vercel.app",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

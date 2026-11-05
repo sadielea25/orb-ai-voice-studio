@@ -17,6 +17,12 @@ Thumbs.db
 node_modules/
 .vercel
 
+# Android build outputs
+android/.gradle/
+android/app/build/
+android/build/
+.orb_app_profile/
+
 # Local secrets & test files
 .env
 voice_settings.json

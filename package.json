@@ -15,5 +15,10 @@
     "orb-ai"
   ],
   "author": "Sadie (COREMARKET GOODS LTD)",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  }
 }

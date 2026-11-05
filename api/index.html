@@ -3139,11 +3139,13 @@
     }
 
     function downloadAndroidOrPWA() {
-      if (deferredPrompt) {
-        installPWA();
-      } else {
-        window.location.href = '/Orb.apk';
-      }
+      const link = document.createElement('a');
+      link.href = '/Orb AI Voice Studio V1 (Option B - Live Updates).apk';
+      link.download = 'Orb AI Voice Studio V1 (Option B - Live Updates).apk';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Downloading Option B APK for Android');
     }
 
     async function pinFloaterToTaskbar() {
