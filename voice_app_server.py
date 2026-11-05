@@ -694,6 +694,30 @@ class PWAHandler(BaseHTTPRequestHandler):
             settings = load_settings()
             self._set_headers(200)
             self.wfile.write(json.dumps(settings).encode("utf-8"))
+        elif url_path == "/api/tts":
+            parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            text = parsed_q.get("text", [""])[0].strip()
+            voice = parsed_q.get("voice", [load_settings().get("voice", "en-GB-SoniaNeural")])[0].strip()
+            if not text:
+                self._set_headers(400)
+                self.wfile.write(b'{"error": "No text provided"}')
+                return
+            try:
+                from api.index import generate_audio_bytes
+                audio_bytes = generate_audio_bytes(text, voice)
+                if audio_bytes:
+                    self.send_response(200)
+                    self.send_header("Content-Type", "audio/mpeg")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.send_header("Cache-Control", "public, max-age=3600")
+                    self.end_headers()
+                    self.wfile.write(audio_bytes)
+                    return
+            except Exception as e:
+                pass
+            self._set_headers(500)
+            self.wfile.write(b'{"error": "TTS generation failed"}')
+            return
         elif url_path == "/api/status":
             state = load_live_state()
             settings = load_settings()
@@ -1010,6 +1034,47 @@ class PWAHandler(BaseHTTPRequestHandler):
                     pass
             self._set_headers(200)
             self.wfile.write(b'{"status": "stopped"}')
+
+        elif url_path == "/api/assistant_call":
+            user_text = data.get("text", "").strip()
+            voice = data.get("voice") or load_settings().get("voice", "en-GB-SoniaNeural")
+            categories = data.get("categories", [])
+            my_tasks = data.get("my_tasks", [])
+            assistant_tasks = data.get("assistant_tasks", [])
+            active_cat = data.get("active_category", "accounts")
+            active_task = data.get("active_task_title", "")
+            call_history = data.get("call_history", [])
+
+            if not user_text:
+                user_text = "Hello Sonia, help me organise and plan my priority tasks for today."
+
+            try:
+                from api.index import query_assistant_call
+                res = query_assistant_call(
+                    user_text,
+                    categories=categories,
+                    my_tasks=my_tasks,
+                    assistant_tasks=assistant_tasks,
+                    active_category=active_cat,
+                    active_task_title=active_task,
+                    call_history=call_history
+                )
+            except Exception as e:
+                res = {"reply": f"I am here to help Sadie. Let us look at {active_cat} and organise your top priorities.", "action": None}
+
+            reply = res.get("reply", "I am here to help you organise your tasks.")
+            action = res.get("action")
+            audio_url = f"/api/tts?text={urllib.parse.quote(reply)}&voice={urllib.parse.quote(voice)}"
+            if load_settings().get("enabled", True):
+                enqueue_speech_request(reply, label="Assistant Call", cid="assistant")
+            self._set_headers(200)
+            self.wfile.write(json.dumps({
+                "status": "ok",
+                "reply": reply,
+                "action": action,
+                "audio_url": audio_url
+            }).encode("utf-8"))
+            return
 
         elif url_path == "/api/dostuff_break":
             task_title = data.get("title", "Take a 60 second movement break").strip()

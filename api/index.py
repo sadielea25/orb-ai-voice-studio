@@ -30,7 +30,7 @@ VOICE_SETTINGS = {
 CONVERSATION_HISTORY = [
     {
         "role": "assistant",
-        "text": "Hello Sadie. Orb AI Voice Studio v3.2 is live and connected in the cloud.",
+        "text": "Hello Sadie. Orb AI Voice Studio v3.3 is live and connected in the cloud.",
         "time": time.strftime("%H:%M")
     }
 ]
@@ -82,7 +82,7 @@ def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
 
 def query_gemini(prompt, history=None, context=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
-    models = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-2.5-flash-lite"]
+    models = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
 
     sys_prompt = (
         "You are Orb, an elite conversational AI voice assistant for Sadie. "
@@ -131,6 +131,104 @@ def query_gemini(prompt, history=None, context=None):
 
     return "I am connected, but I could not reach the language servers just now."
 
+
+
+def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None):
+    api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
+    models = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-flash-latest"]
+
+    cat_summary = ", ".join([c.get("name", c.get("id", "")) for c in (categories or [])]) if categories else "Accounts, ORB App, Client Work, Admin"
+    
+    tasks_summary = []
+    if my_tasks:
+        for t in my_tasks[:15]:
+            cat = t.get("category", "general")
+            prio = t.get("priority", "normal")
+            status = "completed" if t.get("completed") else "pending"
+            tasks_summary.append(f"- [{cat.upper()}] {t.get('title', '')} (Priority: {prio}, Status: {status})")
+    tasks_str = "\n".join(tasks_summary) if tasks_summary else "No tasks logged yet."
+
+    ast_summary = []
+    if assistant_tasks:
+        for at in assistant_tasks[:10]:
+            st = at.get("status", "queued")
+            ast_summary.append(f"- {at.get('title', '')} (Status: {st})")
+    ast_str = "\n".join(ast_summary) if ast_summary else "No assistant tasks currently queued."
+
+    sys_prompt = f"""You are Sonia, executive virtual assistant and ADHD daily planning partner for Sadie (Coremarket Goods / ORB).
+Sadie is calling you directly on a live phone call inside the app.
+Your goals:
+1. Help Sadie organise tasks into categories ({cat_summary}).
+2. Help Sadie prioritise tasks in order of importance so she is never overwhelmed (focusing on one task at a time).
+3. Plan Sadie's priority tasks for the day.
+4. Take on tasks delegated to you ("do stuff for Sadie") and track them on your own assistant to-do list.
+
+Current Working On: "{active_task_title or 'None selected'}" (Category: {active_category})
+
+Sadie's Tasks:
+{tasks_str}
+
+Your Assistant Delegated To-Do List:
+{ast_str}
+
+CRITICAL RULES:
+- Tone: Warm, calm, confident, articulate British executive assistant.
+- Strictly adhere to UK English spelling (prioritise, categorise, organise) and vocabulary.
+- NEVER USE EXCLAMATION MARKS. End sentences with a standard full stop.
+- Keep spoken replies concise (2-3 natural sentences suitable for spoken voice audio).
+
+Format your output as valid JSON:
+{{
+  "reply": "Your warm spoken reply to Sadie",
+  "action": {{
+    "set_focus_task_title": "Task title to set as active Working On (or null)",
+    "add_my_task": {{"title": "Task title", "category": "accounts", "priority": "high"}} (or null),
+    "delegate_to_assistant": {{"title": "Task title to do for Sadie", "category": "accounts", "notes": "Brief note on what you will do"}} (or null),
+    "reordered_priorities": [{{"id": "...", "priority": "high"}}] (or null)
+  }}
+}}
+If no action is triggered, leave action fields null or omit them. Return ONLY valid JSON."""
+
+    contents = []
+    if call_history:
+        for msg in call_history[-6:]:
+            role = "user" if msg.get("role") == "user" else "model"
+            txt = msg.get("text", "").strip()
+            if txt:
+                contents.append({"role": role, "parts": [{"text": txt}]})
+    contents.append({"role": "user", "parts": [{"text": user_prompt}]})
+
+    payload = {
+        "system_instruction": {"parts": [{"text": sys_prompt}]},
+        "contents": contents,
+        "generationConfig": {"response_mime_type": "application/json", "maxOutputTokens": 512, "temperature": 0.5}
+    }
+
+    for mod in models:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={api_key}"
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                res_data = json.loads(resp.read().decode("utf-8"))
+                cand = res_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+                if cand:
+                    cand = cand.replace("!", ".")
+                    try:
+                        return json.loads(cand)
+                    except Exception:
+                        return {"reply": cand, "action": None}
+        except Exception:
+            continue
+
+    return {
+        "reply": f"I am right here with you Sadie. Let us look at your top priority task under {active_category} and take it one step at a time.",
+        "action": None
+    }
 
 class handler(BaseHTTPRequestHandler):
     def _set_headers(self, status=200, content_type="application/json"):
@@ -206,7 +304,7 @@ class handler(BaseHTTPRequestHandler):
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v3.2",
+                "app_version": "v3.3",
                 "active_chat_title": "Orb AI Cloud Studio",
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
@@ -269,7 +367,7 @@ class handler(BaseHTTPRequestHandler):
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "v3.2",
+            "version": "v3.3",
             "status": "online",
             "cloud": True
         }).encode("utf-8"))
@@ -369,6 +467,41 @@ class handler(BaseHTTPRequestHandler):
         elif "stop" in target or "stop" in raw:
             self._set_headers(200)
             self.wfile.write(b'{"status": "stopped"}')
+            return
+
+        elif "assistant_call" in target or "assistant_call" in raw:
+            user_text = data.get("text", "").strip()
+            voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
+            categories = data.get("categories", [])
+            my_tasks = data.get("my_tasks", [])
+            assistant_tasks = data.get("assistant_tasks", [])
+            active_cat = data.get("active_category", "accounts")
+            active_task = data.get("active_task_title", "")
+            call_history = data.get("call_history", [])
+
+            if not user_text:
+                user_text = "Hello Sonia, help me organise and plan my priority tasks for today."
+
+            res = query_assistant_call(
+                user_text,
+                categories=categories,
+                my_tasks=my_tasks,
+                assistant_tasks=assistant_tasks,
+                active_category=active_cat,
+                active_task_title=active_task,
+                call_history=call_history
+            )
+
+            reply = res.get("reply", "I am here to help you organise your tasks.")
+            action = res.get("action")
+            audio_url = f"/api/tts?text={urllib.parse.quote(reply)}&voice={urllib.parse.quote(voice)}"
+            self._set_headers(200)
+            self.wfile.write(json.dumps({
+                "status": "ok",
+                "reply": reply,
+                "action": action,
+                "audio_url": audio_url
+            }).encode("utf-8"))
             return
 
         elif "dostuff_break" in target or "dostuff_break" in raw:

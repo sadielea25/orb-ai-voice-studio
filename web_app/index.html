@@ -633,6 +633,96 @@
     @media all and (display-mode: standalone) {
       .download-section { display: none !important; }
     }
+
+    /* In-App Virtual Assistant Phone Call Modal */
+    #assistantCallModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 999995;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    .call-card {
+      width: min(520px, 100%);
+      background: #ffffff;
+      border: 2px solid #10b981;
+      border-radius: 20px;
+      padding: 22px 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(16, 185, 129, 0.25);
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-sizing: border-box;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    @keyframes callPulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
+      70% { box-shadow: 0 0 0 18px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .call-avatar-wrap {
+      width: 76px;
+      height: 76px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      position: relative;
+      animation: callPulse 2s infinite ease-out;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+    .call-avatar-img {
+      width: 68px;
+      height: 68px;
+      border-radius: 999px;
+      object-fit: cover;
+    }
+    .priority-badge-high {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+    }
+    .priority-badge-normal {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #2563eb;
+    }
+    .priority-badge-low {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+    }
+    .category-pill-btn {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      border: 1.5px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .category-pill-btn.active {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    }
   </style>
 </head>
 <body>
@@ -644,7 +734,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.2</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.3</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -658,7 +748,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.2</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.3</span>
         </div>
       </div>
 
@@ -668,7 +758,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.2</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.3</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -699,54 +789,112 @@
 
       <!-- DOSTUFF FOCUS MODE BAR (Clean Light Background for Easy Reading & Writing) -->
       <div id="dostuffFocusStrip" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 11px; padding: 5px 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);">
-        <!-- Active Focus Task Trigger -->
-        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to choose or manage focus tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 3.5px 8px; color: #0f172a; font-size: 11.5px; font-weight: 700; cursor: pointer; text-align: left; transition: all 0.15s ease;">
-          <span style="font-size: 12px; line-height: 1; flex-shrink: 0;">🎯</span>
-          <span style="font-size: 10px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Focus:</span>
+        <!-- Category Badge & Working On Task Trigger -->
+        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to view categories, reorder priorities, or delegate tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 3.5px 8px; color: #0f172a; font-size: 11.5px; font-weight: 700; cursor: pointer; text-align: left; transition: all 0.15s ease;">
+          <span id="dostuffActiveCategoryBadge" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 9.5px; font-weight: 800; padding: 1.5px 6px; border-radius: 6px; flex-shrink: 0; white-space: nowrap;">📊 Accounts</span>
+          <span style="font-size: 10px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Working On:</span>
           <span id="dostuffActiveTaskTitle" style="white-space: normal; break-words; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; flex: 1; min-width: 0; color: #0f172a; font-weight: 700;">Select a focus task...</span>
           <span id="dostuffTaskSessionsBadge" style="background: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 9.5px; font-weight: 800; padding: 1.5px 6px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;">🔥 0 • 0m</span>
-          <span style="font-size: 9px; color: #64748b; flex-shrink: 0;">▾</span>
+          <span style="font-size: 9px; color: #64748b; flex-shrink: 0;">▼</span>
         </button>
 
-        <!-- Right Quick Action Buttons -->
+        <!-- Right Quick Action Buttons: Live Phone Call & Task Hub -->
         <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
-          <button type="button" id="dostuffSyncTodoBtn" onclick="window.importTasksFromTodoHub()" title="Sync tasks from main to-do list" style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; padding: 3.5px 7px; border-radius: 7px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
-            📋 Sync
+          <button type="button" id="btnCallAssistantStrip" onclick="window.startAssistantCall()" title="Phone up your virtual assistant Sonia for live planning and task delegation" style="background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; color: #ffffff; padding: 4px 9px; border-radius: 8px; font-size: 10.5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 6px rgba(16,185,129,0.35);">
+            <span style="font-size: 11px;">📞</span>
+            <span>Call Sonia</span>
           </button>
-          <button type="button" id="dostuffQuickAddBtn" onclick="window.openQuickAddTaskInput()" title="Add a new task to focus on" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; padding: 3.5px 7px; border-radius: 7px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
-            + Task
+          <button type="button" id="dostuffQuickAddBtn" onclick="window.toggleDoStuffTaskModal()" title="View categories, priorities and tasks" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 4px 7px; border-radius: 8px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+            📋 Tasks
           </button>
         </div>
       </div>
 
-      <!-- DOSTUFF FOCUS TASKS INLINE POPOVER (Crisp Light Background for Easy Writing & Reading) -->
-      <div id="dostuffTaskModal" style="display: none; background: #ffffff; border: 2px solid #3b82f6; border-radius: 14px; padding: 12px; margin-bottom: 8px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08); position: relative; z-index: 100; color: #0f172a;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #e2e8f0;">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 14px;">🎯</span>
-            <span style="font-size: 12px; font-weight: 800; color: #0f172a; letter-spacing: -0.2px;">Choose Focus Task</span>
-            <span id="dostuffTotalTimeBadge" style="font-size: 9.5px; font-weight: 800; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 2px 7px; border-radius: 999px;">0 sessions logged</span>
+      <!-- DOSTUFF CATEGORISED TASKS & VIRTUAL ASSISTANT POPOVER (Crisp Light Background) -->
+      <div id="dostuffTaskModal" onclick="event.stopPropagation()" style="display: none; background: #ffffff; border: 2px solid #3b82f6; border-radius: 14px; padding: 12px; margin-bottom: 8px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08); position: relative; z-index: 100; color: #0f172a;">
+        <!-- Top Nav Header with 2 Major Tabs -->
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #e2e8f0; flex-wrap: wrap;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" id="tabMyTasksBtn" onclick="window.switchTaskModalTab('my_tasks')" style="background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
+              📋 My Tasks & Priorities
+            </button>
+            <button type="button" id="tabAssistantTasksBtn" onclick="window.switchTaskModalTab('assistant_tasks')" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer;">
+              🤝 Assistant's To-Do List <span id="astTaskCountBadge" style="background: #e2e8f0; color: #0f172a; padding: 1px 5px; border-radius: 999px; font-size: 9px; font-weight: 800; margin-left: 3px;">0</span>
+            </button>
           </div>
-          <button type="button" onclick="window.closeDoStuffTaskModal()" title="Close" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 24px; height: 24px; border-radius: 7px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button type="button" onclick="window.startAssistantCall()" title="Call Sonia to help plan tasks" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; padding: 3px 8px; border-radius: 7px; font-size: 10.5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
+              <span>📞</span> Call Sonia
+            </button>
+            <button type="button" onclick="window.closeDoStuffTaskModal()" title="Close" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 24px; height: 24px; border-radius: 7px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+          </div>
         </div>
 
-        <!-- Add Task Input Row (Light Background for Easy Typing) -->
-        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-          <input type="text" id="dostuffNewTaskInput" placeholder="Type a task to focus on..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1; min-width: 0; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 7px 10px; font-size: 12px; font-weight: 600; color: #0f172a; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" />
-          <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 11.5px; font-weight: 800; padding: 7px 14px; border-radius: 8px; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">Add</button>
+        <!-- VIEW 1: MY TASKS & CATEGORIES -->
+        <div id="viewMyTasksContainer">
+          <!-- Categories Selection Pills (Wrap cleanly without horizontal scrollbar) -->
+          <div style="margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;">Work Categories:</span>
+              <button type="button" onclick="window.promptAddCustomCategory()" style="background: none; border: none; color: #2563eb; font-size: 10px; font-weight: 800; cursor: pointer; padding: 0;">+ New Category</button>
+            </div>
+            <div id="categoryPillsRow" style="display: flex; flex-wrap: wrap; gap: 5px;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Add Task Form in Current Category -->
+          <div style="display: flex; gap: 6px; margin-bottom: 8px; align-items: center;">
+            <input type="text" id="dostuffNewTaskInput" placeholder="Add task in this category..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1; min-width: 0; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 6px 9px; font-size: 11.5px; font-weight: 600; color: #0f172a; outline: none;" />
+            <select id="newTaskPrioritySelect" style="width: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 5px 6px; font-size: 11px; font-weight: 700; color: #0f172a; cursor: pointer;">
+              <option value="high">🔴 High</option>
+              <option value="normal" selected>🟡 Normal</option>
+              <option value="low">🟢 Low</option>
+            </select>
+            <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;">Add</button>
+          </div>
+
+          <!-- Task Actions Row (Sort by priority, Sync from to-do) -->
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 8px; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px;">
+            <span style="font-size: 10px; font-weight: 700; color: #64748b;">Use ▲▼ to reorder in any priority</span>
+            <div style="display: flex; gap: 4px;">
+              <button type="button" onclick="window.sortCurrentCategoryByPriority()" style="background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; cursor: pointer;">⚡ Sort High-to-Low</button>
+              <button type="button" onclick="window.importTasksFromTodoHub()" style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; cursor: pointer;">📋 Sync To-Do</button>
+            </div>
+          </div>
+
+          <!-- Tasks List Container (Supports drag / up-down priority reordering) -->
+          <div id="dostuffTasksList" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
+            <!-- Rendered dynamically -->
+          </div>
         </div>
 
-        <!-- Task List Container -->
-        <div id="dostuffTasksList" style="max-height: 190px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
-          <!-- Rendered dynamically -->
+        <!-- VIEW 2: ASSISTANT'S DELEGATED TO-DO LIST (What Sonia is doing for Sadie) -->
+        <div id="viewAssistantTasksContainer" style="display: none;">
+          <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 9px; padding: 8px 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+            <div>
+              <div style="font-size: 11.5px; font-weight: 800; color: #166534;">Sonia's Delegated To-Do List</div>
+              <div style="font-size: 10px; color: #15803d;">Tasks assigned to your assistant to complete for you.</div>
+            </div>
+            <button type="button" onclick="window.startAssistantCall()" style="background: #16a34a; color: #ffffff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">📞 Discuss on Call</button>
+          </div>
+
+          <!-- Delegate New Task Input -->
+          <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+            <input type="text" id="delegateTaskInput" placeholder="Delegate a new task to Sonia..." onkeydown="if(event.key==='Enter') window.delegateNewTaskToAssistant()" style="flex: 1; min-width: 0; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 6px 9px; font-size: 11.5px; font-weight: 600; color: #0f172a; outline: none;" />
+            <button type="button" onclick="window.delegateNewTaskToAssistant()" style="background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #059669; color: #ffffff; font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;">Delegate</button>
+          </div>
+
+          <!-- Assistant Tasks List -->
+          <div id="assistantTasksList" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
+            <!-- Rendered dynamically -->
+          </div>
         </div>
 
-        <!-- Footer Actions in Popover -->
+        <!-- Footer Note -->
         <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 6px; border-top: 1.5px solid #e2e8f0; padding-top: 8px;">
-          <button type="button" onclick="window.importTasksFromTodoHub()" style="background: none; border: none; color: #6d28d9; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
-            <span>📋</span> Sync from To-Do list
-          </button>
-          <span style="font-size: 10.5px; color: #64748b; font-weight: 500;">Select one to anchor your focus</span>
+          <span id="dostuffTotalTimeBadge" style="font-size: 10px; font-weight: 800; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 2px 7px; border-radius: 999px;">0 sessions logged</span>
+          <span style="font-size: 10px; color: #64748b;">Click 🎯 to set any task as your active Working On</span>
         </div>
       </div>
 
@@ -922,7 +1070,70 @@
         </div>
       </div>
     </div>
-    <div id="toast" class="toast">Notice</div>
+    <!-- VIRTUAL ASSISTANT LIVE IN-APP PHONE CALL OVERLAY -->
+  <div id="assistantCallModal">
+    <div class="call-card">
+      <!-- Call Top Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 14px; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 8px; border-radius: 8px; color: #059669;">📞 Live Call</span>
+          <div>
+            <div style="font-size: 13px; font-weight: 800; color: #0f172a;">Sonia • Executive Virtual Assistant</div>
+            <div style="font-size: 10px; color: #64748b;">ADHD Priority Planning & Task Delegation</div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span id="callDurationBadge" style="font-family: ui-monospace, SFMono-Regular, monospace; font-size: 11px; font-weight: 800; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 3px 8px; border-radius: 999px;">00:00</span>
+        </div>
+      </div>
+
+      <!-- Calling Persona Avatar with Animated Pulse -->
+      <div style="text-align: center; padding: 8px 0;">
+        <div id="callAvatarPulse" class="call-avatar-wrap">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sonia" class="call-avatar-img">
+        </div>
+        <div id="callStatusIndicator" style="font-size: 12px; font-weight: 800; color: #059669; margin-top: 10px;">
+          ● Connected • Listening to Sadie...
+        </div>
+        <div id="callSubstatus" style="font-size: 10.5px; color: #64748b; margin-top: 2px;">
+          Speak naturally or tap a planning prompt below.
+        </div>
+      </div>
+
+      <!-- Live Call Transcript Conversation Area -->
+      <div id="callTranscriptBox" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 10px; max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #0f172a; line-height: 1.4;">
+          <strong style="color: #059669;">Sonia:</strong> Hello Sadie. I am right here on the line. How can I help you organise, prioritise, or plan your tasks today?
+        </div>
+      </div>
+
+      <!-- One-Tap Live Planning Prompt Chips -->
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;">
+        <button type="button" onclick="window.sendAssistantCallPrompt('Help me plan my top priority tasks for today')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          📋 Plan My Day
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('Help me organise and prioritise my accounts tasks')" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          ⚡ Prioritise Accounts
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('What should I focus on right now?')" style="background: #fefce8; border: 1px solid #fef08a; color: #854d0e; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          🎯 What Should I Focus On?
+        </button>
+        <button type="button" onclick="window.sendAssistantCallPrompt('Can you draft the client invoice reminder for me and put it on your to-do list?')" style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+          🤝 Delegate Invoice Task
+        </button>
+      </div>
+
+      <!-- End Call Red Action Button -->
+      <div style="display: flex; gap: 8px; border-top: 1.5px solid #e2e8f0; padding-top: 12px; margin-top: 4px;">
+        <button type="button" id="btnEndAssistantCall" onclick="window.endAssistantCall()" style="flex: 1; background: linear-gradient(135deg, #dc2626, #b91c1c); border: 1px solid #991b1b; color: #ffffff; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);">
+          <span>📞</span>
+          <span>End Call</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Notice</div>
   </div>
 
     <!-- Footer Utilities -->
@@ -3272,29 +3483,28 @@
     }
 
     // === DOSTUFF MASTER MICRO-BREAK & ACCOUNTABILITY ENGINE ===
-    const DOSTUFF_CHORES = [
-      { id: 'c1', title: 'Make your bed for a fresh space', icon: '🛏️', category: 'chore', tip: 'Creates visual order in your room to clear mental distraction.' },
-      { id: 'c2', title: 'Brush teeth or splash face with cool water', icon: '🪥', category: 'chore', tip: 'Cool water stimulates the vagus nerve and refreshes tired screen eyes.' },
-      { id: 'c3', title: 'Put a laundry load on or swap to dryer', icon: '🧺', category: 'chore', tip: 'Gets you on your feet and away from desk posture for a physical win.' },
-      { id: 'c4', title: 'Drink a tall glass of crisp cold water', icon: '💧', category: 'chore', tip: 'Hydrates your brain and gives your eyes a full rest from display glare.' },
-      { id: 'c5', title: 'Empty your desk or room bin', icon: '🗑️', category: 'chore', tip: 'Takes 30 seconds to empty, immediately reducing desk clutter.' },
-      { id: 'c6', title: 'Clear 3 misplaced items off your desk', icon: '🧹', category: 'chore', tip: 'Quick micro-win that restores breathing room to your focus space.' },
-      { id: 'c7', title: 'Step outside or open window for 60s fresh air', icon: '☀️', category: 'chore', tip: 'Natural daylight and fresh air quickly restore alertness.' },
-      { id: 'c8', title: 'Put dirty mugs and cups into the sink', icon: '🍽️', category: 'chore', tip: 'Stand up, move your body, and keep your workspace clear.' },
-      { id: 'c9', title: 'Water a house plant', icon: '🪴', category: 'chore', tip: 'A tactile micro-pause connecting you with your living space.' },
-      { id: 'c10', title: 'Quick wipe of desk and keyboard', icon: '✨', category: 'chore', tip: 'Clears dust and grime for a fresh, clean keyboard and desk.' }
+    const DOSTUFF_EXERCISES = [
+      { id: 'ex-1', category: 'exercise', icon: '🚰', title: 'Drink a tall glass of crisp cold water', tip: 'Hydrates your brain and gives your eyes a full rest from display glare.' },
+      { id: 'ex-2', category: 'exercise', icon: '🙆', title: 'Stand up and roll shoulders backward 10 times', tip: 'Releases upper back and neck tension from desk posture.' },
+      { id: 'ex-3', category: 'exercise', icon: '👀', title: '20-20-20 Eye Rest Rule', tip: 'Look at something 20 feet away for 20 seconds to reset optic nerve fatigue.' },
+      { id: 'ex-4', category: 'exercise', icon: '🧘', title: 'Deep diaphragmatic breathing (4-7-8 method)', tip: 'Down-regulates your nervous system and boosts cognitive focus.' },
+      { id: 'ex-5', category: 'exercise', icon: '🦵', title: 'Calf raises & ankle circles (15 reps)', tip: 'Restores lower body blood circulation after prolonged sitting.' },
+      { id: 'ex-6', category: 'exercise', icon: '🚪', title: 'Chest doorway stretch for 30 seconds', tip: 'Opens your chest and counters forward head slump.' }
     ];
 
-    const DOSTUFF_EXERCISES = [
-      { id: 'e1', title: '30-second desk shakeout and shoulder roll', icon: '🪩', category: 'exercise', tip: 'Loosens upper back and neck tension immediately.' },
-      { id: 'e2', title: 'Seated neck stretch (15s each side)', icon: '🧘', category: 'exercise', tip: 'Releases cervical spine compression from staring at the display.' },
-      { id: 'e3', title: 'Doorframe chest and shoulder opening stretch', icon: '🙆', category: 'exercise', tip: 'Opens chest muscles constricted by hunching over a keyboard.' },
-      { id: 'e4', title: '20 standing calf raises behind chair', icon: '🦵', category: 'exercise', tip: 'Pumps venous blood circulation back up from your legs.' },
-      { id: 'e5', title: 'Seated gentle spinal torso twist', icon: '🔄', category: 'exercise', tip: 'Mobilises your spine and resets seated desk posture.' },
-      { id: 'e6', title: '10 gentle chair squats (stand up and sit down)', icon: '🪑', category: 'exercise', tip: 'Re-engages large quadriceps and glutes to wake up circulation.' },
-      { id: 'e7', title: '5 Cat-Cow spine releases on mat or chair', icon: '🐈', category: 'exercise', tip: 'Restores fluid motion to your spine after stationary sitting.' },
-      { id: 'e8', title: 'Arm circles and wrist rotations (30s)', icon: '⭕', category: 'exercise', tip: 'Relieves repetitive typing strain in wrists and forearms.' },
-      { id: 'e9', title: '5 desk-edge or floor push-ups', icon: '💪', category: 'exercise', tip: 'Activates chest and core muscles to break prolonged sitting.' }
+    const DOSTUFF_CHORES = [
+      { id: 'ch-1', category: 'chore', icon: '☕', title: 'Take mugs and glasses to the kitchen', tip: 'A clutter-free desk directly calms ADHD cognitive load.' },
+      { id: 'ch-2', category: 'chore', icon: '🗑️', title: 'Empty your desk bin or paper recycling', tip: 'Physical movement breaks your sedentary loop.' },
+      { id: 'ch-3', category: 'chore', icon: '🌬️', title: 'Open a window for 60 seconds of fresh air', tip: 'Fresh oxygen rapidly clears brain fog.' },
+      { id: 'ch-4', category: 'chore', icon: '🧻', title: 'Wipe down your keyboard and desk mat', tip: 'A clean workstation boosts your dopamine and motivation.' },
+      { id: 'ch-5', category: 'chore', icon: '📬', title: 'Sort incoming letters or receipts into one pile', tip: 'Consolidates loose clutter into one clean spot.' }
+    ];
+
+    const DEFAULT_TASK_CATEGORIES = [
+      { id: 'accounts', name: 'Accounts', icon: '📊', color: '#2563eb' },
+      { id: 'app', name: 'ORB App', icon: '⚡', color: '#059669' },
+      { id: 'client_work', name: 'Client Work', icon: '💼', color: '#7c3aed' },
+      { id: 'admin', name: 'Admin & Tax', icon: '🏛️', color: '#d97706' }
     ];
 
     let dostuffState = {
@@ -3308,10 +3518,42 @@
       currentTask: null,
       focusMode: true,
       activeFocusTaskId: null,
-      focusTasks: []
+      activeCategoryId: 'accounts',
+      activeTab: 'my_tasks',
+      categories: DEFAULT_TASK_CATEGORIES,
+      focusTasks: [],
+      assistantTasks: []
     };
 
+    // --- Phone Call State with Assistant Sonia ---
+    let assistantCallActive = false;
+    let assistantCallTimer = null;
+    let assistantCallSeconds = 0;
+    let assistantCallRecognition = null;
+    let assistantCallHistory = [];
+    let assistantIsSpeaking = false;
+
     function initDoStuffFocusTasks() {
+      // 1. Load Categories
+      try {
+        const savedCats = localStorage.getItem('orb_dostuff_categories');
+        if (savedCats) {
+          const parsed = JSON.parse(savedCats);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            dostuffState.categories = parsed;
+          }
+        }
+      } catch (e) {}
+
+      // 2. Load Active Category
+      const savedCatId = localStorage.getItem('orb_dostuff_active_cat_id');
+      if (savedCatId && dostuffState.categories.some(c => c.id === savedCatId)) {
+        dostuffState.activeCategoryId = savedCatId;
+      } else {
+        dostuffState.activeCategoryId = dostuffState.categories[0] ? dostuffState.categories[0].id : 'accounts';
+      }
+
+      // 3. Load Focus Tasks
       try {
         const saved = localStorage.getItem('orb_dostuff_focus_tasks');
         if (saved) {
@@ -3322,39 +3564,41 @@
         }
       } catch (e) {}
 
-      // If empty, attempt import from main todo list (thermo_milestone_goals)
-      if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) {
-        try {
-          const storedMilestones = localStorage.getItem('thermo_milestone_goals');
-          if (storedMilestones) {
-            const goals = JSON.parse(storedMilestones);
-            if (Array.isArray(goals)) {
-              goals.forEach(g => {
-                (g.tasks || []).forEach(t => {
-                  dostuffState.focusTasks.push({
-                    id: t.id || ('todo-' + Math.random().toString(36).substr(2, 7)),
-                    title: t.text || t.title,
-                    sessions: 0,
-                    totalMinutes: 0,
-                    completed: !!t.done,
-                    createdAt: Date.now(),
-                    source: 'main_todo'
-                  });
-                });
-              });
-            }
-          }
-        } catch (e) {}
+      // Ensure every task has category and priority
+      if (dostuffState.focusTasks && dostuffState.focusTasks.length > 0) {
+        dostuffState.focusTasks.forEach((t, idx) => {
+          if (!t.category) t.category = 'accounts';
+          if (!t.priority) t.priority = 'normal';
+          if (typeof t.order !== 'number') t.order = idx;
+        });
+      } else {
+        // Seed default high-priority accounting, app & admin tasks
+        dostuffState.focusTasks = [
+          { id: 'f-1', title: 'Bank feed and transaction reconciliation', category: 'accounts', priority: 'high', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-2', title: 'Sort incoming invoices and VAT receipts', category: 'accounts', priority: 'high', order: 1, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-3', title: 'HMRC Confirmation Statement and tax review', category: 'admin', priority: 'high', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-4', title: 'Test Android Option B live updates over the air', category: 'app', priority: 'high', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-5', title: 'Update monthly balance spreadsheet', category: 'accounts', priority: 'normal', order: 2, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
+          { id: 'f-6', title: 'Clear pending client correspondence', category: 'client_work', priority: 'normal', order: 0, sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' }
+        ];
       }
 
-      // If still empty, seed default high-priority accounting & admin tasks
-      if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) {
-        dostuffState.focusTasks = [
-          { id: 'f-1', title: 'Bank feed and transaction reconciliation', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-2', title: 'Sort incoming invoices and VAT receipts', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-3', title: 'HMRC Confirmation Statement and tax review', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-4', title: 'Update monthly balance spreadsheet', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' },
-          { id: 'f-5', title: 'Clear pending client correspondence', sessions: 0, totalMinutes: 0, completed: false, createdAt: Date.now(), source: 'default' }
+      // 4. Load Assistant Delegated Tasks
+      try {
+        const savedAst = localStorage.getItem('orb_dostuff_assistant_tasks');
+        if (savedAst) {
+          const parsed = JSON.parse(savedAst);
+          if (Array.isArray(parsed)) {
+            dostuffState.assistantTasks = parsed;
+          }
+        }
+      } catch (e) {}
+
+      if (!dostuffState.assistantTasks || dostuffState.assistantTasks.length === 0) {
+        dostuffState.assistantTasks = [
+          { id: 'ast-1', title: 'Draft overdue invoice reminder email for client', category: 'accounts', status: 'in_progress', notes: 'Drafting polite British reminder with payment links and VAT breakdown.', createdAt: Date.now() },
+          { id: 'ast-2', title: 'Organise top 3 priorities for Sadie today', category: 'admin', status: 'completed', notes: 'Prioritised: 1. Bank Reconciliation, 2. Confirmation Statement, 3. App testing.', createdAt: Date.now() - 3600000 },
+          { id: 'ast-3', title: 'Calculate quarterly VAT output estimate', category: 'accounts', status: 'queued', notes: 'Queued to review as soon as bank reconciliation finishes.', createdAt: Date.now() }
         ];
       }
 
@@ -3370,9 +3614,16 @@
 
     function saveDoStuffFocusTasks() {
       try {
+        localStorage.setItem('orb_dostuff_categories', JSON.stringify(dostuffState.categories));
+        localStorage.setItem('orb_dostuff_active_cat_id', dostuffState.activeCategoryId || 'accounts');
         localStorage.setItem('orb_dostuff_focus_tasks', JSON.stringify(dostuffState.focusTasks));
         localStorage.setItem('orb_dostuff_active_task_id', dostuffState.activeFocusTaskId || '');
+        localStorage.setItem('orb_dostuff_assistant_tasks', JSON.stringify(dostuffState.assistantTasks));
       } catch (e) {}
+    }
+
+    function getActiveCategory() {
+      return dostuffState.categories.find(c => c.id === dostuffState.activeCategoryId) || dostuffState.categories[0] || { id: 'accounts', name: 'Accounts', icon: '📊' };
     }
 
     function getActiveFocusTask() {
@@ -3389,13 +3640,43 @@
       return dostuffState.focusTasks[0] || null;
     }
 
-    window.toggleDoStuffTaskModal = function() {
+    window.switchTaskModalTab = function(tabName) {
+      dostuffState.activeTab = tabName;
+      getAllDoStuffDocs().forEach(doc => {
+        const myTab = Document.prototype.getElementById.call(doc, 'tabMyTasksBtn');
+        const astTab = Document.prototype.getElementById.call(doc, 'tabAssistantTasksBtn');
+        const myView = Document.prototype.getElementById.call(doc, 'viewMyTasksContainer');
+        const astView = Document.prototype.getElementById.call(doc, 'viewAssistantTasksContainer');
+
+        if (tabName === 'assistant_tasks') {
+          if (myTab) { myTab.style.background = '#f1f5f9'; myTab.style.color = '#475569'; myTab.style.borderColor = '#cbd5e1'; }
+          if (astTab) { astTab.style.background = '#10b981'; astTab.style.color = '#ffffff'; astTab.style.borderColor = '#059669'; }
+          if (myView) myView.style.display = 'none';
+          if (astView) astView.style.display = 'block';
+          renderAssistantTasksList();
+        } else {
+          if (myTab) { myTab.style.background = '#2563eb'; myTab.style.color = '#ffffff'; myTab.style.borderColor = '#1d4ed8'; }
+          if (astTab) { astTab.style.background = '#f1f5f9'; astTab.style.color = '#475569'; astTab.style.borderColor = '#cbd5e1'; }
+          if (myView) myView.style.display = 'block';
+          if (astView) astView.style.display = 'none';
+          renderDoStuffTaskList();
+        }
+      });
+    };
+
+    window.toggleDoStuffTaskModal = function(optionalView = null) {
       getAllDoStuffDocs().forEach(doc => {
         const modal = Document.prototype.getElementById.call(doc, 'dostuffTaskModal');
         if (!modal) return;
         const isHidden = modal.style.display === 'none' || !modal.style.display;
         modal.style.display = isHidden ? 'block' : 'none';
         if (isHidden) {
+          if (optionalView === 'assistant') {
+            window.switchTaskModalTab('assistant_tasks');
+          } else {
+            window.switchTaskModalTab('my_tasks');
+          }
+          renderCategoryPills();
           renderDoStuffTaskList();
           const input = Document.prototype.getElementById.call(doc, 'dostuffNewTaskInput');
           if (input) setTimeout(() => input.focus(), 60);
@@ -3410,31 +3691,75 @@
       });
     };
 
-    window.selectDoStuffFocusTask = function(taskId) {
-      dostuffState.activeFocusTaskId = taskId;
+    window.selectTaskCategory = function(catId) {
+      dostuffState.activeCategoryId = catId;
       saveDoStuffFocusTasks();
       updateDoStuffUI();
+      renderCategoryPills();
+      renderDoStuffTaskList();
+    };
+
+    window.promptAddCustomCategory = function() {
+      const name = window.prompt("Enter new category name (e.g. Tax Return, Marketing, Research):");
+      if (!name || !name.trim()) return;
+      const cleanName = name.trim();
+      const id = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 20);
+      if (dostuffState.categories.some(c => c.id === id)) {
+        showToast("Category already exists");
+        return;
+      }
+      dostuffState.categories.push({
+        id: id,
+        name: cleanName,
+        icon: '📁',
+        color: '#2563eb'
+      });
+      dostuffState.activeCategoryId = id;
+      saveDoStuffFocusTasks();
+      updateDoStuffUI();
+      renderCategoryPills();
+      renderDoStuffTaskList();
+      showToast("Added category: " + cleanName);
+    };
+
+    window.selectDoStuffFocusTask = function(taskId) {
+      dostuffState.activeFocusTaskId = taskId;
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (task && task.category) {
+        dostuffState.activeCategoryId = task.category;
+      }
+      saveDoStuffFocusTasks();
+      updateDoStuffUI();
+      renderCategoryPills();
       renderDoStuffTaskList();
       window.closeDoStuffTaskModal();
-      const task = dostuffState.focusTasks.find(t => t.id === taskId);
       if (task) {
-        showToast('🎯 Focus anchored to: ' + task.title);
+        showToast('🎯 Working On: ' + task.title);
       }
     };
 
     window.addDoStuffFocusTask = function() {
       let title = '';
+      let priority = 'normal';
       getAllDoStuffDocs().forEach(doc => {
         const input = Document.prototype.getElementById.call(doc, 'dostuffNewTaskInput');
         if (input && input.value && input.value.trim()) {
           title = input.value.trim();
           input.value = '';
         }
+        const prioSel = Document.prototype.getElementById.call(doc, 'newTaskPrioritySelect');
+        if (prioSel && prioSel.value) {
+          priority = prioSel.value;
+        }
       });
       if (!title) return;
+      const catTasks = dostuffState.focusTasks.filter(t => t.category === dostuffState.activeCategoryId);
       const newTask = {
         id: 'f-' + Date.now(),
         title: title,
+        category: dostuffState.activeCategoryId,
+        priority: priority,
+        order: catTasks.length,
         sessions: 0,
         totalMinutes: 0,
         completed: false,
@@ -3445,9 +3770,95 @@
       dostuffState.activeFocusTaskId = newTask.id;
       saveDoStuffFocusTasks();
       updateDoStuffUI();
+      renderCategoryPills();
       renderDoStuffTaskList();
-      window.closeDoStuffTaskModal();
-      showToast('🎯 Added and focusing on: ' + title);
+      showToast('🎯 Added & Working On: ' + title);
+    };
+
+    // Reordering in any priority order: Move Up ▲
+    window.moveTaskUp = function(taskId, event) {
+      if (event) event.stopPropagation();
+      const cat = dostuffState.activeCategoryId;
+      const catTasks = dostuffState.focusTasks.filter(t => t.category === cat);
+      const idx = catTasks.findIndex(t => t.id === taskId);
+      if (idx <= 0) return; // Already at top of category
+      const currentTask = catTasks[idx];
+      const prevTask = catTasks[idx - 1];
+
+      // Swap in global array
+      const globalIdxCurrent = dostuffState.focusTasks.findIndex(t => t.id === currentTask.id);
+      const globalIdxPrev = dostuffState.focusTasks.findIndex(t => t.id === prevTask.id);
+      if (globalIdxCurrent !== -1 && globalIdxPrev !== -1) {
+        const tmp = dostuffState.focusTasks[globalIdxCurrent];
+        dostuffState.focusTasks[globalIdxCurrent] = dostuffState.focusTasks[globalIdxPrev];
+        dostuffState.focusTasks[globalIdxPrev] = tmp;
+      }
+      saveDoStuffFocusTasks();
+      renderDoStuffTaskList();
+      showToast('▲ Priority increased: ' + currentTask.title);
+    };
+
+    // Reordering in any priority order: Move Down ▼
+    window.moveTaskDown = function(taskId, event) {
+      if (event) event.stopPropagation();
+      const cat = dostuffState.activeCategoryId;
+      const catTasks = dostuffState.focusTasks.filter(t => t.category === cat);
+      const idx = catTasks.findIndex(t => t.id === taskId);
+      if (idx === -1 || idx >= catTasks.length - 1) return; // Already at bottom of category
+      const currentTask = catTasks[idx];
+      const nextTask = catTasks[idx + 1];
+
+      // Swap in global array
+      const globalIdxCurrent = dostuffState.focusTasks.findIndex(t => t.id === currentTask.id);
+      const globalIdxNext = dostuffState.focusTasks.findIndex(t => t.id === nextTask.id);
+      if (globalIdxCurrent !== -1 && globalIdxNext !== -1) {
+        const tmp = dostuffState.focusTasks[globalIdxCurrent];
+        dostuffState.focusTasks[globalIdxCurrent] = dostuffState.focusTasks[globalIdxNext];
+        dostuffState.focusTasks[globalIdxNext] = tmp;
+      }
+      saveDoStuffFocusTasks();
+      renderDoStuffTaskList();
+      showToast('▼ Priority decreased: ' + currentTask.title);
+    };
+
+    // 1-Click Priority Toggle: High -> Normal -> Low -> High
+    window.toggleTaskPriority = function(taskId, event) {
+      if (event) event.stopPropagation();
+      const task = dostuffState.focusTasks.find(t => t.id === taskId);
+      if (!task) return;
+      if (task.priority === 'high') {
+        task.priority = 'normal';
+      } else if (task.priority === 'normal') {
+        task.priority = 'low';
+      } else {
+        task.priority = 'high';
+      }
+      saveDoStuffFocusTasks();
+      renderDoStuffTaskList();
+      updateDoStuffUI();
+      const labels = { high: '🔴 High Priority', normal: '🟡 Normal Priority', low: '🟢 Low Priority' };
+      showToast(`Set to ${labels[task.priority]}`);
+    };
+
+    // Auto-sort high priority to top
+    window.sortCurrentCategoryByPriority = function() {
+      const cat = dostuffState.activeCategoryId;
+      const prioWeights = { high: 3, normal: 2, low: 1 };
+      
+      const inCat = dostuffState.focusTasks.filter(t => t.category === cat);
+      const otherCats = dostuffState.focusTasks.filter(t => t.category !== cat);
+
+      inCat.sort((a, b) => {
+        const pa = prioWeights[a.priority || 'normal'] || 2;
+        const pb = prioWeights[b.priority || 'normal'] || 2;
+        if (pb !== pa) return pb - pa;
+        return (a.completed ? 1 : 0) - (b.completed ? 1 : 0);
+      });
+
+      dostuffState.focusTasks = [...inCat, ...otherCats];
+      saveDoStuffFocusTasks();
+      renderDoStuffTaskList();
+      showToast('⚡ Sorted ' + getActiveCategory().name + ' high-to-low priority');
     };
 
     window.toggleDoStuffTaskDone = function(taskId, event) {
@@ -3457,14 +3868,15 @@
       task.completed = !task.completed;
       if (task.completed) {
         playDoStuffChime([659.25, 783.99, 1046.50], [0.15, 0.15, 0.35]);
-        showToast('✅ Task completed: ' + task.title);
+        showToast('✓ Task completed: ' + task.title);
         if (dostuffState.activeFocusTaskId === taskId) {
-          const nextActive = dostuffState.focusTasks.find(t => !t.completed);
+          const nextActive = dostuffState.focusTasks.find(t => t.category === dostuffState.activeCategoryId && !t.completed);
           if (nextActive) dostuffState.activeFocusTaskId = nextActive.id;
         }
       }
       saveDoStuffFocusTasks();
       updateDoStuffUI();
+      renderCategoryPills();
       renderDoStuffTaskList();
     };
 
@@ -3472,17 +3884,547 @@
       if (event) event.stopPropagation();
       dostuffState.focusTasks = dostuffState.focusTasks.filter(t => t.id !== taskId);
       if (dostuffState.activeFocusTaskId === taskId) {
-        const nextActive = dostuffState.focusTasks.find(t => !t.completed);
+        const nextActive = dostuffState.focusTasks.find(t => t.category === dostuffState.activeCategoryId && !t.completed);
         dostuffState.activeFocusTaskId = nextActive ? nextActive.id : (dostuffState.focusTasks[0] ? dostuffState.focusTasks[0].id : null);
       }
       saveDoStuffFocusTasks();
       updateDoStuffUI();
+      renderCategoryPills();
       renderDoStuffTaskList();
-      showToast('🗑 Task removed');
+      showToast('🗑️ Task removed');
     };
 
-    window.openQuickAddTaskInput = function() {
-      window.toggleDoStuffTaskModal();
+    // --- Assistant Delegated Tasks Functions ---
+    window.delegateNewTaskToAssistant = function() {
+      let title = '';
+      getAllDoStuffDocs().forEach(doc => {
+        const input = Document.prototype.getElementById.call(doc, 'delegateTaskInput');
+        if (input && input.value && input.value.trim()) {
+          title = input.value.trim();
+          input.value = '';
+        }
+      });
+      if (!title) return;
+      const newAstTask = {
+        id: 'ast-' + Date.now(),
+        title: title,
+        category: dostuffState.activeCategoryId,
+        status: 'in_progress',
+        notes: 'Sonia has accepted this task and is working on it for Sadie.',
+        createdAt: Date.now()
+      };
+      dostuffState.assistantTasks.unshift(newAstTask);
+      saveDoStuffFocusTasks();
+      renderAssistantTasksList();
+      updateDoStuffUI();
+      showToast('🤝 Task delegated to Sonia: ' + title);
+    };
+
+    window.toggleAssistantTaskStatus = function(astId, event) {
+      if (event) event.stopPropagation();
+      const task = dostuffState.assistantTasks.find(t => t.id === astId);
+      if (!task) return;
+      if (task.status === 'queued') {
+        task.status = 'in_progress';
+      } else if (task.status === 'in_progress') {
+        task.status = 'completed';
+      } else {
+        task.status = 'queued';
+      }
+      saveDoStuffFocusTasks();
+      renderAssistantTasksList();
+      updateDoStuffUI();
+      const labels = { in_progress: 'In Progress', completed: 'Completed', queued: 'Queued' };
+      showToast(`Sonia task marked as ${labels[task.status]}`);
+    };
+
+    window.deleteAssistantTask = function(astId, event) {
+      if (event) event.stopPropagation();
+      dostuffState.assistantTasks = dostuffState.assistantTasks.filter(t => t.id !== astId);
+      saveDoStuffFocusTasks();
+      renderAssistantTasksList();
+      updateDoStuffUI();
+      showToast('🗑️ Assistant task removed');
+    };
+
+    function renderAssistantTasksList() {
+      getAllDoStuffDocs().forEach(doc => {
+        const listEl = Document.prototype.getElementById.call(doc, 'assistantTasksList');
+        const badgeEl = Document.prototype.getElementById.call(doc, 'astTaskCountBadge');
+        if (badgeEl) badgeEl.textContent = dostuffState.assistantTasks.length;
+        if (!listEl) return;
+
+        if (!dostuffState.assistantTasks || dostuffState.assistantTasks.length === 0) {
+          listEl.innerHTML = `
+            <div style="text-align: center; padding: 18px 8px; color: #94a3b8; font-size: 11.5px;">
+              No tasks delegated to Sonia yet. Type a task above or call Sonia to delegate work.
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        dostuffState.assistantTasks.forEach(task => {
+          const isDone = task.status === 'completed';
+          const isInProg = task.status === 'in_progress';
+          const statusBg = isDone ? '#dcfce7' : (isInProg ? '#eff6ff' : '#f1f5f9');
+          const statusColor = isDone ? '#15803d' : (isInProg ? '#1d4ed8' : '#475569');
+          const statusLabel = isDone ? '✓ Completed' : (isInProg ? '⏳ In Progress' : '📋 Queued');
+
+          html += `
+            <div style="background: #ffffff; border: 1.5px solid ${isDone ? '#86efac' : '#cbd5e1'}; border-radius: 9px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+                <div style="min-width: 0; flex: 1;">
+                  <div style="font-size: 12px; font-weight: 700; color: ${isDone ? '#64748b' : '#0f172a'}; text-decoration: ${isDone ? 'line-through' : 'none'}; line-height: 1.35; white-space: normal; break-words;">
+                    ${escapeHtml(task.title)}
+                  </div>
+                  <div style="font-size: 10px; color: #64748b; margin-top: 2px;">
+                    Assigned: <strong style="color: #0f172a;">Sonia (Assistant)</strong> • Cat: <span style="text-transform: capitalize;">${escapeHtml(task.category || 'general')}</span>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                  <button type="button" onclick="window.toggleAssistantTaskStatus('${task.id}', event)" title="Click to toggle status" style="background: ${statusBg}; border: 1px solid ${statusColor}40; color: ${statusColor}; font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 999px; cursor: pointer;">
+                    ${statusLabel}
+                  </button>
+                  <button type="button" onclick="window.deleteAssistantTask('${task.id}', event)" title="Delete task" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; width: 22px; height: 22px; border-radius: 6px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+              ${task.notes ? `<div style="font-size: 10px; font-style: italic; color: #047857; background: #f0fdf4; border-radius: 6px; padding: 3px 6px; margin-top: 2px;">💬 ${escapeHtml(task.notes)}</div>` : ''}
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+      });
+    }
+
+    function renderCategoryPills() {
+      getAllDoStuffDocs().forEach(doc => {
+        const container = Document.prototype.getElementById.call(doc, 'categoryPillsRow');
+        if (!container) return;
+        let html = '';
+        dostuffState.categories.forEach(cat => {
+          const isActive = cat.id === dostuffState.activeCategoryId;
+          const count = dostuffState.focusTasks.filter(t => t.category === cat.id && !t.completed).length;
+          html += `
+            <button type="button" onclick="window.selectTaskCategory('${cat.id}')" class="category-pill-btn ${isActive ? 'active' : ''}">
+              <span>${cat.icon || '📁'}</span>
+              <span>${escapeHtml(cat.name)}</span>
+              <span style="font-size: 9.5px; opacity: 0.85; margin-left: 2px;">(${count})</span>
+            </button>
+          `;
+        });
+        container.innerHTML = html;
+      });
+    }
+
+    function renderDoStuffTaskList() {
+      const activeFocus = getActiveFocusTask();
+      const activeId = activeFocus ? activeFocus.id : null;
+      const currentCatId = dostuffState.activeCategoryId;
+
+      getAllDoStuffDocs().forEach(doc => {
+        const listEl = Document.prototype.getElementById.call(doc, 'dostuffTasksList');
+        if (!listEl) return;
+
+        const filteredTasks = dostuffState.focusTasks.filter(t => t.category === currentCatId);
+
+        if (!filteredTasks || filteredTasks.length === 0) {
+          listEl.innerHTML = `
+            <div style="text-align: center; padding: 18px 8px; color: #94a3b8; font-size: 11.5px;">
+              No tasks in ${getActiveCategory().name} yet. Type a task above or click Sync To-Do.
+            </div>
+          `;
+          return;
+        }
+
+        let html = '';
+        filteredTasks.forEach((task, idx) => {
+          const isActive = task.id === activeId;
+          const isDone = !!task.completed;
+          const isFirst = idx === 0;
+          const isLast = idx === filteredTasks.length - 1;
+          const prio = task.priority || 'normal';
+          const prioClass = prio === 'high' ? 'priority-badge-high' : (prio === 'low' ? 'priority-badge-low' : 'priority-badge-normal');
+          const prioLabel = prio === 'high' ? '🔴 High' : (prio === 'low' ? '🟢 Low' : '🟡 Normal');
+
+          html += `
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 7px 9px; border-radius: 9px; background: ${isActive ? '#eff6ff' : '#f8fafc'}; border: ${isActive ? '2px solid #2563eb' : '1.5px solid #e2e8f0'}; transition: all 0.15s ease; box-shadow: ${isActive ? '0 2px 8px rgba(37, 99, 235, 0.18)' : 'none'};">
+              <!-- Reorder Buttons: ▲ and ▼ -->
+              <div style="display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;" onclick="event.stopPropagation()">
+                <button type="button" onclick="window.moveTaskUp('${task.id}', event)" title="Increase priority order (Move Up)" style="background: ${isFirst ? '#f1f5f9' : '#ffffff'}; border: 1px solid #cbd5e1; color: ${isFirst ? '#cbd5e1' : '#0f172a'}; width: 20px; height: 16px; border-radius: 4px; font-size: 8px; font-weight: 800; cursor: ${isFirst ? 'default' : 'pointer'}; display: flex; align-items: center; justify-content: center; padding: 0;">
+                  ▲
+                </button>
+                <button type="button" onclick="window.moveTaskDown('${task.id}', event)" title="Decrease priority order (Move Down)" style="background: ${isLast ? '#f1f5f9' : '#ffffff'}; border: 1px solid #cbd5e1; color: ${isLast ? '#cbd5e1' : '#0f172a'}; width: 20px; height: 16px; border-radius: 4px; font-size: 8px; font-weight: 800; cursor: ${isLast ? 'default' : 'pointer'}; display: flex; align-items: center; justify-content: center; padding: 0;">
+                  ▼
+                </button>
+              </div>
+
+              <!-- Checkbox & Task Details -->
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                <button type="button" onclick="window.toggleDoStuffTaskDone('${task.id}', event)" title="${isDone ? 'Mark as active' : 'Mark as completed'}" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 15px; line-height: 1; flex-shrink: 0;">
+                  ${isDone ? '☑' : '☐'}
+                </button>
+                <div style="min-width: 0; flex: 1;">
+                  <div style="font-size: 11.5px; font-weight: ${isActive ? '800' : '700'}; color: ${isDone ? '#94a3b8' : (isActive ? '#1d4ed8' : '#0f172a')}; text-decoration: ${isDone ? 'line-through' : 'none'}; white-space: normal; break-words; line-height: 1.35;">
+                    ${escapeHtml(task.title)}
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 5px; margin-top: 3px; flex-wrap: wrap;">
+                    <!-- Clickable Priority Badge (Cycles Priority) -->
+                    <button type="button" onclick="window.toggleTaskPriority('${task.id}', event)" title="Click to cycle priority (High, Normal, Low)" class="${prioClass}" style="font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 999px; cursor: pointer;">
+                      ${prioLabel}
+                    </button>
+                    <span style="font-size: 9.5px; font-weight: 800; color: #b45309;">🔥 ${task.sessions || 0} • ${(task.totalMinutes || 0)}m</span>
+                    ${isActive ? '<span style="font-size: 9px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1px 6px; border-radius: 999px; text-transform: uppercase;">Working On</span>' : ''}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Set as Active Focus & Delete Actions -->
+              <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="event.stopPropagation()">
+                ${!isActive && !isDone ? `
+                  <button type="button" onclick="window.selectDoStuffFocusTask('${task.id}')" title="Set this task as your active Working On focus" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; padding: 3px 7px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+                    🎯 Focus
+                  </button>
+                ` : ''}
+                <button type="button" onclick="window.deleteDoStuffFocusTask('${task.id}', event)" title="Delete task" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; width: 22px; height: 22px; border-radius: 6px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+      });
+    }
+
+    // --- In-App Virtual Assistant Phone Call Engine ---
+    function playCallAudioChime(type) {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!window.__dostuffAudioCtx || window.__dostuffAudioCtx.state === 'closed') {
+          window.__dostuffAudioCtx = new AudioCtx();
+        }
+        const ctx = window.__dostuffAudioCtx;
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+        const now = ctx.currentTime;
+
+        if (type === 'ring') {
+          // British double ring tone (400Hz + 450Hz)
+          [400, 450].forEach(f => {
+            const osc1 = ctx.createOscillator();
+            const gain1 = ctx.createGain();
+            osc1.frequency.value = f;
+            gain1.gain.setValueAtTime(0.08, now);
+            gain1.gain.setValueAtTime(0.08, now + 0.35);
+            gain1.gain.setValueAtTime(0.001, now + 0.36);
+            gain1.gain.setValueAtTime(0.08, now + 0.55);
+            gain1.gain.setValueAtTime(0.08, now + 0.90);
+            gain1.gain.setValueAtTime(0.001, now + 0.95);
+            osc1.connect(gain1);
+            gain1.connect(ctx.destination);
+            osc1.start(now);
+            osc1.stop(now + 1.0);
+          });
+        } else if (type === 'connect') {
+          // Uplifting two-tone connected bell
+          [587.33, 880.0].forEach((f, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const st = now + idx * 0.12;
+            osc.frequency.value = f;
+            gain.gain.setValueAtTime(0.001, st);
+            gain.gain.exponentialRampToValueAtTime(0.18, st + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, st + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(st);
+            osc.stop(st + 0.4);
+          });
+        } else if (type === 'end') {
+          // Descending disconnect tone
+          [440, 330].forEach((f, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const st = now + idx * 0.14;
+            osc.frequency.value = f;
+            gain.gain.setValueAtTime(0.001, st);
+            gain.gain.exponentialRampToValueAtTime(0.15, st + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, st + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(st);
+            osc.stop(st + 0.35);
+          });
+        }
+      } catch (e) {}
+    }
+
+    window.startAssistantCall = function() {
+      if (assistantCallActive) return;
+      assistantCallActive = true;
+      assistantCallSeconds = 0;
+      assistantCallHistory = [];
+      playCallAudioChime('ring');
+
+      getAllDoStuffDocs().forEach(doc => {
+        const modal = Document.prototype.getElementById.call(doc, 'assistantCallModal');
+        if (modal) modal.style.display = 'flex';
+        const timerBadge = Document.prototype.getElementById.call(doc, 'callDurationBadge');
+        if (timerBadge) timerBadge.textContent = '00:00';
+        const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
+        if (statusEl) statusEl.textContent = '● Ringing Sonia...';
+        const transcript = Document.prototype.getElementById.call(doc, 'callTranscriptBox');
+        if (transcript) {
+          transcript.innerHTML = `
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #0f172a; line-height: 1.4;">
+              <strong style="color: #059669;">Sonia:</strong> Hello Sadie. I am right here on the line. How can I help you organise, prioritise, or plan your tasks today?
+            </div>
+          `;
+        }
+      });
+
+      setTimeout(() => {
+        playCallAudioChime('connect');
+        getAllDoStuffDocs().forEach(doc => {
+          const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
+          if (statusEl) statusEl.textContent = '● Connected • Listening to Sadie...';
+        });
+        startAssistantCallListening();
+      }, 900);
+
+      if (assistantCallTimer) clearInterval(assistantCallTimer);
+      assistantCallTimer = setInterval(() => {
+        assistantCallSeconds++;
+        const m = Math.floor(assistantCallSeconds / 60).toString().padStart(2, '0');
+        const s = (assistantCallSeconds % 60).toString().padStart(2, '0');
+        getAllDoStuffDocs().forEach(doc => {
+          const timerBadge = Document.prototype.getElementById.call(doc, 'callDurationBadge');
+          if (timerBadge) timerBadge.textContent = `${m}:${s}`;
+        });
+      }, 1000);
+    };
+
+    function startAssistantCallListening() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
+      if (assistantCallRecognition) {
+        try { assistantCallRecognition.stop(); } catch (e) {}
+      }
+      try {
+        assistantCallRecognition = new SpeechRecognition();
+        assistantCallRecognition.continuous = false;
+        assistantCallRecognition.interimResults = false;
+        assistantCallRecognition.lang = 'en-GB';
+
+        assistantCallRecognition.onresult = (e) => {
+          const text = e.results[0][0].transcript;
+          if (text && text.trim() && assistantCallActive) {
+            window.sendAssistantCallPrompt(text.trim());
+          }
+        };
+
+        assistantCallRecognition.onerror = (e) => {
+          if (assistantCallActive && !assistantIsSpeaking) {
+            setTimeout(() => {
+              if (assistantCallActive && !assistantIsSpeaking) {
+                try { assistantCallRecognition.start(); } catch (err) {}
+              }
+            }, 1000);
+          }
+        };
+
+        assistantCallRecognition.onend = () => {
+          if (assistantCallActive && !assistantIsSpeaking) {
+            setTimeout(() => {
+              if (assistantCallActive && !assistantIsSpeaking) {
+                try { assistantCallRecognition.start(); } catch (err) {}
+              }
+            }, 600);
+          }
+        };
+
+        assistantCallRecognition.start();
+      } catch (err) {}
+    }
+
+    window.sendAssistantCallPrompt = function(promptText) {
+      if (!promptText || !promptText.trim()) return;
+      const cleanPrompt = promptText.trim();
+
+      // Append user bubble to transcript
+      getAllDoStuffDocs().forEach(doc => {
+        const transcript = Document.prototype.getElementById.call(doc, 'callTranscriptBox');
+        if (transcript) {
+          const bubble = document.createElement('div');
+          bubble.style.cssText = 'background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #1e3a8a; line-height: 1.4; align-self: flex-end;';
+          bubble.innerHTML = `<strong>Sadie:</strong> ${escapeHtml(cleanPrompt)}`;
+          transcript.appendChild(bubble);
+          transcript.scrollTop = transcript.scrollHeight;
+        }
+        const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
+        if (statusEl) statusEl.textContent = '● Sonia is thinking...';
+      });
+
+      assistantCallHistory.push({ role: 'user', text: cleanPrompt });
+      assistantIsSpeaking = true;
+      if (assistantCallRecognition) {
+        try { assistantCallRecognition.stop(); } catch (e) {}
+      }
+
+      fetch('/api/assistant_call', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: cleanPrompt,
+          voice: getCurrentVoiceId(),
+          categories: dostuffState.categories,
+          my_tasks: dostuffState.focusTasks,
+          assistant_tasks: dostuffState.assistantTasks,
+          active_category: dostuffState.activeCategoryId,
+          active_task_title: getActiveFocusTask() ? getActiveFocusTask().title : '',
+          call_history: assistantCallHistory
+        })
+      })
+      .then(r => r.json())
+      .then(data => {
+        const reply = data.reply || "I am right here with you Sadie. Let us take your top task one step at a time.";
+        assistantCallHistory.push({ role: 'model', text: reply });
+
+        // Execute any returned actions
+        if (data.action) {
+          executeAssistantAction(data.action);
+        }
+
+        getAllDoStuffDocs().forEach(doc => {
+          const transcript = Document.prototype.getElementById.call(doc, 'callTranscriptBox');
+          if (transcript) {
+            const bubble = document.createElement('div');
+            bubble.style.cssText = 'background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #0f172a; line-height: 1.4;';
+            bubble.innerHTML = `<strong style="color: #059669;">Sonia:</strong> ${escapeHtml(reply)}`;
+            transcript.appendChild(bubble);
+            transcript.scrollTop = transcript.scrollHeight;
+          }
+          const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
+          if (statusEl) statusEl.textContent = '● Sonia speaking...';
+        });
+
+        // Play Sonia's Voice Audio
+        if (data.audio_url) {
+          playCloudAudio(data.audio_url, reply, () => {
+            assistantIsSpeaking = false;
+            getAllDoStuffDocs().forEach(doc => {
+              const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
+              if (statusEl && assistantCallActive) statusEl.textContent = '● Connected • Listening to Sadie...';
+            });
+            if (assistantCallActive) startAssistantCallListening();
+          });
+        } else {
+          speakTextInBrowser(reply, getCurrentVoiceId());
+          setTimeout(() => {
+            assistantIsSpeaking = false;
+            if (assistantCallActive) startAssistantCallListening();
+          }, 3500);
+        }
+      })
+      .catch(() => {
+        assistantIsSpeaking = false;
+        getAllDoStuffDocs().forEach(doc => {
+          const statusEl = Document.prototype.getElementById.call(doc, 'callStatusIndicator');
+          if (statusEl) statusEl.textContent = '● Connected • Listening to Sadie...';
+        });
+        if (assistantCallActive) startAssistantCallListening();
+      });
+    };
+
+    function executeAssistantAction(action) {
+      if (!action) return;
+      let stateChanged = false;
+
+      // 1. Set Focus Task
+      if (action.set_focus_task_title) {
+        const found = dostuffState.focusTasks.find(t => t.title.toLowerCase().includes(action.set_focus_task_title.toLowerCase()));
+        if (found) {
+          dostuffState.activeFocusTaskId = found.id;
+          if (found.category) dostuffState.activeCategoryId = found.category;
+          stateChanged = true;
+        }
+      }
+
+      // 2. Add Task to Sadie's List
+      if (action.add_my_task && action.add_my_task.title) {
+        const cat = action.add_my_task.category || dostuffState.activeCategoryId || 'accounts';
+        dostuffState.focusTasks.unshift({
+          id: 'f-' + Date.now(),
+          title: action.add_my_task.title,
+          category: cat,
+          priority: action.add_my_task.priority || 'high',
+          order: 0,
+          sessions: 0,
+          totalMinutes: 0,
+          completed: false,
+          createdAt: Date.now(),
+          source: 'assistant'
+        });
+        stateChanged = true;
+      }
+
+      // 3. Delegate Task to Assistant
+      if (action.delegate_to_assistant && action.delegate_to_assistant.title) {
+        dostuffState.assistantTasks.unshift({
+          id: 'ast-' + Date.now(),
+          title: action.delegate_to_assistant.title,
+          category: action.delegate_to_assistant.category || dostuffState.activeCategoryId,
+          status: 'in_progress',
+          notes: action.delegate_to_assistant.notes || 'Accepted during phone call with Sadie.',
+          createdAt: Date.now()
+        });
+        stateChanged = true;
+      }
+
+      // 4. Reorder Priorities
+      if (Array.isArray(action.reordered_priorities) && action.reordered_priorities.length > 0) {
+        action.reordered_priorities.forEach(p => {
+          const t = dostuffState.focusTasks.find(x => x.id === p.id || (p.title && x.title.toLowerCase().includes(p.title.toLowerCase())));
+          if (t && p.priority) {
+            t.priority = p.priority;
+            stateChanged = true;
+          }
+        });
+      }
+
+      if (stateChanged) {
+        saveDoStuffFocusTasks();
+        updateDoStuffUI();
+        renderCategoryPills();
+        renderDoStuffTaskList();
+        renderAssistantTasksList();
+      }
+    }
+
+    window.endAssistantCall = function() {
+      assistantCallActive = false;
+      assistantIsSpeaking = false;
+      if (assistantCallTimer) {
+        clearInterval(assistantCallTimer);
+        assistantCallTimer = null;
+      }
+      if (assistantCallRecognition) {
+        try { assistantCallRecognition.stop(); } catch (e) {}
+      }
+      playCallAudioChime('end');
+
+      getAllDoStuffDocs().forEach(doc => {
+        const modal = Document.prototype.getElementById.call(doc, 'assistantCallModal');
+        if (modal) modal.style.display = 'none';
+      });
+
+      updateDoStuffUI();
+      renderDoStuffTaskList();
+      renderAssistantTasksList();
+      showToast('📞 Call ended. Day plan & tasks updated.');
     };
 
     window.importTasksFromTodoHub = function() {
@@ -3501,6 +4443,9 @@
                   dostuffState.focusTasks.push({
                     id: t.id || ('todo-' + Math.random().toString(36).substr(2, 7)),
                     title: title,
+                    category: dostuffState.activeCategoryId || 'accounts',
+                    priority: 'normal',
+                    order: dostuffState.focusTasks.length,
                     sessions: 0,
                     totalMinutes: 0,
                     completed: !!t.done,
@@ -3517,57 +4462,10 @@
 
       saveDoStuffFocusTasks();
       updateDoStuffUI();
+      renderCategoryPills();
       renderDoStuffTaskList();
       showToast(importedCount > 0 ? `📋 Synced ${importedCount} tasks from main to-do list` : '📋 All to-do tasks already synced');
     };
-
-    function renderDoStuffTaskList() {
-      const activeFocus = getActiveFocusTask();
-      const activeId = activeFocus ? activeFocus.id : null;
-      getAllDoStuffDocs().forEach(doc => {
-        const listEl = Document.prototype.getElementById.call(doc, 'dostuffTasksList');
-        if (!listEl) return;
-        if (!dostuffState.focusTasks || dostuffState.focusTasks.length === 0) {
-          listEl.innerHTML = `
-            <div style="text-align: center; padding: 14px 8px; color: #94a3b8; font-size: 11px;">
-              No focus tasks yet. Type a task above or click Sync from To-Do list.
-            </div>
-          `;
-          return;
-        }
-
-        let html = '';
-        dostuffState.focusTasks.forEach(task => {
-          const isActive = task.id === activeId;
-          const isDone = !!task.completed;
-          html += `
-            <div onclick="window.selectDoStuffFocusTask('${task.id}')" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: 9px; background: ${isActive ? '#eff6ff' : '#f8fafc'}; border: ${isActive ? '2px solid #3b82f6' : '1.5px solid #e2e8f0'}; cursor: pointer; transition: all 0.15s ease; box-shadow: ${isActive ? '0 2px 8px rgba(59, 130, 246, 0.15)' : 'none'};">
-              <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
-                <button type="button" onclick="window.toggleDoStuffTaskDone('${task.id}', event)" title="${isDone ? 'Mark as active' : 'Mark as completed'}" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 14px; line-height: 1;">
-                  ${isDone ? '✅' : '⚪'}
-                </button>
-                <div style="min-width: 0; flex: 1;">
-                  <div style="font-size: 12px; font-weight: ${isActive ? '800' : '700'}; color: ${isDone ? '#94a3b8' : (isActive ? '#1d4ed8' : '#0f172a')}; text-decoration: ${isDone ? 'line-through' : 'none'}; white-space: normal; break-words; line-height: 1.35;">
-                    ${escapeHtml(task.title)}
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
-                    <span style="font-size: 10px; font-weight: 800; color: #b45309;">🔥 ${task.sessions || 0} sessions • ${(task.totalMinutes || 0)}m</span>
-                    ${isActive ? '<span style="font-size: 9px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1px 6px; border-radius: 999px; text-transform: uppercase;">Active</span>' : ''}
-                    ${task.source === 'main_todo' ? '<span style="font-size: 9px; font-weight: 700; background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; padding: 1px 5px; border-radius: 6px;">To-Do Sync</span>' : ''}
-                  </div>
-                </div>
-              </div>
-              <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="event.stopPropagation()">
-                <button type="button" onclick="window.deleteDoStuffFocusTask('${task.id}', event)" title="Delete task" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; width: 24px; height: 24px; border-radius: 6px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
-                  🗑
-                </button>
-              </div>
-            </div>
-          `;
-        });
-        listEl.innerHTML = html;
-      });
-    }
 
     function getAllDoStuffDocs() {
       const docs = [document];
@@ -3712,6 +4610,13 @@
         }
 
         // Focus Mode Strip Updates
+        const catBadge = Document.prototype.getElementById.call(doc, 'dostuffActiveCategoryBadge');
+        if (catBadge) {
+          const actCat = getActiveCategory();
+          catBadge.textContent = `${actCat.icon || '📁'} ${actCat.name}`;
+          catBadge.title = `Current category: ${actCat.name}. Click to switch.`;
+        }
+
         const activeTitleEl = Document.prototype.getElementById.call(doc, 'dostuffActiveTaskTitle');
         if (activeTitleEl) {
           activeTitleEl.textContent = activeFocus ? activeFocus.title : 'Select a focus task...';
@@ -4015,7 +4920,9 @@
 
       initDoStuffFocusTasks();
       updateDoStuffUI();
+      renderCategoryPills();
       renderDoStuffTaskList();
+      renderAssistantTasksList();
 
       // Dismiss task popover on outside click or Esc
       document.addEventListener('keydown', (e) => {
@@ -4025,10 +4932,14 @@
         const modal = document.getElementById('dostuffTaskModal');
         const btn = document.getElementById('dostuffActiveTaskBtn');
         const qbtn = document.getElementById('dostuffQuickAddBtn');
+        const callBtn = document.getElementById('btnCallAssistantStrip');
         if (modal && modal.style.display === 'block') {
-          if (!modal.contains(e.target) && !btn.contains(e.target) && (!qbtn || !qbtn.contains(e.target))) {
-            window.closeDoStuffTaskModal();
-          }
+          if (e.composedPath && e.composedPath().includes(modal)) return;
+          if (modal.contains(e.target)) return;
+          if (btn && btn.contains(e.target)) return;
+          if (qbtn && qbtn.contains(e.target)) return;
+          if (callBtn && callBtn.contains(e.target)) return;
+          window.closeDoStuffTaskModal();
         }
       });
 

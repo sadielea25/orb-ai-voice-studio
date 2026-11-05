@@ -1,0 +1,9 @@
+.orb_app_profile
+.orb_app_profile/
+android/
+android
+node_modules/
+.git/
+temp_audio/
+*.pyc
+__pycache__/
