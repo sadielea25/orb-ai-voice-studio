@@ -30,7 +30,7 @@ VOICE_SETTINGS = {
 CONVERSATION_HISTORY = [
     {
         "role": "assistant",
-        "text": "Hello Sadie. Orb AI Voice Studio v3.1 is live and connected in the cloud.",
+        "text": "Hello Sadie. Orb AI Voice Studio v3.2 is live and connected in the cloud.",
         "time": time.strftime("%H:%M")
     }
 ]
@@ -206,7 +206,7 @@ class handler(BaseHTTPRequestHandler):
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v3.1",
+                "app_version": "v3.2",
                 "active_chat_title": "Orb AI Cloud Studio",
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
@@ -269,7 +269,7 @@ class handler(BaseHTTPRequestHandler):
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "v3.1",
+            "version": "v3.2",
             "status": "online",
             "cloud": True
         }).encode("utf-8"))

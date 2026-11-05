@@ -644,7 +644,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.1</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v3.2</span>
       </div>
       <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
@@ -658,7 +658,7 @@
         <span>💬 Real-Time Speech & Focus Stream</span>
         <div style="display: flex; align-items: center; gap: 8px;">
           <span id="sttBadge" style="font-size: 11px; color: #94a3b8; font-weight: 700;">● Idle</span>
-          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.1</span>
+          <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 7px; border-radius: 999px; cursor: pointer;">v3.2</span>
         </div>
       </div>
 
@@ -668,7 +668,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.1</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v3.2</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -697,56 +697,56 @@
         </div>
       </div>
 
-      <!-- DOSTUFF FOCUS MODE BAR (Select task, track sessions, stay anchored) -->
-      <div id="dostuffFocusStrip" style="background: rgba(15, 23, 42, 0.78); border: 1px solid rgba(59, 130, 246, 0.32); border-radius: 10px; padding: 4px 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);">
+      <!-- DOSTUFF FOCUS MODE BAR (Clean Light Background for Easy Reading & Writing) -->
+      <div id="dostuffFocusStrip" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 11px; padding: 5px 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);">
         <!-- Active Focus Task Trigger -->
-        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to choose or manage focus tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.65); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 7px; padding: 3px 8px; color: #f8fafc; font-size: 11px; font-weight: 700; cursor: pointer; text-align: left;">
+        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to choose or manage focus tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 3.5px 8px; color: #0f172a; font-size: 11.5px; font-weight: 700; cursor: pointer; text-align: left; transition: all 0.15s ease;">
           <span style="font-size: 12px; line-height: 1; flex-shrink: 0;">🎯</span>
-          <span style="font-size: 10px; font-weight: 800; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Focus:</span>
-          <span id="dostuffActiveTaskTitle" style="white-space: normal; break-words; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; flex: 1; min-width: 0; color: #e2e8f0;">Select a focus task...</span>
-          <span id="dostuffTaskSessionsBadge" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.45); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 1.5px 5.5px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;">🔥 0 • 0m</span>
-          <span style="font-size: 9px; color: #94a3b8; flex-shrink: 0;">▾</span>
+          <span style="font-size: 10px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Focus:</span>
+          <span id="dostuffActiveTaskTitle" style="white-space: normal; break-words; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; flex: 1; min-width: 0; color: #0f172a; font-weight: 700;">Select a focus task...</span>
+          <span id="dostuffTaskSessionsBadge" style="background: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 9.5px; font-weight: 800; padding: 1.5px 6px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;">🔥 0 • 0m</span>
+          <span style="font-size: 9px; color: #64748b; flex-shrink: 0;">▾</span>
         </button>
 
         <!-- Right Quick Action Buttons -->
         <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
-          <button type="button" id="dostuffSyncTodoBtn" onclick="window.importTasksFromTodoHub()" title="Sync tasks from main to-do list" style="background: rgba(139, 92, 246, 0.18); border: 1px solid rgba(139, 92, 246, 0.4); color: #c4b5fd; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+          <button type="button" id="dostuffSyncTodoBtn" onclick="window.importTasksFromTodoHub()" title="Sync tasks from main to-do list" style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; padding: 3.5px 7px; border-radius: 7px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
             📋 Sync
           </button>
-          <button type="button" id="dostuffQuickAddBtn" onclick="window.openQuickAddTaskInput()" title="Add a new task to focus on" style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+          <button type="button" id="dostuffQuickAddBtn" onclick="window.openQuickAddTaskInput()" title="Add a new task to focus on" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; padding: 3.5px 7px; border-radius: 7px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
             + Task
           </button>
         </div>
       </div>
 
-      <!-- DOSTUFF FOCUS TASKS INLINE POPOVER -->
-      <div id="dostuffTaskModal" style="display: none; background: #0f172a; border: 1.5px solid rgba(59, 130, 246, 0.5); border-radius: 12px; padding: 10px; margin-bottom: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); position: relative; z-index: 100;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+      <!-- DOSTUFF FOCUS TASKS INLINE POPOVER (Crisp Light Background for Easy Writing & Reading) -->
+      <div id="dostuffTaskModal" style="display: none; background: #ffffff; border: 2px solid #3b82f6; border-radius: 14px; padding: 12px; margin-bottom: 8px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08); position: relative; z-index: 100; color: #0f172a;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1.5px solid #e2e8f0;">
           <div style="display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 13px;">🎯</span>
-            <span style="font-size: 11.5px; font-weight: 800; color: #f8fafc; letter-spacing: -0.2px;">Choose Focus Task</span>
-            <span id="dostuffTotalTimeBadge" style="font-size: 9.5px; font-weight: 800; background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(59, 130, 246, 0.35); color: #93c5fd; padding: 1.5px 6px; border-radius: 999px;">0 sessions logged</span>
+            <span style="font-size: 14px;">🎯</span>
+            <span style="font-size: 12px; font-weight: 800; color: #0f172a; letter-spacing: -0.2px;">Choose Focus Task</span>
+            <span id="dostuffTotalTimeBadge" style="font-size: 9.5px; font-weight: 800; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 2px 7px; border-radius: 999px;">0 sessions logged</span>
           </div>
-          <button type="button" onclick="window.closeDoStuffTaskModal()" title="Close" style="background: rgba(255, 255, 255, 0.08); border: none; color: #94a3b8; width: 22px; height: 22px; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+          <button type="button" onclick="window.closeDoStuffTaskModal()" title="Close" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 24px; height: 24px; border-radius: 7px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
         </div>
 
-        <!-- Add Task Input Row -->
-        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-          <input type="text" id="dostuffNewTaskInput" placeholder="Add task to focus on..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1; min-width: 0; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 7px; padding: 5px 8px; font-size: 11px; color: #ffffff; outline: none;" />
-          <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #60a5fa; color: #ffffff; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 7px; cursor: pointer; white-space: nowrap;">Add</button>
+        <!-- Add Task Input Row (Light Background for Easy Typing) -->
+        <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+          <input type="text" id="dostuffNewTaskInput" placeholder="Type a task to focus on..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1; min-width: 0; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 7px 10px; font-size: 12px; font-weight: 600; color: #0f172a; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" />
+          <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 11.5px; font-weight: 800; padding: 7px 14px; border-radius: 8px; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">Add</button>
         </div>
 
         <!-- Task List Container -->
-        <div id="dostuffTasksList" style="max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px;">
+        <div id="dostuffTasksList" style="max-height: 190px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
           <!-- Rendered dynamically -->
         </div>
 
         <!-- Footer Actions in Popover -->
-        <div style="margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 6px;">
-          <button type="button" onclick="window.importTasksFromTodoHub()" style="background: none; border: none; color: #a78bfa; font-size: 10.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
+        <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 6px; border-top: 1.5px solid #e2e8f0; padding-top: 8px;">
+          <button type="button" onclick="window.importTasksFromTodoHub()" style="background: none; border: none; color: #6d28d9; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
             <span>📋</span> Sync from To-Do list
           </button>
-          <span style="font-size: 10px; color: #64748b;">Select one to anchor your focus</span>
+          <span style="font-size: 10.5px; color: #64748b; font-weight: 500;">Select one to anchor your focus</span>
         </div>
       </div>
 
@@ -762,10 +762,10 @@
             </div>
           </div>
           <!-- Focus Session Accomplishment Card -->
-          <div id="dostuffFocusAccomplishmentBanner" style="display: none; background: rgba(59, 130, 246, 0.22); border: 1.5px solid rgba(96, 165, 250, 0.55); border-radius: 12px; padding: 8px 12px; margin-bottom: 12px; text-align: center; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);">
-            <div style="font-size: 10px; font-weight: 800; color: #93c5fd; text-transform: uppercase; letter-spacing: 0.5px;">🎯 Focus Session Complete</div>
-            <div id="dostuffAccomplishedTaskTitle" style="font-size: 14px; font-weight: 800; color: #ffffff; margin: 3px 0 2px 0;">[Task Title]</div>
-            <div id="dostuffAccomplishedTaskStats" style="font-size: 11px; font-weight: 700; color: #fde68a;">🔥 Session 1 finished • 5m total logged</div>
+          <div id="dostuffFocusAccomplishmentBanner" style="display: none; background: #ffffff; border: 2px solid #3b82f6; border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);">
+            <div style="font-size: 10.5px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.5px;">🎯 Focus Session Complete</div>
+            <div id="dostuffAccomplishedTaskTitle" style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 3px 0 2px 0;">[Task Title]</div>
+            <div id="dostuffAccomplishedTaskStats" style="font-size: 11.5px; font-weight: 800; color: #b45309;">🔥 Session 1 finished • 5m total logged</div>
           </div>
           <div id="dostuffBreakIcon" style="font-size: clamp(32px, 8vh, 72px); line-height: 1.1; margin: clamp(2px, 1vh, 10px) 0 clamp(6px, 1.8vh, 16px);">💧</div>
           <div id="dostuffBreakTitle" style="font-size: clamp(15px, 3.2vh, 28px); font-weight: 800; color: #ffffff; line-height: 1.25; margin-bottom: clamp(4px, 1.2vh, 12px);">Drink a tall glass of crisp cold water</div>
@@ -3539,24 +3539,24 @@
           const isActive = task.id === activeId;
           const isDone = !!task.completed;
           html += `
-            <div onclick="window.selectDoStuffFocusTask('${task.id}')" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 9px; border-radius: 8px; background: ${isActive ? 'rgba(59, 130, 246, 0.18)' : 'rgba(30, 41, 59, 0.55)'}; border: 1px solid ${isActive ? 'rgba(96, 165, 250, 0.65)' : 'rgba(255, 255, 255, 0.08)'}; cursor: pointer; transition: all 0.15s ease;">
+            <div onclick="window.selectDoStuffFocusTask('${task.id}')" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: 9px; background: ${isActive ? '#eff6ff' : '#f8fafc'}; border: ${isActive ? '2px solid #3b82f6' : '1.5px solid #e2e8f0'}; cursor: pointer; transition: all 0.15s ease; box-shadow: ${isActive ? '0 2px 8px rgba(59, 130, 246, 0.15)' : 'none'};">
               <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
-                <button type="button" onclick="window.toggleDoStuffTaskDone('${task.id}', event)" title="${isDone ? 'Mark as active' : 'Mark as completed'}" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 13px; line-height: 1; color: ${isDone ? '#34d399' : '#64748b'};">
+                <button type="button" onclick="window.toggleDoStuffTaskDone('${task.id}', event)" title="${isDone ? 'Mark as active' : 'Mark as completed'}" style="background: none; border: none; cursor: pointer; padding: 0; font-size: 14px; line-height: 1;">
                   ${isDone ? '✅' : '⚪'}
                 </button>
                 <div style="min-width: 0; flex: 1;">
-                  <div style="font-size: 11.5px; font-weight: ${isActive ? '800' : '600'}; color: ${isDone ? '#94a3b8' : (isActive ? '#60a5fa' : '#f8fafc')}; text-decoration: ${isDone ? 'line-through' : 'none'}; white-space: normal; break-words; line-height: 1.3;">
+                  <div style="font-size: 12px; font-weight: ${isActive ? '800' : '700'}; color: ${isDone ? '#94a3b8' : (isActive ? '#1d4ed8' : '#0f172a')}; text-decoration: ${isDone ? 'line-through' : 'none'}; white-space: normal; break-words; line-height: 1.35;">
                     ${escapeHtml(task.title)}
                   </div>
-                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
-                    <span style="font-size: 9.5px; font-weight: 700; color: #fbbf24;">🔥 ${task.sessions || 0} sessions • ${(task.totalMinutes || 0)}m</span>
-                    ${isActive ? '<span style="font-size: 8.5px; font-weight: 800; background: rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 0.5px 5px; border-radius: 999px; text-transform: uppercase;">Active</span>' : ''}
-                    ${task.source === 'main_todo' ? '<span style="font-size: 8.5px; color: #c4b5fd;">To-Do Sync</span>' : ''}
+                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
+                    <span style="font-size: 10px; font-weight: 800; color: #b45309;">🔥 ${task.sessions || 0} sessions • ${(task.totalMinutes || 0)}m</span>
+                    ${isActive ? '<span style="font-size: 9px; font-weight: 800; background: #2563eb; color: #ffffff; padding: 1px 6px; border-radius: 999px; text-transform: uppercase;">Active</span>' : ''}
+                    ${task.source === 'main_todo' ? '<span style="font-size: 9px; font-weight: 700; background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; padding: 1px 5px; border-radius: 6px;">To-Do Sync</span>' : ''}
                   </div>
                 </div>
               </div>
               <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;" onclick="event.stopPropagation()">
-                <button type="button" onclick="window.deleteDoStuffFocusTask('${task.id}', event)" title="Delete task" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; width: 22px; height: 22px; border-radius: 5px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                <button type="button" onclick="window.deleteDoStuffFocusTask('${task.id}', event)" title="Delete task" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; width: 24px; height: 24px; border-radius: 6px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s ease;">
                   🗑
                 </button>
               </div>
