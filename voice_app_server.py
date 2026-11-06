@@ -491,13 +491,10 @@ def get_conversation_history(limit=100, target_title=""):
         except Exception:
             pass
 
-    if os.path.exists(CONVERSATION_FILE):
+    if not messages and os.path.exists(CONVERSATION_FILE):
         try:
             with open(CONVERSATION_FILE, "r", encoding="utf-8") as f:
-                live_msgs = json.load(f)
-                for lm in live_msgs:
-                    if lm not in messages:
-                        messages.append(lm)
+                messages = json.load(f)
         except Exception:
             pass
 
