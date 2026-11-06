@@ -551,7 +551,18 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"error": "Audio generation failed"}')
             return
 
-        elif "settings" in target or "settings" in raw:
+                elif "projects" in target or "projects" in raw:
+            projects = [
+                {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
+                {"id": "orb", "title": "ORB AI Studio"},
+                {"id": "spook", "title": "Spook Studio"},
+                {"id": "arts_grant", "title": "Arts Grant"}
+            ]
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "projects": projects}).encode("utf-8"))
+            return
+
+elif "settings" in target or "settings" in raw:
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
             return

@@ -791,7 +791,24 @@ class PWAHandler(BaseHTTPRequestHandler):
             mtime = os.path.getmtime(idx_path) if os.path.exists(idx_path) else 0
             self._set_headers(200)
             self.wfile.write(json.dumps({"version": int(mtime * 1000)}).encode("utf-8"))
-        elif url_path == "/api/conversation":
+                elif url_path == "/api/projects":
+            transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
+            transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+            seen = set()
+            projects = []
+            for p in transcripts[:25]:
+                t = extract_chat_title(p)
+                if t and t not in seen and not is_garbage_title(t):
+                    seen.add(t)
+                    cid = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(p))))
+                    projects.append({"id": cid, "title": t})
+            if not any("HMRC" in p["title"] or "COREMARKET" in p["title"].upper() for p in projects):
+                projects.insert(0, {"id": "hmrc", "title": "COREMARKETGOODS ACCOUNTING - HMRC"})
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "projects": projects}).encode("utf-8"))
+            return
+
+elif url_path == "/api/conversation":
             limit = 100
             target_title = ""
             if "?" in self.path:

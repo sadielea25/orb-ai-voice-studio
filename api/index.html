@@ -718,7 +718,7 @@
     <header>
       <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
         <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v4.5</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v4.6</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Instant cloud sync between desktop and phone" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #10b981; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -762,7 +762,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.5</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.6</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -800,7 +800,7 @@
           <span>🎙️ Real-Time Voice & Speech Stream</span>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="sttBadge" style="font-size: 11px; color: #64748b; font-weight: 700;">● Idle</span>
-            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.5</span>
+            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.6</span>
           </div>
         </div>
 
@@ -963,13 +963,16 @@
           <span style="font-size: 11px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 8px; border-radius: 999px;">● Connected</span>
         </div>
 
-        <!-- Active Chat Target Spotlight -->
-        <div id="activeChatHighlight" class="active-chat-highlight" style="margin-bottom: 12px;" title="Currently active Antigravity chat target">
+        <!-- Active Chat Target Spotlight (Interactive Project Selector) -->
+        <div id="activeChatHighlight" class="active-chat-highlight" onclick="window.openProjectPickerModal()" style="margin-bottom: 12px; cursor: pointer; border: 1.5px solid #bfdbfe; background: #f0f7ff; transition: all 0.15s ease;" title="Click to switch between Antigravity projects">
           <span class="active-chat-pulse"></span>
-          <span class="active-chat-icon">💬</span>
+          <span class="active-chat-icon">📁</span>
           <div class="active-chat-meta">
-            <span class="active-chat-label">Active Coding Project</span>
-            <span id="activeChatTitleText" class="active-chat-title">COREMARKETGOODS ACCOUNTING - HMRC</span>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span class="active-chat-label">Active Coding Project</span>
+              <span style="font-size: 10px; color: #2563eb; font-weight: 800;">Tap to Switch ▼</span>
+            </div>
+            <span id="activeChatTitleText" class="active-chat-title" style="color: #1d4ed8; font-weight: 800;">COREMARKETGOODS ACCOUNTING - HMRC</span>
           </div>
         </div>
 
@@ -978,7 +981,10 @@
           <label style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 6px; display: block;">Prompt Antigravity Agent:</label>
           <div style="display: flex; gap: 6px;">
             <input type="text" id="antigravPromptInput" placeholder="Ask Antigravity to code, review accounts, or inspect changes..." onkeydown="if(event.key==='Enter') window.sendAntigravPrompt()" style="flex: 1; min-width: 0; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; font-weight: 600; color: #0f172a; outline: none;" />
-            <button type="button" onclick="window.sendAntigravPrompt()" style="background: #2563eb; color: #ffffff; padding: 10px 16px; border-radius: 10px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+            <button type="button" id="btnAntigravVoiceInput" onclick="window.toggleAntigravVoiceInput()" title="Speak voice prompt directly to Antigravity" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #2563eb; padding: 10px 14px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; min-height: 44px;">
+              🎙️
+            </button>
+            <button type="button" onclick="window.sendAntigravPrompt()" style="background: #2563eb; color: #ffffff; padding: 10px 16px; border-radius: 10px; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; min-height: 44px;">
               🚀 Send
             </button>
           </div>
@@ -1595,6 +1601,33 @@
           <span>📞</span>
           <span>End Call</span>
         </button>
+      </div>
+    </div>
+  </div>
+
+    <!-- PROJECT PICKER MODAL (Switch between Antigravity projects) -->
+  <div id="projectPickerModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 99999999; align-items: center; justify-content: center; padding: 16px;">
+    <div style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 20px; padding: 18px; width: 100%; max-width: 440px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35); color: #0f172a; max-height: 85vh; display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 18px;">📁</span>
+          <div>
+            <div style="font-size: 14px; font-weight: 800; color: #0f172a;">Select Coding Project</div>
+            <div style="font-size: 10.5px; color: #64748b;">Target Antigravity prompts to the right workspace</div>
+          </div>
+        </div>
+        <button type="button" onclick="window.closeProjectPickerModal()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; width: 28px; height: 28px; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+      </div>
+
+      <!-- Projects List Container -->
+      <div id="projectPickerList" style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; margin-bottom: 12px; padding-right: 2px;">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <!-- Custom Project Input -->
+      <div style="display: flex; gap: 6px; padding-top: 10px; border-top: 1.5px solid #e2e8f0;">
+        <input type="text" id="customProjectNameInput" placeholder="Or type project name..." style="flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #0f172a; outline: none;" onkeydown="if(event.key==='Enter') window.selectCustomProject()" />
+        <button type="button" onclick="window.selectCustomProject()" style="background: #2563eb; color: #ffffff; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">Select</button>
       </div>
     </div>
   </div>
