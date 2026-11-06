@@ -654,33 +654,6 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
             return
 
-        elif "debug_sync" in target or "debug_sync" in raw:
-            token = os.environ.get("BLOB_READ_WRITE_TOKEN", "")
-            err = ""
-            st = None
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state
-                st = get_cloud_sync_state()
-            except Exception as e:
-                err = str(e)
-            if isinstance(st, dict) and "_error" in st:
-                err = st["_error"]
-                st = None
-            self._set_headers(200)
-            self.wfile.write(json.dumps({
-                "has_token": bool(token),
-                "token_prefix": token[:15] if token else "",
-                "token_len": len(token),
-                "error": err,
-                "state_is_none": st is None,
-                "msg_count": len(st.get("messages", [])) if st else 0,
-                "active_chat": st.get("active_chat_title") if st else ""
-            }).encode("utf-8"))
-            return
-
         elif "conversation" in target or "conversation" in raw:
             try:
                 try:
