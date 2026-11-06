@@ -37,7 +37,7 @@ def get_blob_token():
 def get_cloud_sync_state():
     token = get_blob_token()
     if not token:
-        return None
+        return {"_error": "No blob token found"}
     try:
         req = urllib.request.Request(
             "https://blob.vercel-storage.com/?prefix=orb_sync_state",
@@ -45,18 +45,24 @@ def get_cloud_sync_state():
         )
         req.add_header("Authorization", f"Bearer {token}")
         req.add_header("x-api-version", "7")
+        req.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbAI/5.1")
         with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             blobs = data.get("blobs", [])
             if not blobs:
-                return None
+                return {"_error": "No blobs found with prefix orb_sync_state"}
             blobs.sort(key=lambda b: b.get("uploadedAt", ""), reverse=True)
             latest_url = blobs[0].get("url")
-            with urllib.request.urlopen(latest_url, timeout=8) as content_resp:
-                return json.loads(content_resp.read().decode("utf-8"))
+            req_c = urllib.request.Request(latest_url)
+            req_c.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbAI/5.1")
+            with urllib.request.urlopen(req_c, timeout=8) as content_resp:
+                res = json.loads(content_resp.read().decode("utf-8"))
+                return res
     except Exception as e:
-        print(f"[SYNC-ENGINE-GET-ERR]: {e}", flush=True)
-        return None
+        import traceback
+        err_msg = f"{e} - {traceback.format_exc()}"
+        print(f"[SYNC-ENGINE-GET-ERR]: {err_msg}", flush=True)
+        return {"_error": err_msg}
 
 def save_cloud_sync_state(state_data):
     token = get_blob_token()
@@ -76,6 +82,7 @@ def save_cloud_sync_state(state_data):
         req.add_header("Authorization", f"Bearer {token}")
         req.add_header("x-api-version", "7")
         req.add_header("Content-Type", "application/json")
+        req.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbAI/5.1")
         with urllib.request.urlopen(req, timeout=10) as resp:
             res = json.loads(resp.read().decode("utf-8"))
             return res.get("url")

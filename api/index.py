@@ -666,6 +666,9 @@ class handler(BaseHTTPRequestHandler):
                 st = get_cloud_sync_state()
             except Exception as e:
                 err = str(e)
+            if isinstance(st, dict) and "_error" in st:
+                err = st["_error"]
+                st = None
             self._set_headers(200)
             self.wfile.write(json.dumps({
                 "has_token": bool(token),
@@ -686,6 +689,8 @@ class handler(BaseHTTPRequestHandler):
                     from sync_engine import get_cloud_sync_state
                 st = get_cloud_sync_state()
             except Exception:
+                st = None
+            if isinstance(st, dict) and "_error" in st:
                 st = None
             msgs = (st.get("messages") if st and isinstance(st.get("messages"), list) and len(st.get("messages")) > 0 else None) or CONVERSATION_HISTORY
             self._set_headers(200)
