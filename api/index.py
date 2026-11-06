@@ -573,7 +573,7 @@ class handler(BaseHTTPRequestHandler):
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v5.1",
+                "app_version": "v5.2",
                 "active_chat_title": active_chat,
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),

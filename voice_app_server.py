@@ -463,9 +463,14 @@ def get_conversation_history(limit=100, target_title=""):
                             t_str = time.strftime("%H:%M")
                         
                         clean_cnt = cnt.strip()
-                        m = re.search(r'<USER_REQUEST>\s*(.*?)\s*</USER_REQUEST>', clean_cnt, re.DOTALL)
-                        if m:
-                            clean_cnt = m.group(1).strip()
+                        if '<talker_agent_context>' in clean_cnt:
+                            user_matches = re.findall(r'user:\s*"([^"]+)"', clean_cnt)
+                            if user_matches:
+                                clean_cnt = user_matches[-1].strip()
+                        elif '<USER_REQUEST>' in clean_cnt:
+                            m = re.search(r'<USER_REQUEST>\s*(.*?)\s*</USER_REQUEST>', clean_cnt, re.DOTALL)
+                            if m:
+                                clean_cnt = m.group(1).strip()
 
                         messages.append({
                             "role": "user",
@@ -1787,7 +1792,7 @@ def cloud_antigrav_bridge_worker():
             body = json.dumps(payload).encode("utf-8")
             req = urllib.request.Request(cloud_relay_url, data=body, method="POST", headers={
                 "Content-Type": "application/json",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbDesktop/5.1"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbDesktop/5.2"
             })
             with urllib.request.urlopen(req, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
