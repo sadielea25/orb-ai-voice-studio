@@ -14,6 +14,8 @@ import subprocess
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+BROWSER_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
 def get_blob_token():
     token = os.environ.get("BLOB_READ_WRITE_TOKEN", "").strip()
     if token:
@@ -36,10 +38,15 @@ def get_blob_token():
     return ""
 
 def fetch_json_url(url, timeout=8):
+    headers = {
+        "User-Agent": BROWSER_UA,
+        "Accept": "application/json, text/plain, */*"
+    }
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"})
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+        import requests
+        resp = requests.get(url, headers=headers, timeout=timeout)
+        if resp.status_code == 200:
+            return resp.json()
     except Exception:
         pass
     try:
@@ -49,6 +56,12 @@ def fetch_json_url(url, timeout=8):
             return json.loads(res.stdout)
     except Exception:
         pass
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        pass
     return None
 
 def get_cloud_sync_state():
@@ -56,22 +69,30 @@ def get_cloud_sync_state():
     if not token:
         return None
     try:
-        req = urllib.request.Request(
-            "https://blob.vercel-storage.com/?prefix=orb_sync_state",
-            method="GET"
-        )
-        req.add_header("Authorization", f"Bearer {token}")
-        req.add_header("x-api-version", "7")
-        req.add_header("User-Agent", "Mozilla/5.0")
-        with urllib.request.urlopen(req, timeout=8) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            blobs = data.get("blobs", [])
-            if not blobs:
-                return None
-            blobs.sort(key=lambda b: b.get("uploadedAt", ""), reverse=True)
-            latest_url = blobs[0].get("url")
-            content = fetch_json_url(latest_url, timeout=8)
-            return content
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "x-api-version": "7",
+            "User-Agent": BROWSER_UA
+        }
+        data = None
+        try:
+            import requests
+            resp = requests.get("https://blob.vercel-storage.com/?prefix=orb_sync_state", headers=headers, timeout=8)
+            if resp.status_code == 200:
+                data = resp.json()
+        except Exception:
+            pass
+        if not data:
+            req = urllib.request.Request("https://blob.vercel-storage.com/?prefix=orb_sync_state", method="GET", headers=headers)
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        blobs = data.get("blobs", []) if data else []
+        if not blobs:
+            return None
+        blobs.sort(key=lambda b: b.get("uploadedAt", ""), reverse=True)
+        latest_url = blobs[0].get("url")
+        content = fetch_json_url(latest_url, timeout=8)
+        return content
     except Exception as e:
         print(f"[SYNC-ENGINE-GET-ERR]: {e}", flush=True)
         return None
@@ -85,16 +106,21 @@ def save_cloud_sync_state(state_data):
             state_data = {}
         if "updated_at" not in state_data or not state_data["updated_at"]:
             state_data["updated_at"] = int(time.time() * 1000)
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "x-api-version": "7",
+            "Content-Type": "application/json",
+            "User-Agent": BROWSER_UA
+        }
+        try:
+            import requests
+            resp = requests.put("https://blob.vercel-storage.com/orb_sync_state.json", json=state_data, headers=headers, timeout=10)
+            if resp.status_code in (200, 201):
+                return resp.json().get("url")
+        except Exception:
+            pass
         body = json.dumps(state_data).encode("utf-8")
-        req = urllib.request.Request(
-            "https://blob.vercel-storage.com/orb_sync_state.json",
-            data=body,
-            method="PUT"
-        )
-        req.add_header("Authorization", f"Bearer {token}")
-        req.add_header("x-api-version", "7")
-        req.add_header("Content-Type", "application/json")
-        req.add_header("User-Agent", "Mozilla/5.0")
+        req = urllib.request.Request("https://blob.vercel-storage.com/orb_sync_state.json", data=body, method="PUT", headers=headers)
         with urllib.request.urlopen(req, timeout=10) as resp:
             res = json.loads(resp.read().decode("utf-8"))
             return res.get("url")

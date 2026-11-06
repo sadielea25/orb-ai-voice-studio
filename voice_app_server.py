@@ -1739,115 +1739,86 @@ def handle_earbud_resume_gesture():
 def cloud_antigrav_bridge_worker():
     """
     Two-Way Antigravity Cloud Bridge Worker.
-    Continuously runs on Sadie's PC:
-    1. Reads pending prompts sent from the phone / cloud thin client in Cloud Blob,
+    Runs continuously on Sadie's PC:
+    1. Reads pending prompts sent from the phone / cloud thin client via https://orbai.appsolutelydone.com/api/cloud_relay,
        and automatically types them into the active Antigravity workspace window via desktop_injector.
     2. Syncs the live Antigravity transcript, active chat title, and scanned projects
-       up to Cloud Blob so the mobile phone displays live Antigravity activity with sub-second latency.
+       up to Vercel Cloud Relay so the mobile phone displays live Antigravity activity with sub-second latency.
     """
     time.sleep(2)
-    print("[CLOUD-BRIDGE] Desktop Antigravity Cloud Bridge started.", flush=True)
-    import sync_engine
+    print("[CLOUD-RELAY-BRIDGE] Desktop Antigravity Cloud Bridge started.", flush=True)
 
-    last_pushed_hash = ""
+    cloud_relay_url = "https://orbai.appsolutelydone.com/api/cloud_relay"
+    last_mtime = 0
     last_sync_time = 0
 
     while True:
         try:
-            token = sync_engine.get_blob_token()
-            if not token:
-                time.sleep(5)
-                continue
-
-            cloud_state = sync_engine.get_cloud_sync_state() or {}
-            if isinstance(cloud_state, dict) and "_error" in cloud_state:
-                cloud_state.pop("_error", None)
             now = time.time()
-            state_dirty = False
-
-            # 1. Process pending prompts from mobile phone / web
-            pending = cloud_state.get("pending_antigrav_prompts", [])
-            if pending and isinstance(pending, list) and len(pending) > 0:
-                print(f"[CLOUD-BRIDGE] Found {len(pending)} pending prompt(s) from phone.", flush=True)
-                for item in pending:
-                    p_text = item.get("text", "").strip() if isinstance(item, dict) else ""
-                    p_target = item.get("chat_title", "") if isinstance(item, dict) else ""
-                    if p_text:
-                        print(f"[CLOUD-BRIDGE] Injecting prompt into Antigravity: '{p_text}' (target: '{p_target}')", flush=True)
-                        try:
-                            import desktop_injector
-                            desktop_injector.type_text_into_antigravity(p_text, target_title=p_target)
-                        except Exception as ie:
-                            print(f"[CLOUD-BRIDGE-INJECT-ERR]: {ie}", flush=True)
-                cloud_state["pending_antigrav_prompts"] = []
-                state_dirty = True
-
-            # 2. Check for scan_all_chats signal from cloud
-            if cloud_state.get("scan_requested"):
-                try:
-                    with open(os.path.join(BASE_DIR, "scan_all_chats.signal"), "w", encoding="utf-8") as f:
-                        f.write("1")
-                except Exception:
-                    pass
-                cloud_state["scan_requested"] = False
-                state_dirty = True
-
-            # 3. Read local Antigravity state
             active_title, transcript_path = get_active_chat_title_and_transcript()
-            local_msgs = get_conversation_history(limit=50, target_title=active_title)
+            cur_mtime = os.path.getmtime(transcript_path) if os.path.exists(transcript_path) else 0
 
-            # Update active chat title if changed
-            if active_title and active_title != cloud_state.get("active_chat_title"):
-                cloud_state["active_chat_title"] = active_title
-                state_dirty = True
-
-            # Scan projects periodically (every 15s or if empty)
-            if (now - last_sync_time > 15) or not cloud_state.get("projects"):
+            # Only scan messages if mtime changed or if heartbeat interval elapsed
+            needs_push = (cur_mtime > last_mtime) or (now - last_sync_time > 15)
+            
+            local_msgs = get_conversation_history(limit=50, target_title=active_title) if needs_push else None
+            
+            scanned_projects = None
+            if now - last_sync_time > 20:
                 transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
                 transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
                 seen = set()
-                projects = []
+                scanned_projects = []
                 for p in transcripts[:25]:
                     t = extract_chat_title(p)
                     if t and t not in seen and not is_garbage_title(t):
                         seen.add(t)
                         cid = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(p))))
-                        projects.append({"id": cid, "title": t})
-                if projects and projects != cloud_state.get("projects"):
-                    cloud_state["projects"] = projects
-                    state_dirty = True
+                        scanned_projects.append({"id": cid, "title": t})
 
-            # Merge conversation messages
-            if local_msgs:
-                cloud_msgs = cloud_state.get("messages", [])
-                if not isinstance(cloud_msgs, list):
-                    cloud_msgs = []
+            payload = {
+                "active_chat_title": active_title
+            }
+            if local_msgs is not None:
+                payload["messages"] = local_msgs
+            if scanned_projects is not None:
+                payload["projects"] = scanned_projects
 
-                msg_seen = set()
-                combined = []
-                for m in cloud_msgs + local_msgs:
-                    if isinstance(m, dict) and m.get("text"):
-                        key = (m.get("text", "").strip()[:80], m.get("time", "").strip(), m.get("role", "").strip())
-                        if key not in msg_seen:
-                            msg_seen.add(key)
-                            combined.append(m)
-
-                new_msgs = combined[-100:]
-                cur_hash = f"{len(new_msgs)}:{new_msgs[-1].get('text', '') if new_msgs else ''}:{active_title}"
-                cloud_state["messages"] = new_msgs
-                if cur_hash != last_pushed_hash:
-                    state_dirty = True
-                    last_pushed_hash = cur_hash
-
-            if state_dirty:
-                sync_engine.save_cloud_sync_state(cloud_state)
+            body = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(cloud_relay_url, data=body, method="POST", headers={
+                "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbDesktop/5.1"
+            })
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                last_mtime = cur_mtime
                 last_sync_time = now
-                print(f"[CLOUD-BRIDGE] Synced {len(cloud_state.get('messages', []))} messages to cloud. Active: '{cloud_state.get('active_chat_title', '')}'", flush=True)
+
+                # Process any pending prompts from the mobile phone
+                pending = data.get("pending_prompts", [])
+                if pending and isinstance(pending, list):
+                    for item in pending:
+                        p_text = item.get("text", "").strip() if isinstance(item, dict) else ""
+                        p_target = item.get("chat_title", "") if isinstance(item, dict) else ""
+                        if p_text == "__SCAN_ALL_CHATS__":
+                            try:
+                                with open(os.path.join(BASE_DIR, "scan_all_chats.signal"), "w", encoding="utf-8") as f:
+                                    f.write("1")
+                                print("[CLOUD-RELAY] Triggered scan_all_chats from phone signal.", flush=True)
+                            except Exception:
+                                pass
+                        elif p_text:
+                            print(f"[CLOUD-RELAY] Injecting prompt from mobile phone: '{p_text}' into '{p_target or active_title}'", flush=True)
+                            try:
+                                import desktop_injector
+                                desktop_injector.type_text_into_antigravity(p_text, target_title=p_target or active_title)
+                            except Exception as ie:
+                                print(f"[CLOUD-RELAY-INJECT-ERR]: {ie}", flush=True)
 
         except Exception as e:
-            print(f"[CLOUD-BRIDGE-LOOP-ERR]: {e}", flush=True)
+            pass
 
-        time.sleep(3)
+        time.sleep(2.5)
 
 
 class ThreadedOrbServer(ThreadingHTTPServer):

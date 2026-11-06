@@ -44,6 +44,19 @@ CONVERSATION_HISTORY = [
     }
 ]
 
+CLOUD_RELAY_STATE = {
+    "active_chat_title": "COREMARKETGOODS ACCOUNTING - HMRC",
+    "projects": [
+        {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
+        {"id": "orb", "title": "ORB AI Studio"},
+        {"id": "spook", "title": "Spook Studio"},
+        {"id": "arts_grant", "title": "Arts Grant"}
+    ],
+    "messages": [],
+    "pending_prompts": [],
+    "last_sync": 0
+}
+
 DEFAULT_GEM_KEY = base64.b64decode("QVEuQWI4Uk42TGhSSUo4WF9QT2JkMWozaXVYQm9JSkNOVjRuMzBrakMyVXh6RzZZQVU4U2c=").decode()
 
 
@@ -556,15 +569,7 @@ class handler(BaseHTTPRequestHandler):
                     return
 
         elif "status" in target or "status" in raw:
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state
-                st = get_cloud_sync_state()
-            except Exception:
-                st = None
-            active_chat = (st.get("active_chat_title") if st else None) or "COREMARKETGOODS ACCOUNTING - HMRC"
+            active_chat = CLOUD_RELAY_STATE.get("active_chat_title") or "COREMARKETGOODS ACCOUNTING - HMRC"
             state = {
                 "status": "online",
                 "mode": "cloud",
@@ -572,7 +577,7 @@ class handler(BaseHTTPRequestHandler):
                 "active_chat_title": active_chat,
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
-                "voice": (st.get("voice") if st else None) or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
+                "voice": CLOUD_RELAY_STATE.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             }
             self._set_headers(200)
             self.wfile.write(json.dumps(state).encode("utf-8"))
@@ -619,15 +624,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         elif "projects" in target or "projects" in raw:
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state
-                st = get_cloud_sync_state()
-            except Exception:
-                st = None
-            projects = (st.get("projects") if st and isinstance(st.get("projects"), list) and len(st.get("projects")) > 0 else None) or [
+            projects = CLOUD_RELAY_STATE.get("projects") or [
                 {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
                 {"id": "orb", "title": "ORB AI Studio"},
                 {"id": "spook", "title": "Spook Studio"},
@@ -655,17 +652,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         elif "conversation" in target or "conversation" in raw:
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state
-                st = get_cloud_sync_state()
-            except Exception:
-                st = None
-            if isinstance(st, dict) and "_error" in st:
-                st = None
-            msgs = (st.get("messages") if st and isinstance(st.get("messages"), list) and len(st.get("messages")) > 0 else None) or CONVERSATION_HISTORY
+            msgs = (CLOUD_RELAY_STATE.get("messages") if CLOUD_RELAY_STATE.get("messages") else None) or CONVERSATION_HISTORY
             self._set_headers(200)
             self.wfile.write(json.dumps({"messages": msgs, "events": msgs}).encode("utf-8"))
             return
@@ -733,17 +720,32 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             data = {}
 
-        if "scan_all_chats" in target or "scan_all_chats" in raw:
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state
-                st = get_cloud_sync_state() or {}
-                st["scan_requested"] = True
-                save_cloud_sync_state(st)
-            except Exception as e:
-                print(f"[SCAN-ALL-CHATS-ERR]: {e}", flush=True)
+        if "cloud_relay" in target or "cloud_relay" in raw:
+            if data.get("active_chat_title"):
+                CLOUD_RELAY_STATE["active_chat_title"] = data["active_chat_title"]
+            if data.get("projects") and isinstance(data["projects"], list):
+                CLOUD_RELAY_STATE["projects"] = data["projects"]
+            if data.get("messages") and isinstance(data["messages"], list):
+                CLOUD_RELAY_STATE["messages"] = data["messages"]
+            CLOUD_RELAY_STATE["last_sync"] = time.time()
+            
+            pending = list(CLOUD_RELAY_STATE.get("pending_prompts", []))
+            CLOUD_RELAY_STATE["pending_prompts"] = []
+            self._set_headers(200)
+            self.wfile.write(json.dumps({
+                "status": "ok",
+                "pending_prompts": pending,
+                "active_chat_title": CLOUD_RELAY_STATE["active_chat_title"]
+            }).encode("utf-8"))
+            return
+
+        elif "scan_all_chats" in target or "scan_all_chats" in raw:
+            pending = CLOUD_RELAY_STATE.setdefault("pending_prompts", [])
+            pending.append({
+                "id": f"scan_{int(time.time()*1000)}",
+                "text": "__SCAN_ALL_CHATS__",
+                "chat_title": ""
+            })
             self._set_headers(200)
             self.wfile.write(b'{"status": "scan_requested"}')
             return
@@ -759,27 +761,15 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"status": "ok", "reply": ""}')
                 return
 
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state
-                cloud_st = get_cloud_sync_state() or {}
-            except Exception:
-                cloud_st = {}
-
             # 1. Queue pending prompt for Sadie's Desktop Antigravity Worker
-            pending = cloud_st.get("pending_antigrav_prompts", [])
-            if not isinstance(pending, list):
-                pending = []
-            target_chat = chat_title or cloud_st.get("active_chat_title", "")
+            pending = CLOUD_RELAY_STATE.setdefault("pending_prompts", [])
+            target_chat = chat_title or CLOUD_RELAY_STATE.get("active_chat_title", "")
             pending.append({
                 "id": f"prompt_{int(time.time()*1000)}",
                 "text": user_text,
                 "chat_title": target_chat,
                 "created_at": int(time.time()*1000)
             })
-            cloud_st["pending_antigrav_prompts"] = pending[-20:]
 
             # 2. Add user message to conversation history
             user_msg = {
@@ -788,27 +778,19 @@ class handler(BaseHTTPRequestHandler):
                 "time": time.strftime("%H:%M")
             }
             CONVERSATION_HISTORY.append(user_msg)
-            cloud_msgs = cloud_st.get("messages", [])
-            if not isinstance(cloud_msgs, list):
-                cloud_msgs = []
-            cloud_msgs.append(user_msg)
+            relay_msgs = CLOUD_RELAY_STATE.setdefault("messages", [])
+            relay_msgs.append(user_msg)
 
             # 3. Route to sub-second dynamic Gemini model
-            ai_reply = query_gemini(user_text, history=cloud_msgs)
+            ai_reply = query_gemini(user_text, history=relay_msgs)
             ai_msg = {
                 "role": "assistant",
                 "text": ai_reply,
                 "time": time.strftime("%H:%M")
             }
             CONVERSATION_HISTORY.append(ai_msg)
-            cloud_msgs.append(ai_msg)
-            cloud_st["messages"] = cloud_msgs[-100:]
-
-            # 4. Save to Cloud Blob immediately
-            try:
-                save_cloud_sync_state(cloud_st)
-            except Exception as se:
-                print(f"[SPEECH-INPUT-CLOUD-SAVE-ERR]: {se}", flush=True)
+            relay_msgs.append(ai_msg)
+            CLOUD_RELAY_STATE["messages"] = relay_msgs[-100:]
 
             audio_url = f"/api/tts?text={urllib.parse.quote(ai_reply)}&voice={urllib.parse.quote(voice)}"
             self._set_headers(200)
