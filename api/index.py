@@ -551,7 +551,7 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"error": "Audio generation failed"}')
             return
 
-                elif "projects" in target or "projects" in raw:
+        elif "projects" in target or "projects" in raw:
             projects = [
                 {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
                 {"id": "orb", "title": "ORB AI Studio"},
@@ -562,7 +562,7 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "ok", "projects": projects}).encode("utf-8"))
             return
 
-elif "settings" in target or "settings" in raw:
+        elif "settings" in target or "settings" in raw:
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
             return
@@ -605,10 +605,21 @@ elif "settings" in target or "settings" in raw:
             self.wfile.write(json.dumps({"status": "ok", "state": state}).encode("utf-8"))
             return
 
+        if "projects" in target or "projects" in raw:
+            default_projects = [
+                {"id": "hmrc", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
+                {"id": "orb", "title": "ORB - Voice Assistant"},
+                {"id": "spook", "title": "Spook Studio"},
+                {"id": "arts", "title": "Arts Grant"}
+            ]
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "projects": default_projects}).encode("utf-8"))
+            return
+
         self._set_headers(200)
         self.wfile.write(json.dumps({
             "app": "Orb AI Live Voice Studio",
-            "version": "v3.6",
+            "version": "v4.6",
             "status": "online",
             "cloud": True
         }).encode("utf-8"))

@@ -791,7 +791,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             mtime = os.path.getmtime(idx_path) if os.path.exists(idx_path) else 0
             self._set_headers(200)
             self.wfile.write(json.dumps({"version": int(mtime * 1000)}).encode("utf-8"))
-                elif url_path == "/api/projects":
+        elif url_path == "/api/projects":
             transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
             transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
             seen = set()
@@ -808,7 +808,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "ok", "projects": projects}).encode("utf-8"))
             return
 
-elif url_path == "/api/conversation":
+        elif url_path == "/api/conversation":
             limit = 100
             target_title = ""
             if "?" in self.path:
