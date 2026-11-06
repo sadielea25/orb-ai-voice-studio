@@ -13,21 +13,27 @@
   <link rel="icon" href="https://img.icons8.com/fluency/96/microphone.png" type="image/png">
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #faf8fd;
       --card: #ffffff;
-      --card-inner: #f1f5f9;
-      --border: #e2e8f0;
-      --border-dark: #cbd5e1;
-      --border-focus: #2563eb;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --accent: #059669;
-      --accent-hover: #047857;
+      --card-inner: #fbf7fe;
+      --border: #f1e9fa;
+      --border-dark: #e4d7f5;
+      --border-focus: #8b5cf6;
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --accent: #d946ef;
+      --accent-hover: #c026d3;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --lilac: #8b5cf6;
+      --lilac-soft: #f5f3ff;
+      --pink: #d946ef;
+      --pink-soft: #fdf4ff;
       --text: #0f172a;
       --text-secondary: #334155;
-      --text-muted: #475569;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --text-muted: #64748b;
+      --shadow-sm: 0 1px 3px rgba(139, 92, 246, 0.04);
+      --shadow-md: 0 4px 16px rgba(139, 92, 246, 0.06);
     }
     * { 
       box-sizing: border-box; 
@@ -36,6 +42,48 @@
       font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
       -webkit-tap-highlight-color: transparent;
       letter-spacing: 0.005em;
+    }
+    html, body {
+      overflow-x: hidden !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      background: var(--bg) !important;
+      color: var(--text) !important;
+    }
+    .container {
+      width: 100% !important;
+      max-width: 580px !important;
+      margin: 0 auto !important;
+      padding: 12px 14px 28px 14px !important;
+      overflow-x: hidden !important;
+    }
+    .card {
+      background: #ffffff !important;
+      border: 1.5px solid var(--border) !important;
+      border-radius: 16px !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+    .master-tab-btn {
+      background: transparent !important;
+      color: #64748b !important;
+      border: none !important;
+      padding: 8px 4px !important;
+      border-radius: 10px !important;
+      font-size: 11.5px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 4px !important;
+      transition: all 0.2s ease !important;
+    }
+    .master-tab-btn.active {
+      background: #ffffff !important;
+      color: #7c3aed !important;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.12) !important;
     }
     html, body {
       overflow-x: hidden !important;
@@ -524,7 +572,7 @@
       width: 76px;
       height: 76px;
       border-radius: 999px;
-      background: #ecfdf5;
+      background: #fdf4ff;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -739,8 +787,8 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v4.7</span>
-        <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #ecfdf5; border: 1.5px solid #a7f3d0; color: #059669; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v4.8</span>
+        <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
         </button>
@@ -781,7 +829,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.7</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.8</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -819,7 +867,7 @@
           <span>🎙️ Real-Time Voice & Speech Stream</span>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="sttBadge" style="font-size: 11px; color: #64748b; font-weight: 700;">● Idle</span>
-            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.7</span>
+            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.8</span>
           </div>
         </div>
 
@@ -979,7 +1027,7 @@
       <div class="card" style="background: #ffffff;">
         <div class="card-title">
           <span>⚡ Antigravity Direct Desktop Bridge</span>
-          <span style="font-size: 11px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 8px; border-radius: 999px;">● Connected</span>
+          <span style="font-size: 11px; font-weight: 800; color: #7c3aed; background: #fdf4ff; border: 1px solid #a7f3d0; padding: 2px 8px; border-radius: 999px;">● Connected</span>
         </div>
 
         <!-- Active Chat Target Spotlight (Interactive Project Selector) -->
@@ -1017,7 +1065,7 @@
           <button type="button" onclick="speakLastAIReply()" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #2563eb; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
             🔊 Speak Latest AI Reply
           </button>
-          <button type="button" onclick="window.sendAntigravPrompt('save and git tag this version')" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #059669; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
+          <button type="button" onclick="window.sendAntigravPrompt('save and git tag this version')" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #7c3aed; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
             💾 Save & Git Tag Version
           </button>
           <button type="button" onclick="popOutFloatingWidget('compact')" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
@@ -1044,229 +1092,34 @@
     <!-- TAB 3: SONYA (Virtual Assistant, Tasks & Gmail Inbox) -->
     <!-- ==================================================== -->
     <div id="tabPanel_sonya" class="tab-panel" style="display: none;">
-      <!-- Sonya Profile & Live Call Master CTA -->
-      <div class="card" style="background: #ffffff; border: 1.5px solid #a7f3d0;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="position: relative; width: 48px; height: 48px; flex-shrink: 0;">
-              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sonia" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #10b981;">
-              <span style="position: absolute; bottom: 0; right: 0; width: 11px; height: 11px; border-radius: 50%; background: #10b981; border: 2px solid #ffffff;"></span>
-            </div>
-            <div>
-              <div style="font-size: 14.5px; font-weight: 800; color: #0f172a;">Sonia • Executive Virtual Assistant</div>
-              <div style="font-size: 11px; color: #059669; font-weight: 700;">Online 24/7 in Cloud • Option B Mobile Sync</div>
-            </div>
-          </div>
-          <button type="button" onclick="window.startAssistantCall()" style="background: linear-gradient(135deg, #059669, #047857); color: #ffffff; border: none; padding: 9px 18px; border-radius: 25px; font-size: 12.5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);">
-            <span style="font-size: 13px;">📞</span>
-            <span>Call Sonia</span>
+      <!-- Virtual Assistant -->
+      <div class="card" style="padding: 20px 16px;">
+        <!-- 3-Way Assistant Switcher (100% visible, no horizontal scroll) -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 20px;">
+          <button type="button" onclick="window.switchAssistant('sonia')" id="asstPill_sonia" style="background: #fdf4ff; border: 1.5px solid #d946ef; color: #a21caf; padding: 9px 4px; border-radius: 10px; font-size: 12.5px; font-weight: 700; cursor: pointer; text-align: center;">
+            Sonia
+          </button>
+          <button type="button" onclick="window.switchAssistant('gemma')" id="asstPill_gemma" style="background: #ffffff; border: 1.5px solid #f1e9fa; color: #475569; padding: 9px 4px; border-radius: 10px; font-size: 12.5px; font-weight: 700; cursor: pointer; text-align: center;">
+            Gemma
+          </button>
+          <button type="button" onclick="window.switchAssistant('ryan')" id="asstPill_ryan" style="background: #ffffff; border: 1.5px solid #f1e9fa; color: #475569; padding: 9px 4px; border-radius: 10px; font-size: 12.5px; font-weight: 700; cursor: pointer; text-align: center;">
+            Ryan
           </button>
         </div>
-      </div>
 
-      <!-- Midday Phone Calls Check-In Card -->
-      <div class="card" style="background: #ffffff;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 14px;">📞</span>
-            <span style="font-size: 13px; font-weight: 800; color: #0f172a;">Midday Phone Calls Check-In</span>
+        <!-- Active Assistant Profile -->
+        <div style="text-align: center; padding: 6px 0;">
+          <div style="position: relative; width: 68px; height: 68px; margin: 0 auto 12px auto;">
+            <img id="activeAssistantAvatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Assistant" style="width: 68px; height: 68px; border-radius: 50%; object-fit: cover; border: 2.5px solid #c084fc;">
           </div>
-          <span style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px;">Mon - Fri 12:00</span>
-        </div>
-        <p style="font-size: 11.5px; color: #475569; line-height: 1.45; margin-bottom: 8px;">
-          Sonia rings your phone at midday to check if you have made your morning calls (Wellness Pharmacy, Accountant, etc.) and helps round them off.
-        </p>
-        <div style="display: flex; gap: 6px;">
-          <button type="button" onclick="window.answerIncomingCall('midday_phone_checkin')" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
-            📞 Test Midday Ring Now
+          <div style="font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 20px;" id="activeAssistantName">Sonia</div>
+
+          <!-- Master Call Button (Lilac / Purply-Pink, Futuristic SVG) -->
+          <button type="button" onclick="window.startAssistantCall()" style="background: linear-gradient(135deg, #8b5cf6, #d946ef); color: #ffffff; border: none; padding: 13px 32px; border-radius: 30px; font-size: 14px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span id="callAssistantBtnText">Call Sonia</span>
           </button>
         </div>
-      </div>
-
-      <!-- Focus Tasks & Categories -->
-      <div class="card" style="background: #ffffff;">
-        <div class="card-title">
-          <span>📋 Focus Tasks & Categories</span>
-        </div>
-
-        <!-- DOSTUFF FOCUS MODE BAR (Clean Light Background for Easy Reading & Writing) -->
-      <div id="dostuffFocusStrip" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 11px; padding: 5px 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);">
-        <!-- Category Badge & Working On Task Trigger -->
-        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to view categories, reorder priorities, or delegate tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 5px 10px; color: #0f172a; font-size: 11.5px; font-weight: 700; cursor: pointer; text-align: left; transition: all 0.15s ease;">
-          <span id="dostuffActiveCategoryBadge" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 9.5px; font-weight: 800; padding: 1.5px 6px; border-radius: 6px; flex-shrink: 0; white-space: nowrap;">📊 Accounts</span>
-          <span style="font-size: 10px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Working On:</span>
-          <span id="dostuffActiveTaskTitle" style="white-space: normal; break-words; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; flex: 1; min-width: 0; color: #0f172a; font-weight: 700;">Select a focus task...</span>
-          <span id="dostuffTaskSessionsBadge" style="background: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 9.5px; font-weight: 800; padding: 1.5px 6px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;">🔥 0 • 0m</span>
-          <span style="font-size: 9px; color: #64748b; flex-shrink: 0;">▼</span>
-        </button>
-
-        <!-- Right Quick Action Buttons: Live Phone Call & Task Hub -->
-        <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
-          <button type="button" id="btnCallAssistantStrip" onclick="window.startAssistantCall()" title="Phone up your virtual assistant Sonia for live planning and task delegation" style="background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #34d399; color: #ffffff; padding: 4px 9px; border-radius: 8px; font-size: 10.5px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; box-shadow: 0 2px 6px rgba(16,185,129,0.35);">
-            <span style="font-size: 11px;">📞</span>
-            <span>Call Sonia</span>
-          </button>
-          <button type="button" id="dostuffQuickAddBtn" onclick="window.toggleDoStuffTaskModal()" title="View categories, priorities and tasks" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 4px 7px; border-radius: 8px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
-            📋 Tasks
-          </button>
-        </div>
-      </div>
-
-      
-
-        <!-- VIEW 1: MY TASKS & CATEGORIES -->
-        <div id="viewMyTasksContainer">
-          <!-- Categories Selection Pills (Wrap cleanly without horizontal scrollbar) -->
-          <div style="margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-              <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;">Work Categories:</span>
-              <button type="button" onclick="window.promptAddCustomCategory()" style="background: none; border: none; color: #2563eb; font-size: 10px; font-weight: 800; cursor: pointer; padding: 0;">+ New Category</button>
-            </div>
-            <div id="categoryPillsRow" style="display: flex; flex-wrap: wrap; gap: 5px;">
-              <!-- Rendered dynamically -->
-            </div>
-          </div>
-
-          <!-- Bunch by Location Filter Row -->
-          <div style="margin-bottom: 8px; padding: 5px 7px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-              <span style="font-size: 9.5px; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.3px;">📍 Bunch by Location:</span>
-              <span id="locationFilterCountLabel" style="font-size: 9.5px; color: #2563eb; font-weight: 800;">All Locations</span>
-            </div>
-            <div id="locationFilterPillsRow" style="display: flex; flex-wrap: wrap; gap: 4px;">
-              <!-- Rendered dynamically -->
-            </div>
-          </div>
-          <!-- Add Task Form with Priority & Location Tag -->
-          <div class="add-task-form-wrapper" style="margin-bottom: 10px;">
-            <div class="task-input-row" style="display: flex; gap: 6px; margin-bottom: 6px;">
-              <input type="text" id="dostuffNewTaskInput" placeholder="Add task in this category..." onkeydown="if(event.key==='Enter') window.addDoStuffFocusTask()" style="flex: 1; min-width: 0; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 8px 10px; font-size: 13.5px; font-weight: 600; color: #0f172a; outline: none;" />
-              <button type="button" onclick="window.addDoStuffFocusTask()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 12.5px; font-weight: 800; padding: 8px 16px; border-radius: 8px; cursor: pointer; white-space: nowrap;">Add</button>
-            </div>
-            <div class="task-controls-row" style="display: grid; grid-template-columns: 1fr 1.15fr 1.15fr; gap: 6px;">
-              <select id="newTaskPrioritySelect" title="Task Priority Level" style="width: 100%; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 6px 8px; font-size: 12px; font-weight: 700; color: #0f172a; cursor: pointer;">
-                <option value="high">🔴 High</option>
-                <option value="normal" selected>🟡 Normal</option>
-                <option value="low">🟢 Low</option>
-              </select>
-              <select id="newTaskLocationSelect" title="Task Location & Context" style="width: 100%; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 6px 8px; font-size: 12px; font-weight: 700; color: #0f172a; cursor: pointer;">
-                <option value="laptop" selected>💻 Laptop</option>
-                <option value="home_physical">🏠 Home Physical</option>
-                <option value="out_about">🚗 Out & About</option>
-                <option value="phone">📱 Phone</option>
-                <option value="offline">📝 Pen & Paper</option>
-              </select>
-              <select id="newTaskPlanSessionsSelect" title="Planned Focus Sessions" style="width: 100%; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 6px 8px; font-size: 12px; font-weight: 700; color: #0f172a; cursor: pointer;">
-                <option value="1">🔥 1 session</option>
-                <option value="2" selected>🔥 2 sessions</option>
-                <option value="3">🔥 3 sessions</option>
-                <option value="4">🔥 4 sessions</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Task Actions Row (Sort by priority, Sync from to-do) -->
-          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 8px; padding: 4px 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px;">
-            <span style="font-size: 10px; font-weight: 700; color: #64748b;">Use ▲▼ to reorder in any priority</span>
-            <div style="display: flex; gap: 4px;">
-              <button type="button" onclick="window.sortCurrentCategoryByPriority()" style="background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; cursor: pointer;">⚡ Sort High-to-Low</button>
-              <button type="button" onclick="window.importTasksFromTodoHub()" style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; cursor: pointer;">📋 Sync To-Do</button>
-            </div>
-          </div>
-
-          <!-- Tasks List Container (Supports drag / up-down priority reordering) -->
-          <div id="dostuffTasksList" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        
-      </div>
-
-      <!-- Sonia's Delegated Tasks -->
-      <div class="card" style="background: #ffffff;">
-        <div class="card-title">
-          <span>🤝 Sonia's Delegated To-Do List</span>
-        </div>
-        <!-- VIEW 2: ASSISTANT'S DELEGATED TO-DO LIST (What Sonia is doing for Sadie) -->
-        <div id="viewAssistantTasksContainer" >
-          <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 9px; padding: 8px 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-            <div>
-              <div style="font-size: 11.5px; font-weight: 800; color: #166534;">Sonia's Delegated To-Do List</div>
-              <div style="font-size: 10px; color: #15803d;">Tasks assigned to your assistant to complete for you.</div>
-            </div>
-            <button type="button" onclick="window.startAssistantCall()" style="background: #16a34a; color: #ffffff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">📞 Discuss on Call</button>
-          </div>
-
-          <!-- Delegate New Task Input -->
-          <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-            <input type="text" id="delegateTaskInput" placeholder="Delegate a new task to Sonia..." onkeydown="if(event.key==='Enter') window.delegateNewTaskToAssistant()" style="flex: 1; min-width: 0; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 8px; padding: 6px 9px; font-size: 11.5px; font-weight: 600; color: #0f172a; outline: none;" />
-            <button type="button" onclick="window.delegateNewTaskToAssistant()" style="background: linear-gradient(135deg, #10b981, #059669); border: 1px solid #059669; color: #ffffff; font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap;">Delegate</button>
-          </div>
-
-          <!-- Assistant Tasks List -->
-          <div id="assistantTasksList" style="max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 2px;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        
-      </div>
-
-      <!-- Gmail Inbox & Fast Voice Drafter -->
-      <div class="card" style="background: #ffffff;">
-        <div class="card-title">
-          <span>📧 Gmail Inbox & Voice Drafter</span>
-        </div>
-        <!-- VIEW 4: GOOGLE GMAIL INBOX & VOICE DRAFTING -->
-        <div id="viewGmailContainer" >
-          <!-- Gmail Connection Status Banner -->
-          <div style="background: linear-gradient(135deg, #f0fdf4, #eff6ff); border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 16px;">📧</span>
-              <div>
-                <div style="font-size: 11.5px; font-weight: 800; color: #0f172a;">Gmail Inbox • Sonia Connected</div>
-                <div style="font-size: 10px; color: #059669; font-weight: 700;">sadielea25@gmail.com • Active & Synced</div>
-              </div>
-            </div>
-            <div style="display: flex; gap: 4px;">
-              <button type="button" onclick="window.askSoniaToSummariseEmails()" style="background: #2563eb; color: #ffffff; border: 1px solid #1d4ed8; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">
-                <span>⚡ Brief Me on Emails</span>
-              </button>
-              <button type="button" onclick="window.startAssistantCall()" style="background: #16a34a; color: #ffffff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">
-                <span>📞 Call Sonia</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Unread Emails Feed Header -->
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-            <span style="font-size: 10.5px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">Priority Unread Messages:</span>
-            <button type="button" onclick="window.openEmailDraftModal('', '', '')" style="background: none; border: none; color: #2563eb; font-size: 10px; font-weight: 800; cursor: pointer; padding: 0;">+ Compose New Email</button>
-          </div>
-
-          <!-- Unread Messages List Container -->
-          <div id="gmailMessagesFeed" style="display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; margin-bottom: 10px; padding-right: 2px;">
-            <!-- Rendered dynamically -->
-          </div>
-
-          <!-- Voice Email Fast Composer Card -->
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 8px 10px;">
-            <div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">✍️ Fast Voice Email Drafter</div>
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-              <input type="text" id="gmailQuickTo" placeholder="To: (e.g. accountant@taxpractice.co.uk or client name)..." style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; font-size: 11px; color: #0f172a; outline: none;" />
-              <input type="text" id="gmailQuickSubject" placeholder="Subject..." style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; font-size: 11px; color: #0f172a; outline: none;" />
-              <textarea id="gmailQuickNotes" rows="2" placeholder="Tell Sonia what you want to convey in plain words..." style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 8px; font-size: 11px; color: #0f172a; resize: none; outline: none;"></textarea>
-              <div style="display: flex; justify-content: flex-end; gap: 6px;">
-                <button type="button" onclick="window.draftQuickEmailWithSonia()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border: 1px solid #1d4ed8; color: #ffffff; font-size: 10.5px; font-weight: 800; padding: 5px 12px; border-radius: 6px; cursor: pointer;">
-                  Draft with Sonia
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        
       </div>
     </div>
 
@@ -1284,7 +1137,7 @@
             <div style="background: #ffffff; border: 1.5px solid #bfdbfe; border-radius: 9px; padding: 7px 9px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;">
                 <span style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Today</span>
-                <span id="planTodayStatusBadge" style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 999px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">On Track 🟢</span>
+                <span id="planTodayStatusBadge" style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 999px; background: #fdf4ff; color: #7c3aed; border: 1px solid #a7f3d0;">On Track 🟢</span>
               </div>
               <div id="planTodayNumbers" style="font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">
                 0 / 4 <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (0%)</span>
@@ -1302,10 +1155,10 @@
             </div>
 
             <!-- This Week Card -->
-            <div style="background: #ffffff; border: 1.5px solid #a7f3d0; border-radius: 9px; padding: 7px 9px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+            <div style="background: #ffffff; border: 1.5px solid #f0abfc; border-radius: 9px; padding: 7px 9px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px;">
                 <span style="font-size: 10px; font-weight: 800; color: #065f46; text-transform: uppercase;">This Week</span>
-                <span id="planWeekStatusBadge" style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 999px; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">On Track 🟢</span>
+                <span id="planWeekStatusBadge" style="font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 999px; background: #fdf4ff; color: #7c3aed; border: 1px solid #a7f3d0;">On Track 🟢</span>
               </div>
               <div id="planWeekNumbers" style="font-size: 13.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">
                 0 / 20 <span style="font-size: 10px; font-weight: 700; color: #64748b;">sessions (0%)</span>
@@ -1351,7 +1204,7 @@
                 <span style="font-size: 15px;">📅</span>
                 <div>
                   <div style="font-size: 12px; font-weight: 800; color: #0f172a;">Google Calendar • Live Synchronisation</div>
-                  <div style="font-size: 10px; color: #059669; font-weight: 700;">sadielea25@gmail.com • Real-time Events Linked</div>
+                  <div style="font-size: 10px; color: #7c3aed; font-weight: 700;">sadielea25@gmail.com • Real-time Events Linked</div>
                 </div>
               </div>
               <div style="display: flex; gap: 4px;">
@@ -1401,7 +1254,7 @@
                 <span style="font-size: 11px; font-weight: 800; color: #0f172a;">📅 7-Day Weekly Focus Plan</span>
                 <span style="font-size: 9.5px; color: #64748b; margin-left: 5px;">Fill days with priority tasks</span>
               </div>
-              <button type="button" onclick="window.startAssistantCall()" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">📞 Plan with Sonia</button>
+              <button type="button" onclick="window.startAssistantCall()" style="background: #fdf4ff; border: 1px solid #a7f3d0; color: #7c3aed; padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer;">📞 Plan with Sonia</button>
             </div>
             <div id="plannerWeekDaysContainer" style="display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow-y: auto; padding-right: 2px;">
               <!-- Rendered dynamically -->
@@ -1502,7 +1355,7 @@
     <div style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 24px; padding: 24px 20px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.4); animation: incomingCallPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
       
       <!-- Ringing badge -->
-      <div style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; border: 1.5px solid #a7f3d0; color: #059669; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; margin-bottom: 16px;">
+      <div style="display: inline-flex; align-items: center; gap: 6px; background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; margin-bottom: 16px;">
         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulseRingDot 1.2s infinite;"></span>
         <span>Incoming Phone Call</span>
       </div>
@@ -1519,7 +1372,7 @@
       <div style="font-size: 12px; font-weight: 700; color: #2563eb; margin-bottom: 8px;">Midday Phone Calls & Tasks Check-In</div>
       <div style="font-size: 11px; color: #475569; line-height: 1.4; margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px;">
         Scheduled Check-In (Mon - Fri 12:00)<br />
-        <span style="color: #059669; font-weight: 700;">Morning phone calls check-in (Wellness Pharmacy, Accountant, etc.)</span>
+        <span style="color: #7c3aed; font-weight: 700;">Morning phone calls check-in (Wellness Pharmacy, Accountant, etc.)</span>
       </div>
 
       <!-- Action Buttons (Answer / Decline) -->
@@ -1540,7 +1393,7 @@
       <!-- Call Top Header -->
       <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 10px;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 14px; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 8px; border-radius: 8px; color: #059669;">📞 Live Call</span>
+          <span style="font-size: 14px; background: #fdf4ff; border: 1px solid #a7f3d0; padding: 4px 8px; border-radius: 8px; color: #7c3aed;">📞 Live Call</span>
           <div>
             <div style="font-size: 13px; font-weight: 800; color: #0f172a;">Sonia • Executive Virtual Assistant</div>
             <div style="font-size: 10px; color: #64748b;">ADHD Priority Planning & Task Delegation</div>
@@ -1556,7 +1409,7 @@
         <div id="callAvatarPulse" class="call-avatar-wrap">
           <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80" alt="Sonia" class="call-avatar-img">
         </div>
-        <div id="callStatusIndicator" style="font-size: 12px; font-weight: 800; color: #059669; margin-top: 10px;">
+        <div id="callStatusIndicator" style="font-size: 12px; font-weight: 800; color: #7c3aed; margin-top: 10px;">
           ● Connected • Listening to Sadie...
         </div>
         <div id="callSubstatus" style="font-size: 10.5px; color: #64748b; margin-top: 2px;">
@@ -1567,7 +1420,7 @@
       <!-- Live Call Transcript Conversation Area -->
       <div id="callTranscriptBox" style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 10px; max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
         <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #0f172a; line-height: 1.4;">
-          <strong style="color: #059669;">Sonia:</strong> Hello Sadie. I am right here on the line. How can I help you organise, prioritise, or plan your tasks today?
+          <strong style="color: #7c3aed;">Sonia:</strong> Hello Sadie. I am right here on the line. How can I help you organise, prioritise, or plan your tasks today?
         </div>
       </div>
 
@@ -1606,7 +1459,7 @@
         <button type="button" onclick="window.sendAssistantCallPrompt('Can you draft the client invoice reminder for me and put it on your to-do list?')" style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           🤝 Delegate Invoice Task
         </button>
-        <button type="button" onclick="window.sendAssistantCallPrompt('What are all my physical out and about tasks that I need to run today?')" style="background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
+        <button type="button" onclick="window.sendAssistantCallPrompt('What are all my physical out and about tasks that I need to run today?')" style="background: #fdf4ff; border: 1px solid #a7f3d0; color: #047857; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
           🚗 Out & About Tasks
         </button>
         <button type="button" onclick="window.sendAssistantCallPrompt('What pen and paper or offline tasks can I work on without internet?')" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; font-size: 10.5px; font-weight: 700; padding: 5px 9px; border-radius: 999px; cursor: pointer;">
@@ -1667,30 +1520,28 @@
       <span>Pin to Taskbar</span>
     </button>
   </div>
-  <div id="downloadSection" class="download-section" style="margin: 24px auto 20px auto; max-width: 600px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-    <h3 style="margin-top: 0; font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">Get the App</h3>
-    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-      <button type="button" onclick="downloadAndroidOrPWA()" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">📱</span> Download for Android
+  <div id="downloadSection" class="download-section" style="margin: 20px auto 16px auto; max-width: 580px; text-align: center; border-top: 1.5px solid #f1e9fa; padding-top: 16px;">
+    <!-- Android / Mobile Download Option (Hidden on Desktop) -->
+    <div id="mobileDownloadOptions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <button type="button" id="btnDownloadAndroid" onclick="downloadAndroidOrPWA()" style="background: #fdf4ff; color: #a21caf; border: 1.5px solid #f0abfc; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-1.0002s.4482-1.0002.9993-1.0002c.5516 0 .9997.4486.9997 1.0002s-.4481 1.0002-.9997 1.0002m-11.046 0c-.5511 0-.9993-.4486-.9993-1.0002s.4482-1.0002.9993-1.0002c.5516 0 .9997.4486.9997 1.0002s-.4481 1.0002-.9997 1.0002m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.4116 13.8533 8.125 12 8.125c-1.8533 0-3.5902.2866-5.1368.8247L4.8409 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.152 5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.75h24c-.3432-4.0911-2.6889-7.5633-6.1185-9.4286"/></svg>
+        <span>Download Android App</span>
       </button>
-      <button type="button" onclick="installPWA()" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); padding: 12px 22px; border-radius: 25px; font-weight: 600; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <span style="font-size: 16px;">💻</span> Install for Windows / Mac
+      <button type="button" id="btnInstallDesktop" onclick="installPWA()" style="background: #f5f3ff; color: #7c3aed; border: 1.5px solid #ddd6fe; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Install Desktop App</span>
       </button>
     </div>
   </div>
-  <footer id="appLegalFooter" style="width: 100%; max-width: 600px; margin: 0 auto 20px auto; padding-top: 14px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 11.5px; color: #64748b;">
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 6px; align-items: center;">
-      <a href="https://orbai.appsolutelydone.com" target="_blank" rel="noopener noreferrer" style="color: #059669; text-decoration: none; font-weight: 700;">🌐 Live Website</a>
-      <span>•</span>
-      <button type="button" onclick="showToast('Privacy Policy: Voice settings and DoStuff streaks are stored locally on your device.')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Privacy Policy</button>
-      <span>•</span>
-      <button type="button" onclick="showToast('Terms of Service: Provided for voice productivity and physical micro-break wellness.')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Terms of Service</button>
-      <span>•</span>
-      <button type="button" onclick="showToast('Cookie Preferences: Functional local storage only. Zero tracking cookies.')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Cookie Preferences</button>
-      <span>•</span>
-      <button type="button" onclick="showToast('Contact: Coremarket Goods Ltd — Orb & DoStuff Studio')" style="background: transparent; border: none; color: #94a3b8; font-size: 11px; padding: 0; cursor: pointer; font-weight: 500;">Contact</button>
+  <footer id="appLegalFooter" style="width: 100%; max-width: 580px; margin: 0 auto 16px auto; padding-top: 12px; border-top: 1.5px solid #f1e9fa; text-align: center; font-size: 11px; color: #64748b;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 6px; align-items: center;">
+      <a href="javascript:void(0)" onclick="openLegalModal('privacy')" style="color: #64748b; text-decoration: none; font-weight: 600;">Privacy</a>
+      <span style="opacity: 0.3;">•</span>
+      <a href="javascript:void(0)" onclick="openLegalModal('terms')" style="color: #64748b; text-decoration: none; font-weight: 600;">Terms</a>
+      <span style="opacity: 0.3;">•</span>
+      <a href="https://orbai.appsolutelydone.com" target="_blank" rel="noopener noreferrer" style="color: #7c3aed; text-decoration: none; font-weight: 700;">Live Production ↗</a>
     </div>
-    <div style="font-size: 10.5px; color: #64748b;">© <span id="footerYear">2026</span> Coremarket Goods Ltd — Orb + DoStuff Master Studio</div>
+    <div style="color: #94a3b8; font-size: 10.5px;">&copy; <span id="legalCurrentYear">2026</span> Orb Studio. All rights reserved.</div>
   </footer>
 
   
@@ -4535,7 +4386,7 @@
               <div style="font-size: 11.5px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(sum)}</div>
               <div style="font-size: 10px; color: #2563eb; font-weight: 700;">${escapeHtml(dateStr)}${escapeHtml(loc)}</div>
             </div>
-            <span style="font-size: 9.5px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 999px; flex-shrink: 0;">Confirmed</span>
+            <span style="font-size: 9.5px; font-weight: 800; color: #7c3aed; background: #fdf4ff; border: 1px solid #a7f3d0; padding: 2px 6px; border-radius: 999px; flex-shrink: 0;">Confirmed</span>
           </div>
         `;
       }).join('');
@@ -5873,7 +5724,7 @@
         if (transcript) {
           transcript.innerHTML = `
             <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #0f172a; line-height: 1.4;">
-              <strong style="color: #059669;">Sonia:</strong> ${chosenGreeting}
+              <strong style="color: #7c3aed;">Sonia:</strong> ${chosenGreeting}
             </div>
           `;
         }
@@ -6021,7 +5872,7 @@
           if (transcript) {
             const bubble = document.createElement('div');
             bubble.style.cssText = 'background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 11.5px; color: #0f172a; line-height: 1.4;';
-            bubble.innerHTML = `<strong style="color: #059669;">Sonia:</strong> ${escapeHtml(reply)}`;
+            bubble.innerHTML = `<strong style="color: #7c3aed;">Sonia:</strong> ${escapeHtml(reply)}`;
             transcript.appendChild(bubble);
             transcript.scrollTop = transcript.scrollHeight;
           }
@@ -7093,6 +6944,28 @@
         window.switchAssistant(activeAssistantId);
       }
     }, 400);
+
+
+    // Platform-Specific UI Filtering
+    (function() {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.Capacitor !== undefined || window.location.protocol === 'capacitor:';
+      
+      const btnDesktop = document.getElementById('btnInstallDesktop');
+      const btnAndroid = document.getElementById('btnDownloadAndroid');
+      const downloadSec = document.getElementById('downloadSection');
+
+      if (isStandalone) {
+        // Already installed inside native app or PWA: hide all download banners
+        if (downloadSec) downloadSec.style.display = 'none';
+      } else if (isMobile) {
+        // On phone: hide desktop installer link
+        if (btnDesktop) btnDesktop.style.display = 'none';
+      } else {
+        // On desktop: hide mobile APK download
+        if (btnAndroid) btnAndroid.style.display = 'none';
+      }
+    })();
 
 </script>
 </body>
