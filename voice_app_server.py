@@ -1789,7 +1789,7 @@ def cloud_antigrav_bridge_worker():
             body = json.dumps(payload).encode("utf-8")
             req = urllib.request.Request(cloud_relay_url, data=body, method="POST", headers={
                 "Content-Type": "application/json",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbDesktop/5.2"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbDesktop/5.3"
             })
             with urllib.request.urlopen(req, timeout=5) as resp:
                 data = json.loads(resp.read().decode("utf-8"))

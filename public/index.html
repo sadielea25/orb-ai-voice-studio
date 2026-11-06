@@ -787,7 +787,7 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v5.2</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v5.3</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -838,7 +838,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 6px;">
             <span id="dostuffStreakBadge" title="Completed focus blocks today" style="background: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px;">🔥 0 done</span>
-            <span onclick="applyHotUpdate(true)" title="Tap to refresh version" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.2</span>
+            <span onclick="applyHotUpdate(true)" title="Tap to refresh version" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.3</span>
           </div>
         </div>
 
@@ -895,7 +895,7 @@
           <span>🎙️ Real-Time Voice & Speech Stream</span>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="sttBadge" style="font-size: 11px; color: #64748b; font-weight: 700;">● Idle</span>
-            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.2</span>
+            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.3</span>
           </div>
         </div>
 
@@ -1107,7 +1107,7 @@
             🔄 Refresh
           </button>
         </div>
-        <div id="antigravChatStream" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+        <div id="antigravChatStream" style="max-height: min(420px, 55vh); min-height: 140px; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
           <!-- Dynamically populated from /api/conversation -->
         </div>
       </div>
@@ -1720,6 +1720,21 @@
       return clean;
     }
 
+    function formatChatContent(text) {
+      if (!text) return '';
+      let safe = escapeHtml(text);
+      safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a; font-weight: 700;">$1</strong>');
+      safe = safe.replace(/`([^`]+)`/g, '<code style="background: rgba(15,23,42,0.06); padding: 1px 4px; border-radius: 4px; font-size: 11.5px; font-family: ui-monospace, monospace;">$1</code>');
+      safe = safe.replace(/^### (.*$)/gim, '<div style="font-size: 12px; font-weight: 800; color: #1e293b; margin: 8px 0 3px 0;">$1</div>');
+      safe = safe.replace(/^## (.*$)/gim, '<div style="font-size: 13px; font-weight: 800; color: #0f172a; margin: 10px 0 4px 0;">$1</div>');
+      safe = safe.replace(/^\s*[\*\-]\s+(.*$)/gim, '<div style="display: flex; gap: 6px; margin: 2px 0 2px 4px;"><span style="color: #2563eb; font-weight: bold;">•</span><span>$1</span></div>');
+      safe = safe.replace(/\n\n+/g, '<div style="height: 6px;"></div>');
+      safe = safe.replace(/\n/g, '<br/>');
+      return safe;
+    }
+
+    window.__renderedChatMessages = [];
+
     window.speakChatMessage = function(text) {
       if (!text) return;
       if (typeof playCloudAudio === 'function' && typeof currentVoiceId !== 'undefined') {
@@ -1732,8 +1747,17 @@
       }
     };
 
+    window.speakMessageAtIndex = function(idx) {
+      const m = window.__renderedChatMessages && window.__renderedChatMessages[idx];
+      if (!m || !m.text) return;
+      window.speakChatMessage(cleanChatText(m.text));
+    };
+
     function renderChatStream(messages) {
-      knownAITexts = (messages || [])
+      const sliceMsgs = (messages || []).slice(-50);
+      window.__renderedChatMessages = sliceMsgs;
+
+      knownAITexts = sliceMsgs
         .filter(m => m.role === 'assistant' && m.text)
         .slice(-15)
         .map(m => m.text);
@@ -1746,12 +1770,14 @@
       docs.forEach(doc => {
         const streamBox = Document.prototype.getElementById.call(doc, 'antigravChatStream');
         if (!streamBox) return;
-        if (!messages || messages.length === 0) {
+        if (!sliceMsgs || sliceMsgs.length === 0) {
           streamBox.innerHTML = '<div style="color: #64748b; font-size: 11.5px; text-align: center; padding: 20px 0;">No messages yet. Send a prompt above to interact with Antigravity.</div>';
           return;
         }
 
-        const html = messages.slice(-50).map(m => {
+        const isNearBottom = (streamBox.scrollHeight - streamBox.scrollTop - streamBox.clientHeight) < 140;
+
+        const html = sliceMsgs.map((m, idx) => {
           const isUser = m.role === 'user';
           const bg = isUser ? '#eff6ff' : '#f8fafc';
           const border = isUser ? '#bfdbfe' : '#e2e8f0';
@@ -1760,12 +1786,9 @@
           const roleLabel = isUser ? 'Sadie' : 'Antigravity';
           const timeStr = m.time || '';
           const cleaned = cleanChatText(m.text || '');
+          const formattedText = formatChatContent(cleaned);
 
-          let formattedText = escapeHtml(cleaned);
-          formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          formattedText = formattedText.replace(/`([^`]+)`/g, '<code style="background: rgba(0,0,0,0.06); padding: 1px 4px; border-radius: 4px; font-size: 11.5px;">$1</code>');
-
-          const speakBtn = !isUser ? `<button type="button" onclick="window.speakChatMessage('${escapeHtml(cleaned).replace(/'/g, "\\'")}')" style="background: none; border: none; padding: 0; color: #2563eb; font-size: 11px; cursor: pointer;" title="Read message aloud">🔊</button>` : '';
+          const speakBtn = !isUser ? `<button type="button" onclick="window.speakMessageAtIndex(${idx})" style="background: none; border: none; padding: 2px 4px; color: #2563eb; font-size: 13px; cursor: pointer; border-radius: 4px;" title="Read message aloud">&#128266;</button>` : '';
 
           return `
             <div style="align-self: ${align}; max-width: 90%; background: ${bg}; border: 1px solid ${border}; border-radius: 12px; padding: 9px 12px; margin-bottom: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
@@ -1776,13 +1799,15 @@
                   ${timeStr ? `<span>${timeStr}</span>` : ''}
                 </div>
               </div>
-              <div style="font-size: 12.5px; color: ${textColor}; line-height: 1.45; word-break: break-word; white-space: pre-wrap;">${formattedText}</div>
+              <div style="font-size: 12.5px; color: ${textColor}; line-height: 1.5; word-break: break-word;">${formattedText}</div>
             </div>
           `;
         }).join('');
 
         streamBox.innerHTML = html;
-        streamBox.scrollTop = streamBox.scrollHeight;
+        if (isNearBottom) {
+          streamBox.scrollTop = streamBox.scrollHeight;
+        }
       });
     }
 
@@ -3850,7 +3875,10 @@
     }
 
 
+    let isPollingLiveState = false;
     async function pollLiveState() {
+      if (isPollingLiveState) return;
+      isPollingLiveState = true;
       try {
         const isCap = (window.Capacitor !== undefined) || (window.location.protocol === 'capacitor:') || (window.location.protocol === 'file:');
         const isCloud = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
@@ -3962,10 +3990,13 @@
             const sub = Document.prototype.getElementById.call(doc, 'statusSub'); if (sub) sub.innerText = 'Click Start Listening to talk';
           });
         }
-      } catch (e) { isAISpeaking = false; }
+      } catch (e) { isAISpeaking = false; } finally { isPollingLiveState = false; }
     }
 
+    let isPollingConversation = false;
     async function pollConversation() {
+      if (isPollingConversation) return;
+      isPollingConversation = true;
       try {
         let activeChatName = '';
         const docs = [document];
@@ -3993,10 +4024,11 @@
           lastRenderedMessages = messages;
           renderChatStream(messages);
         }
-      } catch (e) {}
+      } catch (e) {
+      } finally {
+        isPollingConversation = false;
+      }
     }
-
-// (renderChatStream consolidated at primary definition)
 
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -6807,8 +6839,9 @@
 
       pollConversation();
       pollLiveState();
-      setInterval(pollConversation, 1500);
-      setInterval(pollLiveState, 200);
+      const isCloudEnv = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+      setInterval(pollConversation, isCloudEnv ? 2000 : 1500);
+      setInterval(pollLiveState, isCloudEnv ? 1500 : 400);
 
       bindOrbHandlers(document);
       setOrbState('paused');
