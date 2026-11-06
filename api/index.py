@@ -166,9 +166,29 @@ def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
     return b""
 
 
+
+def classify_prompt_complexity(prompt):
+    """
+    Intelligently routes between models based on turn complexity:
+    - Basic / Fast turns (greetings, simple queries, acknowledgments): gemini-3.5-flash-lite (~400ms sub-second response)
+    - Complex / In-depth turns (HMRC, VAT, accounting, code, multi-sentence planning): gemini-3.8-flash (deep reasoning)
+    """
+    text = (prompt or "").lower().strip()
+    words = text.split()
+    complex_keywords = [
+        "vat", "hmrc", "tax", "reconciliation", "invoice", "statement", "accounting",
+        "confirmation statement", "corporation tax", "code", "architecture", "script",
+        "calculate", "audit", "analyse", "analyze", "strategy", "breakdown"
+    ]
+    is_complex = any(k in text for k in complex_keywords) or len(words) > 20
+    if is_complex:
+        return ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-flash-latest", "gemini-3.5-flash-lite"]
+    else:
+        return ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.8-flash"]
+
 def query_gemini(prompt, history=None, context=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
-    models = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
+    models = classify_prompt_complexity(prompt)
 
     sys_prompt = (
         "You are Orb, an elite conversational AI voice assistant for Sadie. "
@@ -223,7 +243,7 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
     if accent_adapter:
         user_prompt = accent_adapter.adapt_speech_text(user_prompt)
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
-    models = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
+    models = classify_prompt_complexity(user_prompt)
 
     cat_summary = ", ".join([c.get("name", c.get("id", "")) for c in (categories or [])]) if categories else "Accounts, ORB App, Client Work, Admin"
     
