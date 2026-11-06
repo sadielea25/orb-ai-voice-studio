@@ -108,7 +108,35 @@ def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
         if audio and len(audio) > 100:
             return audio
 
-    # Attempt 1: High-reliability Google TTS (gTTS) - 100% reliable on cloud datacenter IPs
+    # Map ElevenLabs names to Microsoft Natural British Neural voices when credits run out
+    edge_fallback_map = {
+        "alice": "en-GB-SoniaNeural",
+        "sarah": "en-GB-LibbyNeural",
+        "lily": "en-GB-SoniaNeural",
+        "george": "en-GB-RyanNeural",
+        "charlotte": "en-GB-SoniaNeural",
+        "rachel": "en-US-JennyNeural"
+    }
+    v_clean = voice_id.replace("eleven:", "").strip().lower()
+    edge_voice = edge_fallback_map.get(v_clean, voice_id if "Neural" in voice_id else "en-GB-SoniaNeural")
+
+    # Attempt 1: High-quality Microsoft Neural TTS (Sonia, Libby, Ryan)
+    try:
+        import edge_tts
+        async def _edge():
+            comm = edge_tts.Communicate(clean_text, edge_voice)
+            buf = b""
+            async for chunk in comm.stream():
+                if chunk["type"] == "audio":
+                    buf += chunk["data"]
+            return buf
+        audio_data = asyncio.run(_edge())
+        if audio_data and len(audio_data) > 100:
+            return audio_data
+    except Exception as e:
+        print(f"[EDGE-TTS-FALLBACK-ERR]: {e}", flush=True)
+
+    # Attempt 2: Last-resort gTTS safety net only if edge-tts connection fails
     try:
         from gtts import gTTS
         tld = "co.uk"
@@ -123,22 +151,6 @@ def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
         data = fp.getvalue()
         if data and len(data) > 100:
             return data
-    except Exception:
-        pass
-
-    # Attempt 2: Edge-TTS
-    try:
-        import edge_tts
-        async def _edge():
-            comm = edge_tts.Communicate(clean_text, voice_id)
-            buf = b""
-            async for chunk in comm.stream():
-                if chunk["type"] == "audio":
-                    buf += chunk["data"]
-            return buf
-        audio_data = asyncio.run(_edge())
-        if audio_data and len(audio_data) > 100:
-            return audio_data
     except Exception:
         pass
 

@@ -535,12 +535,24 @@ async def generate_speech(text, settings, output_path):
         except Exception as e:
             print(f"[LOCAL-ELEVEN-ERR]: {e}", flush=True)
 
+    # Map ElevenLabs names to Microsoft Natural British Neural voices when credits run out
+    edge_fallback_map = {
+        "alice": "en-GB-SoniaNeural",
+        "sarah": "en-GB-LibbyNeural",
+        "lily": "en-GB-SoniaNeural",
+        "george": "en-GB-RyanNeural",
+        "charlotte": "en-GB-SoniaNeural",
+        "rachel": "en-US-JennyNeural"
+    }
+    v_clean = voice.replace("eleven:", "").strip().lower()
+    edge_voice = edge_fallback_map.get(v_clean, voice if "Neural" in voice else "en-GB-SoniaNeural")
+
     rate = settings.get("rate", "+10%")
     pitch = settings.get("pitch", "+0Hz")
     volume = settings.get("volume", "+0%")
     communicate = edge_tts.Communicate(
         text=text,
-        voice=voice,
+        voice=edge_voice,
         rate=rate,
         pitch=pitch,
         volume=volume
