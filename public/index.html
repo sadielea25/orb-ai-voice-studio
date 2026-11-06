@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Orb AI - Live Two-Way Voice Studio</title>
@@ -14,26 +18,43 @@
       --card-inner: #f1f5f9;
       --border: #e2e8f0;
       --border-dark: #cbd5e1;
-      --border-focus: #3b82f6;
+      --border-focus: #2563eb;
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --accent: #059669;
       --accent-hover: #047857;
-      --purple: #7c3aed;
-      --gold: #d97706;
-      --danger: #dc2626;
       --text: #0f172a;
       --text-secondary: #334155;
-      --text-muted: #64748b;
+      --text-muted: #475569;
       --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
     * { 
       box-sizing: border-box; 
       margin: 0; 
       padding: 0; 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
+      font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
       -webkit-tap-highlight-color: transparent;
+      letter-spacing: 0.005em;
+    }
+    html, body {
+      overflow-x: hidden !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+    }
+    .container {
+      width: 100% !important;
+      max-width: 680px !important;
+      margin: 0 auto !important;
+      box-sizing: border-box !important;
+      overflow-x: hidden !important;
+    }
+    .card {
+      background: #ffffff !important;
+      border: 1.5px solid #e2e8f0 !important;
+      color: #0f172a !important;
+      border-radius: 14px !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
     }
     html, body {
       overflow-x: hidden;
@@ -715,38 +736,36 @@
 
   <div class="container">
     <canvas id="dostuffConfettiCanvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 999999; width: 100%; height: 100%;"></canvas>
-    <header>
-      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
-        <h1>🎙️ Orb + ⚡ DoStuff Master Studio</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh and sync latest version" style="background: rgba(59, 130, 246, 0.18); border: 1px solid rgba(96, 165, 250, 0.45); color: #93c5fd; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; cursor: pointer; user-select: none; letter-spacing: 0.4px;">v4.6</span>
-        <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Instant cloud sync between desktop and phone" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 4px;">
-          <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #10b981; display: inline-block;"></span>
+    <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v4.7</span>
+        <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #ecfdf5; border: 1.5px solid #a7f3d0; color: #059669; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+          <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
-          <svg style="width: 10px; height: 10px;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         </button>
       </div>
-      <div style="margin-top: 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-        <button type="button" id="btnPipFloat" style="background: linear-gradient(135deg, #2563eb, #10b981); color: #ffffff; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; border: 1px solid #60a5fa; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35); display: inline-flex; align-items: center; gap: 6px;" onclick="popOutFloatingWidget('compact')">⚡ Launch Pop-Up Widget</button>
-        <button type="button" id="btnFocusMain" style="display: none; background: rgba(56, 189, 248, 0.15); border: 1px solid #0ea5e9; color: #38bdf8; padding: 10px 24px; border-radius: 25px; font-size: 13.5px; font-weight: 700; cursor: pointer; align-items: center; gap: 6px;" onclick="window.focus(); showToast('Back on Main Page. Click Start Listening.');">🔙 Go to Main Page</button>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span id="headerDateDisplay" style="font-size: 11.5px; font-weight: 600; color: #475569;">Today</span>
       </div>
     </header>
     <!-- Master 4-Tab Navigation Bar -->
-    <nav class="master-tabs-nav">
+    <nav class="master-tabs-nav" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; margin: 8px 0 12px 0; background: #f1f5f9; padding: 3px; border-radius: 12px; border: 1.5px solid #e2e8f0; box-sizing: border-box;">
       <button type="button" id="tabBtn_orb_generic" class="master-tab-btn active" onclick="switchMainTab('orb_generic')">
-        <span class="tab-icon">🎙️</span>
-        <span class="tab-label"><span class="tab-text-full">Orb Generic</span><span class="tab-text-short">Generic</span></span>
+        <span class="tab-icon">⚡</span>
+        <span class="tab-label">Focus</span>
       </button>
       <button type="button" id="tabBtn_orb_antigrav" class="master-tab-btn" onclick="switchMainTab('orb_antigrav')">
-        <span class="tab-icon">⚡</span>
-        <span class="tab-label"><span class="tab-text-full">Orb Antigrav</span><span class="tab-text-short">Antigrav</span></span>
+        <span class="tab-icon">💻</span>
+        <span class="tab-label">Antigrav</span>
       </button>
       <button type="button" id="tabBtn_sonya" class="master-tab-btn" onclick="switchMainTab('sonya')">
-        <span class="tab-icon">👩</span>
-        <span class="tab-label"><span class="tab-text-full">Sonya</span><span class="tab-text-short">Sonya</span></span>
+        <span class="tab-icon">👩‍💼</span>
+        <span class="tab-label">Assistant</span>
       </button>
       <button type="button" id="tabBtn_my_calendar" class="master-tab-btn" onclick="switchMainTab('my_calendar')">
         <span class="tab-icon">📅</span>
-        <span class="tab-label"><span class="tab-text-full">My Calendar</span><span class="tab-text-short">Calendar</span></span>
+        <span class="tab-label">Calendar</span>
       </button>
     </nav>
 
@@ -762,7 +781,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.6</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.7</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -800,7 +819,7 @@
           <span>🎙️ Real-Time Voice & Speech Stream</span>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="sttBadge" style="font-size: 11px; color: #64748b; font-weight: 700;">● Idle</span>
-            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.6</span>
+            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.7</span>
           </div>
         </div>
 
@@ -1073,7 +1092,7 @@
         <!-- DOSTUFF FOCUS MODE BAR (Clean Light Background for Easy Reading & Writing) -->
       <div id="dostuffFocusStrip" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 11px; padding: 5px 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);">
         <!-- Category Badge & Working On Task Trigger -->
-        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to view categories, reorder priorities, or delegate tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 3.5px 8px; color: #0f172a; font-size: 11.5px; font-weight: 700; cursor: pointer; text-align: left; transition: all 0.15s ease;">
+        <button type="button" id="dostuffActiveTaskBtn" onclick="window.toggleDoStuffTaskModal()" title="Click to view categories, reorder priorities, or delegate tasks" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 5px 10px; color: #0f172a; font-size: 11.5px; font-weight: 700; cursor: pointer; text-align: left; transition: all 0.15s ease;">
           <span id="dostuffActiveCategoryBadge" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: 9.5px; font-weight: 800; padding: 1.5px 6px; border-radius: 6px; flex-shrink: 0; white-space: nowrap;">📊 Accounts</span>
           <span style="font-size: 10px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Working On:</span>
           <span id="dostuffActiveTaskTitle" style="white-space: normal; break-words; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; flex: 1; min-width: 0; color: #0f172a; font-weight: 700;">Select a focus task...</span>
@@ -1207,7 +1226,7 @@
               <span style="font-size: 16px;">📧</span>
               <div>
                 <div style="font-size: 11.5px; font-weight: 800; color: #0f172a;">Gmail Inbox • Sonia Connected</div>
-                <div style="font-size: 10px; color: #059669; font-weight: 700;">sadie@coremarketgoods.com • Active & Synced</div>
+                <div style="font-size: 10px; color: #059669; font-weight: 700;">sadielea25@gmail.com • Active & Synced</div>
               </div>
             </div>
             <div style="display: flex; gap: 4px;">
@@ -1639,11 +1658,11 @@
   
 
 <div id="footerUtilities" style="margin: 16px auto 10px auto; max-width: 600px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-    <button type="button" id="btnFloaterRefresh" onclick="applyHotUpdate(true)" title="Refresh Floater & Sync Changes" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+    <button type="button" id="btnFloaterRefresh" onclick="applyHotUpdate(true)" title="Refresh & Sync" style="padding: 9px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1.5px solid #cbd5e1; background: #ffffff; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.05); white-space: nowrap;">
       <span id="floaterRefreshIcon">🔄</span>
       <span>Refresh</span>
     </button>
-    <button type="button" id="btnFloaterPinTaskbar" onclick="pinFloaterToTaskbar()" title="Pin standalone app to Windows Taskbar" style="padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 2px 8px rgba(0,0,0,0.2); white-space: nowrap;">
+    <button type="button" id="btnFloaterPinTaskbar" onclick="pinFloaterToTaskbar()" title="Pin to Windows Taskbar" style="padding: 9px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: 1.5px solid #fcd34d; background: #fffbeb; color: #92400e; box-shadow: 0 1px 3px rgba(0,0,0,0.05); white-space: nowrap;">
       <span>📌</span>
       <span>Pin to Taskbar</span>
     </button>
@@ -6655,6 +6674,18 @@
         }
         dostuffState.targetEndTime = now + dostuffState.remainingSeconds * 1000;
         playDoStuffChime([523, 659], [0.08, 0.12]);
+        try {
+          const activeTask = (dostuffState.workingOnTaskTitle && dostuffState.workingOnTaskTitle !== 'Select Task') ? dostuffState.workingOnTaskTitle : 'your priority focus task';
+          const activeMins = dostuffState.intervalMinutes || 25;
+          const spoken = `Starting focus session. We are focusing on ${activeTask} for ${activeMins} minutes.`;
+          const asstVoice = (typeof window.getActiveAssistant === 'function') ? window.getActiveAssistant().voice : 'en-GB-SoniaNeural';
+          const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+          const ttsBase = isCap ? 'https://orbai.appsolutelydone.com' : '';
+          const ttsUrl = `${ttsBase}/api/tts?text=${encodeURIComponent(spoken)}&voice=${encodeURIComponent(asstVoice)}`;
+          if (typeof playCloudAudio === 'function') {
+            playCloudAudio(ttsUrl, spoken, () => {});
+          }
+        } catch(e) {}
         showToast('▶ DoStuff break timer resumed');
       } else {
         if (dostuffState.targetEndTime) {
@@ -6816,6 +6847,252 @@
       return Document.prototype.getElementById.call(document, id);
     }
     document.getElementById = getAnyElementById;
+
+
+    // ==============================================================
+    // 1. INTERACTIVE PROJECT SWITCHER ENGINE (Antigrav Tab)
+    // ==============================================================
+    window.openProjectPickerModal = function() {
+      const modal = document.getElementById('projectPickerModal');
+      if (!modal) return;
+      modal.style.display = 'flex';
+      const listContainer = document.getElementById('projectPickerList');
+      if (listContainer) {
+        listContainer.innerHTML = '<div style="padding: 12px; text-align: center; color: #475569; font-size: 12px;">Loading active projects...</div>';
+      }
+
+      const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+      const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
+
+      fetch(`${base}/api/projects`)
+        .then(r => r.json())
+        .then(data => {
+          const projects = (data && data.projects && data.projects.length) ? data.projects : [
+            { id: 'hmrc', title: 'COREMARKETGOODS ACCOUNTING - HMRC' },
+            { id: 'orb', title: 'ORB - Voice Assistant' },
+            { id: 'spook', title: 'Spook Studio' },
+            { id: 'arts', title: 'Arts Grant' }
+          ];
+          renderProjectsList(projects);
+        })
+        .catch(() => {
+          renderProjectsList([
+            { id: 'hmrc', title: 'COREMARKETGOODS ACCOUNTING - HMRC' },
+            { id: 'orb', title: 'ORB - Voice Assistant' },
+            { id: 'spook', title: 'Spook Studio' },
+            { id: 'arts', title: 'Arts Grant' }
+          ]);
+        });
+    };
+
+    function renderProjectsList(projects) {
+      const listContainer = document.getElementById('projectPickerList');
+      if (!listContainer) return;
+      const current = (window.activeChatTitle || localStorage.getItem('orb_active_project') || 'COREMARKETGOODS ACCOUNTING - HMRC').toUpperCase();
+      
+      listContainer.innerHTML = projects.map(p => {
+        const isSelected = p.title.toUpperCase() === current || (current.includes('HMRC') && p.title.includes('HMRC'));
+        return `
+          <button type="button" onclick="window.selectProject('${p.id}', '${p.title.replace(/'/g, "\\'")}')" style="width: 100%; text-align: left; padding: 10px 12px; border-radius: 9px; border: 1.5px solid ${isSelected ? '#2563eb' : '#e2e8f0'}; background: ${isSelected ? '#eff6ff' : '#ffffff'}; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; transition: all 0.15s ease;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 14px;">📁</span>
+              <div>
+                <div style="font-size: 12.5px; font-weight: 700; color: ${isSelected ? '#1d4ed8' : '#0f172a'};">${p.title}</div>
+                <div style="font-size: 10.5px; color: #475569;">Antigravity Workspace</div>
+              </div>
+            </div>
+            ${isSelected ? '<span style="font-size: 11px; color: #2563eb; font-weight: 700;">Active ✓</span>' : '<span style="font-size: 11px; color: #64748b;">Select ›</span>'}
+          </button>
+        `;
+      }).join('');
+    }
+
+    window.closeProjectPickerModal = function() {
+      const modal = document.getElementById('projectPickerModal');
+      if (modal) modal.style.display = 'none';
+    };
+
+    window.selectProject = function(id, title) {
+      window.activeChatTitle = title;
+      try { localStorage.setItem('orb_active_project', title); } catch (e) {}
+      
+      const badge = document.getElementById('activeChatTitleText');
+      if (badge) badge.textContent = title;
+      
+      window.closeProjectPickerModal();
+      if (typeof showToast === 'function') {
+        showToast(`Switched active project to ${title}`);
+      }
+
+      // Re-fetch conversation for this specific project
+      const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
+      const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
+      fetch(`${base}/api/conversation?limit=50&chat_title=${encodeURIComponent(title)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.events && typeof renderAntigravFeed === 'function') {
+            renderAntigravFeed(data.events);
+          }
+        })
+        .catch(() => {});
+    };
+
+    // ==============================================================
+    // 2. VIRTUAL ASSISTANT SQUAD ENGINE (Sonia, Gemma, Ryan)
+    // ==============================================================
+    const ASSISTANT_PRESETS = {
+      sonia: {
+        id: 'sonia',
+        name: 'Sonia',
+        role: 'Executive Assistant • Calendar & Daily Flow',
+        voice: 'en-GB-SoniaNeural',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
+        greeting: 'Hello Sadie. Sonia here. How can I help you organise, prioritise, or plan your tasks today?'
+      },
+      gemma: {
+        id: 'gemma',
+        name: 'Gemma',
+        role: 'Financial & Budgeting Advisor • HMRC, VAT & Cashflow',
+        voice: 'en-GB-LibbyNeural',
+        avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80',
+        greeting: 'Hi Sadie. Gemma here. What financial, budgeting, or HMRC accounts work shall we tackle today?'
+      },
+      ryan: {
+        id: 'ryan',
+        name: 'Ryan',
+        role: 'Technical & Operations Lead • Code & Deployments',
+        voice: 'en-GB-RyanNeural',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+        greeting: 'Hello Sadie. Ryan here. All systems and dev pipelines are running. What shall we deploy or build?'
+      }
+    };
+
+    let activeAssistantId = 'sonia';
+    try {
+      const savedAsst = localStorage.getItem('orb_active_assistant');
+      if (savedAsst && ASSISTANT_PRESETS[savedAsst]) activeAssistantId = savedAsst;
+    } catch (e) {}
+
+    window.switchAssistant = function(id) {
+      if (!ASSISTANT_PRESETS[id]) return;
+      activeAssistantId = id;
+      try { localStorage.setItem('orb_active_assistant', id); } catch (e) {}
+      const asst = ASSISTANT_PRESETS[id];
+
+      // Update UI Header in Assistant Card
+      const nameEl = document.getElementById('activeAssistantName');
+      if (nameEl) nameEl.textContent = asst.name;
+      const roleEl = document.getElementById('activeAssistantRole');
+      if (roleEl) roleEl.textContent = asst.role;
+      const avatarEl = document.getElementById('activeAssistantAvatar');
+      if (avatarEl) avatarEl.src = asst.avatar;
+      const btnText = document.getElementById('callAssistantBtnText');
+      if (btnText) btnText.textContent = `Call ${asst.name}`;
+
+      // Update pill active borders
+      ['sonia', 'gemma', 'ryan'].forEach(pid => {
+        const pill = document.getElementById(`asstPill_${pid}`);
+        if (pill) {
+          if (pid === id) {
+            pill.style.background = '#eff6ff';
+            pill.style.borderColor = '#2563eb';
+            pill.style.color = '#1d4ed8';
+          } else {
+            pill.style.background = '#f8fafc';
+            pill.style.borderColor = '#cbd5e1';
+            pill.style.color = '#475569';
+          }
+        }
+      });
+
+      if (typeof showToast === 'function') {
+        showToast(`Switched active assistant to ${asst.name} (${asst.role.split('•')[0].trim()})`);
+      }
+    };
+
+    window.getActiveAssistant = function() {
+      return ASSISTANT_PRESETS[activeAssistantId] || ASSISTANT_PRESETS.sonia;
+    };
+
+    // ==============================================================
+    // 3. GOOGLE CALENDAR GRID ENGINE (Clean standard layout)
+    // ==============================================================
+    let currentCalendarDate = new Date();
+
+    window.calendarPrevMonth = function() {
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+      renderGoogleCalendarGrid();
+    };
+
+    window.calendarNextMonth = function() {
+      currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+      renderGoogleCalendarGrid();
+    };
+
+    window.calendarGoToday = function() {
+      currentCalendarDate = new Date();
+      renderGoogleCalendarGrid();
+    };
+
+    function renderGoogleCalendarGrid() {
+      const grid = document.getElementById('googleCalendarGrid');
+      if (!grid) return;
+      const monthLabel = document.getElementById('calendarMonthLabel');
+      
+      const year = currentCalendarDate.getFullYear();
+      const month = currentCalendarDate.getMonth();
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      if (monthLabel) monthLabel.textContent = `${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay(); // 0 is Sun
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const startingCol = (firstDay === 0) ? 6 : firstDay - 1; // Mon is 0
+
+      const today = new Date();
+      const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+      const todayDate = today.getDate();
+
+      let cells = '';
+      // Empty leading slots
+      for (let i = 0; i < startingCol; i++) {
+        cells += '<div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 6px; min-height: 44px; padding: 4px; opacity: 0.4;"></div>';
+      }
+
+      // Sample events mapping for Sadie
+      const sampleEvents = {
+        6: [{ time: '09:15', title: 'Q3 VAT Deadline', color: '#2563eb' }, { time: '12:00', title: 'Sonia Check-In', color: '#059669' }],
+        7: [{ time: '14:30', title: 'Pharmacy Repeat', color: '#475569' }],
+        12: [{ time: '10:00', title: 'Accountant Call', color: '#2563eb' }],
+        15: [{ time: '12:00', title: 'Sonia Check-In', color: '#059669' }]
+      };
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const isToday = isCurrentMonth && d === todayDate;
+        const evs = sampleEvents[d] || [];
+        const evHtml = evs.map(ev => `
+          <div style="background: ${ev.color}; color: #ffffff; font-size: 8.5px; font-weight: 700; padding: 1.5px 3px; border-radius: 3px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${ev.time} ${ev.title}
+          </div>
+        `).join('');
+
+        cells += `
+          <div style="background: ${isToday ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${isToday ? '#2563eb' : '#e2e8f0'}; border-radius: 6px; min-height: 48px; padding: 4px; cursor: pointer; transition: all 0.15s ease;" onclick="window.showToast('Selected date: ${d} ${monthNames[month]} ${year}')">
+            <div style="font-size: 11px; font-weight: ${isToday ? '800' : '600'}; color: ${isToday ? '#1d4ed8' : '#0f172a'};">${d}</div>
+            ${evHtml}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = cells;
+    }
+
+    // Auto-init on load
+    setTimeout(() => {
+      renderGoogleCalendarGrid();
+      if (typeof window.switchAssistant === 'function') {
+        window.switchAssistant(activeAssistantId);
+      }
+    }, 400);
 
 </script>
 </body>
