@@ -1,0 +1,53 @@
+{
+  "profile": {
+    "user_name": "Sadie",
+    "working_style": "ADHD-friendly: single-task focus, 25-minute DoStuff sessions, clear spoken audio cues, zero visual clutter",
+    "tone_preference": "Direct, articulate UK English, ADHD brevity (1-2 sentences), zero exclamation marks, zero filler words",
+    "visual_preference": "Clean high-contrast light theme (white, soft blue, lilac, purply-pink), strictly NO green"
+  },
+  "workspaces": {
+    "COREMARKETGOODS ACCOUNTING - HMRC": {
+      "description": "CoreMarket Goods LTD management, HMRC tax records, invoice tracking, timber supplier orders",
+      "key_contacts": [
+        "David (Chartered Accountant)",
+        "HMRC",
+        "The Wellness Pharmacy",
+        "Timber Supplies Ltd"
+      ],
+      "active_priorities": [
+        "Q3 VAT Submission",
+        "Bank reconciliation",
+        "Confirmation Statement",
+        "Supplier invoices"
+      ]
+    },
+    "ORB": {
+      "description": "Orb AI Studio & Thin Client Native Mobile App (Option B live streaming via orbai.appsolutelydone.com)",
+      "assistants": {
+        "Sonia": "Executive Virtual Assistant & Daily Planning Partner",
+        "Gemma": "HMRC, Accounts & Financial Auditor",
+        "Ryan": "Technical Architecture & Operations Specialist"
+      },
+      "focus_timer": "DoStuff 25-minute sprint with spoken task announcement"
+    },
+    "Spook Studio": {
+      "description": "Dolled Up To Death salon telephone booking & receptionist system",
+      "details": "Hannah AI receptionist on studio line +44 292 271 5991 with automatic two-way call recording"
+    },
+    "Arts Grant": {
+      "description": "Arts Council grant application, budgeting, project milestones"
+    }
+  },
+  "routines": {
+    "midday_phone_calls": "Check in with Sadie on whether she completed morning calls (Accountant David, Pharmacy, Suppliers)",
+    "afternoon_focus": "Suggest a 25-minute DoStuff focus block on top priority items",
+    "daily_target_sessions": 4,
+    "weekly_target_sessions": 20
+  },
+  "learned_facts": [
+    "Sadie prefers quick direct voice answers over lengthy lectures.",
+    "CoreMarketGoods is Sadie's primary trading company requiring regular HMRC and VAT attention.",
+    "Spook Studio is tied to Dolled Up To Death salon with live phone recording on line +44 292 271 5991.",
+    "Never use exclamation marks or green accents in any user interface or assistant reply."
+  ]
+}

@@ -748,6 +748,18 @@ class PWAHandler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"status": "ok", "events": []}).encode("utf-8"))
                 return
 
+        elif url_path == "/api/vocabulary":
+            import accent_adapter
+            vocab = accent_adapter.load_custom_vocab()
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "vocabulary": vocab}).encode("utf-8"))
+            return
+        elif url_path == "/api/memory":
+            import accent_adapter
+            mem = accent_adapter.load_user_memory()
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "memory": mem}).encode("utf-8"))
+            return
         elif url_path == "/api/settings":
             settings = load_settings()
             self._set_headers(200)
@@ -1190,6 +1202,11 @@ class PWAHandler(BaseHTTPRequestHandler):
 
         elif url_path == "/api/assistant_call":
             user_text = data.get("text", "").strip()
+            try:
+                import accent_adapter
+                user_text = accent_adapter.adapt_speech_text(user_text)
+            except Exception:
+                pass
             voice = data.get("voice") or load_settings().get("voice", "en-GB-SoniaNeural")
             categories = data.get("categories", [])
             my_tasks = data.get("my_tasks", [])

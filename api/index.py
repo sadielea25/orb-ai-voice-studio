@@ -14,6 +14,15 @@ import urllib.request
 import base64
 import time
 
+try:
+    import accent_adapter
+except ImportError:
+    try:
+        from api import accent_adapter
+    except ImportError:
+        accent_adapter = None
+
+
 VOICE_SETTINGS = {
     "engine": "edge",
     "voice": "en-GB-SoniaNeural",
@@ -211,6 +220,8 @@ def query_gemini(prompt, history=None, context=None):
 
 
 def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None, call_type=None, emails=None, calendar_events=None):
+    if accent_adapter:
+        user_prompt = accent_adapter.adapt_speech_text(user_prompt)
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
     models = ["gemini-3.8-flash", "gemini-pro-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-flash-lite-latest"]
 
@@ -293,7 +304,34 @@ def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_
             planning_summary.append("- 7-Day Plan: " + "; ".join(day_items))
     planning_str = "\n".join(planning_summary) if planning_summary else "Daily target: 4 sessions, Weekly target: 20 sessions, Monthly target: 80 sessions."
 
+    # Load user memory & learned habits
+    user_mem = {}
+    if accent_adapter:
+        try:
+            user_mem = accent_adapter.load_user_memory()
+        except Exception:
+            pass
+    learned_facts_list = user_mem.get("learned_facts", [
+        "Sadie prefers 1-2 sentence direct answers, zero filler words, no exclamation marks.",
+        "CoreMarketGoods is Sadie's primary trading company requiring regular HMRC and VAT attention.",
+        "Spook Studio is tied to Dolled Up To Death salon with live phone recording on line +44 292 271 5991."
+    ])
+    learned_facts_str = "\n".join([f"- {f}" for f in learned_facts_list])
+    workspaces_list = []
+    for wk_name, wk_info in user_mem.get("workspaces", {}).items():
+        desc = wk_info.get("description", "")
+        workspaces_list.append(f"- {wk_name}: {desc}")
+    workspaces_str = "\n".join(workspaces_list) if workspaces_list else "- COREMARKETGOODS ACCOUNTING - HMRC: Company accounts, VAT, HMRC records\n- ORB: Thin client mobile app\n- Spook Studio: Dolled Up To Death salon receptionist"
+
     sys_prompt = f"""You are Sonia, executive virtual assistant and ADHD daily planning partner for Sadie (Coremarket Goods / ORB).
+Sadie is calling you directly on a live phone call inside the app.
+
+LEARNED HABITS & PERSISTENT MEMORY:
+{learned_facts_str}
+
+ACTIVE WORKSPACES & BACKGROUND KNOWLEDGE:
+{workspaces_str}
+
 Sadie is calling you directly on a live phone call inside the app.
 Your goals:
 1. Help Sadie organise tasks into categories ({cat_summary}).
@@ -562,6 +600,18 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "ok", "projects": projects}).encode("utf-8"))
             return
 
+        elif "vocabulary" in target or "vocabulary" in raw:
+            vocab = accent_adapter.load_custom_vocab() if accent_adapter else {"replacements": {}, "vocabulary_words": []}
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "vocabulary": vocab}).encode("utf-8"))
+            return
+
+        elif "memory" in target or "memory" in raw:
+            mem = accent_adapter.load_user_memory() if accent_adapter else {}
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "memory": mem}).encode("utf-8"))
+            return
+
         elif "settings" in target or "settings" in raw:
             self._set_headers(200)
             self.wfile.write(json.dumps(VOICE_SETTINGS).encode("utf-8"))
@@ -637,6 +687,8 @@ class handler(BaseHTTPRequestHandler):
 
         if "speech_input" in target or "speech_input" in raw:
             user_text = data.get("text", "").strip()
+            if accent_adapter:
+                user_text = accent_adapter.adapt_speech_text(user_text)
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             if not user_text:
                 self._set_headers(200)
@@ -782,6 +834,8 @@ class handler(BaseHTTPRequestHandler):
 
         elif "assistant_call" in target or "assistant_call" in raw:
             user_text = data.get("text", "").strip()
+            if accent_adapter:
+                user_text = accent_adapter.adapt_speech_text(user_text)
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             categories = data.get("categories", [])
             my_tasks = data.get("my_tasks", [])

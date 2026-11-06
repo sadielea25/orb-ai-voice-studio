@@ -787,7 +787,7 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v4.8</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v4.9</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -829,7 +829,7 @@
           <span style="font-size: 12px; line-height: 1;">⚡</span>
           <span style="font-size: 11px; font-weight: 800; color: #ecfdf5; letter-spacing: -0.2px; white-space: nowrap;">DoStuff</span>
           <span id="dostuffStreakBadge" title="Completed physical resets today" style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-size: 9.5px; font-weight: 800; padding: 2px 5px; border-radius: 999px; white-space: nowrap;">🔥 0</span>
-          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.8</span>
+          <span id="compactVersionBadge" onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 9.5px; font-weight: 800; color: #60a5fa; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.35); padding: 2px 5px; border-radius: 999px; cursor: pointer; white-space: nowrap;">v4.9</span>
         </div>
 
         <div style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; flex-shrink: 0;">
@@ -867,7 +867,7 @@
           <span>🎙️ Real-Time Voice & Speech Stream</span>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="sttBadge" style="font-size: 11px; color: #64748b; font-weight: 700;">● Idle</span>
-            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.8</span>
+            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v4.9</span>
           </div>
         </div>
 
@@ -3095,6 +3095,21 @@
         [/\bin\s+this\s+chart\b/gi, "in this chat"],
         [/\bopen\s+chart\b/gi, "open chat"],
         [/\bacross\s+all\s+tracks\b/gi, "across all chats"],
+
+        // Projects, Brands & Key Entities
+        [/\b(call|corn|core)\s+market\s+goods\b/gi, "CoreMarketGoods"],
+        [/\b(call|corn|core)\s+market\b/gi, "CoreMarket"],
+        [/\b(spoke|spooky)\s+studio\b/gi, "Spook Studio"],
+        [/\bdoll(ed)?\s+up\s+to\s+death\b/gi, "Dolled Up To Death"],
+        [/\barts\s+grant\b/gi, "Arts Grant"],
+        [/\bdo\s+stuff\b/gi, "DoStuff"],
+        [/\bdostuff\b/gi, "DoStuff"],
+        [/\btimber\s+supplies(\s+ltd)?\b/gi, "Timber Supplies Ltd"],
+        [/\bwellness\s+pharmacy\b/gi, "The Wellness Pharmacy"],
+        [/\bso\s*near\b/gi, "Sonia"],
+        [/\bson\s*ya\b/gi, "Sonia"],
+        [/\bjem\s*ma\b/gi, "Gemma"],
+        [/\bry\s*an\b/gi, "Ryan"],
 
         // Accounting / HMRC / Banking Context
         [/\b(h\s*m\s*r\s*c|age\s*m\s*r\s*c|h\s*mark)\b/gi, "HMRC"],
@@ -5776,9 +5791,10 @@
         assistantCallRecognition.lang = 'en-GB';
 
         assistantCallRecognition.onresult = (e) => {
-          const text = e.results[0][0].transcript;
-          if (text && text.trim() && assistantCallActive) {
-            window.sendAssistantCallPrompt(text.trim());
+          const rawText = e.results[0][0].transcript;
+          if (rawText && rawText.trim() && assistantCallActive) {
+            const cleanAdapted = (typeof adaptSpeechText === 'function') ? adaptSpeechText(rawText.trim()) : rawText.trim();
+            window.sendAssistantCallPrompt(cleanAdapted);
           }
         };
 
@@ -5808,7 +5824,7 @@
 
     window.sendAssistantCallPrompt = function(promptText) {
       if (!promptText || !promptText.trim()) return;
-      const cleanPrompt = promptText.trim();
+      const cleanPrompt = (typeof adaptSpeechText === 'function') ? adaptSpeechText(promptText.trim()) : promptText.trim();
 
       // Append user bubble to transcript
       getAllDoStuffDocs().forEach(doc => {
@@ -5831,7 +5847,7 @@
       }
 
       const isCapacitorEnv = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
-      const assistantEndpoint = isCapacitorEnv ? 'https://orb-ai-voice-studio.vercel.app/api/assistant_call' : '/api/assistant_call';
+      const assistantEndpoint = isCapacitorEnv ? 'https://orbai.appsolutelydone.com/api/assistant_call' : '/api/assistant_call';
 
       fetch(assistantEndpoint, {
         method: 'POST',
