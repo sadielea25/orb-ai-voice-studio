@@ -1760,6 +1760,8 @@ def cloud_antigrav_bridge_worker():
                 continue
 
             cloud_state = sync_engine.get_cloud_sync_state() or {}
+            if isinstance(cloud_state, dict) and "_error" in cloud_state:
+                cloud_state.pop("_error", None)
             now = time.time()
             state_dirty = False
 
@@ -1832,8 +1834,8 @@ def cloud_antigrav_bridge_worker():
 
                 new_msgs = combined[-100:]
                 cur_hash = f"{len(new_msgs)}:{new_msgs[-1].get('text', '') if new_msgs else ''}:{active_title}"
+                cloud_state["messages"] = new_msgs
                 if cur_hash != last_pushed_hash:
-                    cloud_state["messages"] = new_msgs
                     state_dirty = True
                     last_pushed_hash = cur_hash
 

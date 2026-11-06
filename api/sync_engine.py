@@ -10,6 +10,7 @@ import json
 import time
 import urllib.request
 import urllib.error
+import subprocess
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -34,10 +35,26 @@ def get_blob_token():
                     pass
     return ""
 
+def fetch_json_url(url, timeout=8):
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        pass
+    try:
+        curl_bin = "curl.exe" if os.name == "nt" else "curl"
+        res = subprocess.run([curl_bin, "-s", "--max-time", str(timeout), url], capture_output=True, text=True)
+        if res.returncode == 0 and res.stdout.strip():
+            return json.loads(res.stdout)
+    except Exception:
+        pass
+    return None
+
 def get_cloud_sync_state():
     token = get_blob_token()
     if not token:
-        return {"_error": "No blob token found"}
+        return None
     try:
         req = urllib.request.Request(
             "https://blob.vercel-storage.com/?prefix=orb_sync_state",
@@ -45,24 +62,19 @@ def get_cloud_sync_state():
         )
         req.add_header("Authorization", f"Bearer {token}")
         req.add_header("x-api-version", "7")
-        req.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbAI/5.1")
+        req.add_header("User-Agent", "Mozilla/5.0")
         with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             blobs = data.get("blobs", [])
             if not blobs:
-                return {"_error": "No blobs found with prefix orb_sync_state"}
+                return None
             blobs.sort(key=lambda b: b.get("uploadedAt", ""), reverse=True)
             latest_url = blobs[0].get("url")
-            req_c = urllib.request.Request(latest_url)
-            req_c.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbAI/5.1")
-            with urllib.request.urlopen(req_c, timeout=8) as content_resp:
-                res = json.loads(content_resp.read().decode("utf-8"))
-                return res
+            content = fetch_json_url(latest_url, timeout=8)
+            return content
     except Exception as e:
-        import traceback
-        err_msg = f"{e} - {traceback.format_exc()}"
-        print(f"[SYNC-ENGINE-GET-ERR]: {err_msg}", flush=True)
-        return {"_error": err_msg}
+        print(f"[SYNC-ENGINE-GET-ERR]: {e}", flush=True)
+        return None
 
 def save_cloud_sync_state(state_data):
     token = get_blob_token()
@@ -82,7 +94,7 @@ def save_cloud_sync_state(state_data):
         req.add_header("Authorization", f"Bearer {token}")
         req.add_header("x-api-version", "7")
         req.add_header("Content-Type", "application/json")
-        req.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) OrbAI/5.1")
+        req.add_header("User-Agent", "Mozilla/5.0")
         with urllib.request.urlopen(req, timeout=10) as resp:
             res = json.loads(resp.read().decode("utf-8"))
             return res.get("url")
@@ -98,17 +110,15 @@ def merge_sync_states(existing, incoming):
 
     merged = dict(existing)
 
-    # 1. Focus Tasks:
-    # If incoming explicitly provides focus_tasks (list), client is authoritative.
-    # Deleted tasks stay deleted, added tasks stay added.
+    # 1. Focus Tasks
     if "focus_tasks" in incoming and isinstance(incoming["focus_tasks"], list):
         merged["focus_tasks"] = incoming["focus_tasks"]
 
-    # 2. Assistant Tasks:
+    # 2. Assistant Tasks
     if "assistant_tasks" in incoming and isinstance(incoming["assistant_tasks"], list):
         merged["assistant_tasks"] = incoming["assistant_tasks"]
 
-    # 3. Categories:
+    # 3. Categories
     if "categories" in incoming and isinstance(incoming["categories"], list) and len(incoming["categories"]) > 0:
         merged["categories"] = incoming["categories"]
 
