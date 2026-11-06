@@ -34,3 +34,6 @@ test_*.py
 .env*
 
 scratch/
+
+speech_live_state.json
+speech_queue_incoming.jsonl

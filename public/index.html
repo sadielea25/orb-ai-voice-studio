@@ -787,7 +787,7 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v5.0</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v5.1</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -838,7 +838,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 6px;">
             <span id="dostuffStreakBadge" title="Completed focus blocks today" style="background: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px;">🔥 0 done</span>
-            <span onclick="applyHotUpdate(true)" title="Tap to refresh version" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.0</span>
+            <span onclick="applyHotUpdate(true)" title="Tap to refresh version" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.1</span>
           </div>
         </div>
 
@@ -895,7 +895,7 @@
           <span>🎙️ Real-Time Voice & Speech Stream</span>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="sttBadge" style="font-size: 11px; color: #64748b; font-weight: 700;">● Idle</span>
-            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.0</span>
+            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.1</span>
           </div>
         </div>
 
@@ -1653,8 +1653,17 @@
       }
 
       const payload = JSON.stringify({ text: text, auto_send: true, source: 'app', chat_title: activeChatName });
+      const isCap = (window.Capacitor !== undefined) || (window.location.protocol === 'capacitor:') || (window.location.protocol === 'file:');
       const isCloud = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-      const endpoints = isCloud ? ['/api/speech_input'] : ['http://127.0.0.1:8766/api/speech_input', '/api/speech_input'];
+      
+      let endpoints;
+      if (isCap) {
+        endpoints = ['https://orbai.appsolutelydone.com/api/speech_input', 'http://192.168.0.250:8766/api/speech_input'];
+      } else if (isCloud) {
+        endpoints = ['https://orbai.appsolutelydone.com/api/speech_input', '/api/speech_input'];
+      } else {
+        endpoints = ['http://127.0.0.1:8766/api/speech_input', '/api/speech_input'];
+      }
 
       for (const ep of endpoints) {
         try {
@@ -1670,7 +1679,7 @@
               if (data.audio_url) playCloudAudio(data.audio_url, data.reply);
               else speakTextInBrowser(data.reply, currentVoiceId);
             }
-            if (typeof pollConversation === 'function') pollConversation();
+            if (typeof pollConversation === 'function') setTimeout(pollConversation, 400);
             return;
           }
         } catch (e) {}
@@ -1680,8 +1689,9 @@
     window.scanAllChats = async function() {
       showToast('Scanning all chat targets...');
       try {
+        const isCap = (window.Capacitor !== undefined) || (window.location.protocol === 'capacitor:') || (window.location.protocol === 'file:');
         const isCloud = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        const ep = isCloud ? '/api/scan_all_chats' : 'http://127.0.0.1:8766/api/scan_all_chats';
+        const ep = isCap ? 'https://orbai.appsolutelydone.com/api/scan_all_chats' : (isCloud ? '/api/scan_all_chats' : 'http://127.0.0.1:8766/api/scan_all_chats');
         await fetch(ep, { method: 'POST' });
         setTimeout(() => { if (typeof pollLiveState === 'function') pollLiveState(); }, 500);
       } catch (e) {}
@@ -3788,10 +3798,16 @@
 
     async function pollLiveState() {
       try {
-        // Always hit local relay server for live state — relative URL won't work from Vercel
-        const url = (window.location.protocol.startsWith('http') && window.location.hostname !== '127.0.0.1')
-          ? '/api/status'
-          : (window.location.port === '8766' ? '/api/status' : 'http://127.0.0.1:8766/api/status');
+        const isCap = (window.Capacitor !== undefined) || (window.location.protocol === 'capacitor:') || (window.location.protocol === 'file:');
+        const isCloud = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        let url;
+        if (isCap) {
+          url = 'https://orbai.appsolutelydone.com/api/status';
+        } else if (isCloud) {
+          url = '/api/status';
+        } else {
+          url = (window.location.port === '8766') ? '/api/status' : 'http://127.0.0.1:8766/api/status';
+        }
         const res = await fetch(url);
         const state = await res.json();
 
@@ -3909,13 +3925,15 @@
           }
         });
         
-        let url = '/api/conversation';
+        const isCap = (window.Capacitor !== undefined) || (window.location.protocol === 'capacitor:') || (window.location.protocol === 'file:') || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1');
+        const primaryBase = isCap ? 'https://orbai.appsolutelydone.com' : '';
+        let url = `${primaryBase}/api/conversation`;
         if (activeChatName) {
           url += '?chat_title=' + encodeURIComponent(activeChatName);
         }
         const res = await fetch(url);
         const data = await res.json();
-        const messages = data.messages || [];
+        const messages = data.messages || data.events || [];
 
         if (JSON.stringify(messages) !== JSON.stringify(lastRenderedMessages)) {
           lastRenderedMessages = messages;

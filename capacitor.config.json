@@ -4,7 +4,7 @@
   "webDir": "public",
   "bundledWebRuntime": false,
   "server": {
-    "url": "https://orb-ai-voice-studio.vercel.app",
+    "url": "https://orbai.appsolutelydone.com",
     "cleartext": true
   },
   "android": {

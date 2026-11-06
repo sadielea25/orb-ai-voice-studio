@@ -69,11 +69,12 @@ def save_chat_voices(cfg):
 
 
 KNOWN_PROJECTS = {
-    "coremarketgoods accounting": "Orb",
-    "coremarketgoods": "Orb",
-    "orb": "Orb",
-    "orb ai voice studio v1": "Orb",
-    "orb ai voice studio": "Orb",
+    "coremarketgoods accounting - hmrc": "COREMARKETGOODS ACCOUNTING - HMRC",
+    "coremarketgoods accounting": "COREMARKETGOODS ACCOUNTING - HMRC",
+    "coremarketgoods": "COREMARKETGOODS ACCOUNTING - HMRC",
+    "orb": "ORB AI Studio",
+    "orb ai voice studio v1": "ORB AI Studio",
+    "orb ai voice studio": "ORB AI Studio",
     "timber builds": "Timber Builds",
     "snap n pack app": "Snap N Pack",
     "snap n pack": "Snap N Pack",
@@ -84,6 +85,7 @@ KNOWN_PROJECTS = {
     "festi face": "Festi Face",
     "glitterandshots": "Glitter & Shots",
     "spook studio": "Spook Studio",
+    "arts grant": "Arts Grant",
 }
 
 def format_project_title(raw):
@@ -1734,6 +1736,118 @@ def handle_earbud_resume_gesture():
         trigger_replay_last_ai_reply()
 
 
+def cloud_antigrav_bridge_worker():
+    """
+    Two-Way Antigravity Cloud Bridge Worker.
+    Continuously runs on Sadie's PC:
+    1. Reads pending prompts sent from the phone / cloud thin client in Cloud Blob,
+       and automatically types them into the active Antigravity workspace window via desktop_injector.
+    2. Syncs the live Antigravity transcript, active chat title, and scanned projects
+       up to Cloud Blob so the mobile phone displays live Antigravity activity with sub-second latency.
+    """
+    time.sleep(2)
+    print("[CLOUD-BRIDGE] Desktop Antigravity Cloud Bridge started.", flush=True)
+    import sync_engine
+
+    last_pushed_hash = ""
+    last_sync_time = 0
+
+    while True:
+        try:
+            token = sync_engine.get_blob_token()
+            if not token:
+                time.sleep(5)
+                continue
+
+            cloud_state = sync_engine.get_cloud_sync_state() or {}
+            now = time.time()
+            state_dirty = False
+
+            # 1. Process pending prompts from mobile phone / web
+            pending = cloud_state.get("pending_antigrav_prompts", [])
+            if pending and isinstance(pending, list) and len(pending) > 0:
+                print(f"[CLOUD-BRIDGE] Found {len(pending)} pending prompt(s) from phone.", flush=True)
+                for item in pending:
+                    p_text = item.get("text", "").strip() if isinstance(item, dict) else ""
+                    p_target = item.get("chat_title", "") if isinstance(item, dict) else ""
+                    if p_text:
+                        print(f"[CLOUD-BRIDGE] Injecting prompt into Antigravity: '{p_text}' (target: '{p_target}')", flush=True)
+                        try:
+                            import desktop_injector
+                            desktop_injector.type_text_into_antigravity(p_text, target_title=p_target)
+                        except Exception as ie:
+                            print(f"[CLOUD-BRIDGE-INJECT-ERR]: {ie}", flush=True)
+                cloud_state["pending_antigrav_prompts"] = []
+                state_dirty = True
+
+            # 2. Check for scan_all_chats signal from cloud
+            if cloud_state.get("scan_requested"):
+                try:
+                    with open(os.path.join(BASE_DIR, "scan_all_chats.signal"), "w", encoding="utf-8") as f:
+                        f.write("1")
+                except Exception:
+                    pass
+                cloud_state["scan_requested"] = False
+                state_dirty = True
+
+            # 3. Read local Antigravity state
+            active_title, transcript_path = get_active_chat_title_and_transcript()
+            local_msgs = get_conversation_history(limit=50, target_title=active_title)
+
+            # Update active chat title if changed
+            if active_title and active_title != cloud_state.get("active_chat_title"):
+                cloud_state["active_chat_title"] = active_title
+                state_dirty = True
+
+            # Scan projects periodically (every 15s or if empty)
+            if (now - last_sync_time > 15) or not cloud_state.get("projects"):
+                transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
+                transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+                seen = set()
+                projects = []
+                for p in transcripts[:25]:
+                    t = extract_chat_title(p)
+                    if t and t not in seen and not is_garbage_title(t):
+                        seen.add(t)
+                        cid = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(p))))
+                        projects.append({"id": cid, "title": t})
+                if projects and projects != cloud_state.get("projects"):
+                    cloud_state["projects"] = projects
+                    state_dirty = True
+
+            # Merge conversation messages
+            if local_msgs:
+                cloud_msgs = cloud_state.get("messages", [])
+                if not isinstance(cloud_msgs, list):
+                    cloud_msgs = []
+
+                msg_seen = set()
+                combined = []
+                for m in cloud_msgs + local_msgs:
+                    if isinstance(m, dict) and m.get("text"):
+                        key = (m.get("text", "").strip()[:80], m.get("time", "").strip(), m.get("role", "").strip())
+                        if key not in msg_seen:
+                            msg_seen.add(key)
+                            combined.append(m)
+
+                new_msgs = combined[-100:]
+                cur_hash = f"{len(new_msgs)}:{new_msgs[-1].get('text', '') if new_msgs else ''}:{active_title}"
+                if cur_hash != last_pushed_hash:
+                    cloud_state["messages"] = new_msgs
+                    state_dirty = True
+                    last_pushed_hash = cur_hash
+
+            if state_dirty:
+                sync_engine.save_cloud_sync_state(cloud_state)
+                last_sync_time = now
+                print(f"[CLOUD-BRIDGE] Synced {len(cloud_state.get('messages', []))} messages to cloud. Active: '{cloud_state.get('active_chat_title', '')}'", flush=True)
+
+        except Exception as e:
+            print(f"[CLOUD-BRIDGE-LOOP-ERR]: {e}", flush=True)
+
+        time.sleep(3)
+
+
 class ThreadedOrbServer(ThreadingHTTPServer):
     daemon_threads = True
     request_queue_size = 64
@@ -1743,6 +1857,7 @@ class ThreadedOrbServer(ThreadingHTTPServer):
 def run():
     threading.Thread(target=keep_orb_pinned_loop, daemon=True).start()
     threading.Thread(target=earbud_gesture_listener_loop, daemon=True).start()
+    threading.Thread(target=cloud_antigrav_bridge_worker, daemon=True).start()
     threading.Timer(0.6, lambda: resize_or_launch_orb_window("compact")).start()
     server_address = ("0.0.0.0", PORT)
     while True:

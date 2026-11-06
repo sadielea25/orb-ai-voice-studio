@@ -17,20 +17,21 @@ def get_blob_token():
     token = os.environ.get("BLOB_READ_WRITE_TOKEN", "").strip()
     if token:
         return token
-    for fname in [".env.local", ".env"]:
-        p = os.path.join(BASE_DIR, fname)
-        if os.path.exists(p):
-            try:
-                with open(p, "r", encoding="utf-8") as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith("BLOB_READ_WRITE_TOKEN="):
-                            token = line.split("=", 1)[1].strip().strip('"').strip("'")
-                            if token:
-                                os.environ["BLOB_READ_WRITE_TOKEN"] = token
-                                return token
-            except Exception:
-                pass
+    for d in [BASE_DIR, os.path.dirname(BASE_DIR)]:
+        for fname in [".env.local", ".env"]:
+            p_file = os.path.join(d, fname)
+            if os.path.exists(p_file):
+                try:
+                    with open(p_file, "r", encoding="utf-8") as f:
+                        for line in f:
+                            line = line.strip()
+                            if line.startswith("BLOB_READ_WRITE_TOKEN="):
+                                token = line.split("=", 1)[1].strip().strip('"').strip("'")
+                                if token:
+                                    os.environ["BLOB_READ_WRITE_TOKEN"] = token
+                                    return token
+                except Exception:
+                    pass
     return ""
 
 def get_cloud_sync_state():
@@ -129,6 +130,18 @@ def merge_sync_states(existing, incoming):
         merged["calendar_events"] = incoming["calendar_events"]
     if "created_docs" in incoming and isinstance(incoming["created_docs"], list):
         merged["created_docs"] = incoming["created_docs"]
+
+    # 8. Antigravity Cloud Bridge items
+    if "pending_antigrav_prompts" in incoming and isinstance(incoming["pending_antigrav_prompts"], list):
+        merged["pending_antigrav_prompts"] = incoming["pending_antigrav_prompts"]
+    if "active_chat_title" in incoming and incoming["active_chat_title"]:
+        merged["active_chat_title"] = incoming["active_chat_title"]
+    if "projects" in incoming and isinstance(incoming["projects"], list):
+        merged["projects"] = incoming["projects"]
+    if "scan_requested" in incoming:
+        merged["scan_requested"] = incoming["scan_requested"]
+    if "app_version" in incoming:
+        merged["app_version"] = incoming["app_version"]
 
     merged["updated_at"] = incoming.get("updated_at") or int(time.time() * 1000)
     return merged

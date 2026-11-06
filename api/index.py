@@ -556,14 +556,23 @@ class handler(BaseHTTPRequestHandler):
                     return
 
         elif "status" in target or "status" in raw:
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state
+                st = get_cloud_sync_state()
+            except Exception:
+                st = None
+            active_chat = (st.get("active_chat_title") if st else None) or "COREMARKETGOODS ACCOUNTING - HMRC"
             state = {
                 "status": "online",
                 "mode": "cloud",
-                "app_version": "v3.6",
-                "active_chat_title": "Orb AI Cloud Studio",
+                "app_version": "v5.1",
+                "active_chat_title": active_chat,
                 "is_speaking": False,
                 "enabled": VOICE_SETTINGS.get("enabled", True),
-                "voice": VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
+                "voice": (st.get("voice") if st else None) or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             }
             self._set_headers(200)
             self.wfile.write(json.dumps(state).encode("utf-8"))
@@ -610,7 +619,15 @@ class handler(BaseHTTPRequestHandler):
             return
 
         elif "projects" in target or "projects" in raw:
-            projects = [
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state
+                st = get_cloud_sync_state()
+            except Exception:
+                st = None
+            projects = (st.get("projects") if st and isinstance(st.get("projects"), list) and len(st.get("projects")) > 0 else None) or [
                 {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
                 {"id": "orb", "title": "ORB AI Studio"},
                 {"id": "spook", "title": "Spook Studio"},
@@ -638,8 +655,17 @@ class handler(BaseHTTPRequestHandler):
             return
 
         elif "conversation" in target or "conversation" in raw:
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state
+                st = get_cloud_sync_state()
+            except Exception:
+                st = None
+            msgs = (st.get("messages") if st and isinstance(st.get("messages"), list) and len(st.get("messages")) > 0 else None) or CONVERSATION_HISTORY
             self._set_headers(200)
-            self.wfile.write(json.dumps({"messages": CONVERSATION_HISTORY}).encode("utf-8"))
+            self.wfile.write(json.dumps({"messages": msgs, "events": msgs}).encode("utf-8"))
             return
 
         elif "sync" in target or "sync" in raw:
@@ -705,8 +731,24 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             data = {}
 
-        if "speech_input" in target or "speech_input" in raw:
+        if "scan_all_chats" in target or "scan_all_chats" in raw:
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                st = get_cloud_sync_state() or {}
+                st["scan_requested"] = True
+                save_cloud_sync_state(st)
+            except Exception as e:
+                print(f"[SCAN-ALL-CHATS-ERR]: {e}", flush=True)
+            self._set_headers(200)
+            self.wfile.write(b'{"status": "scan_requested"}')
+            return
+
+        elif "speech_input" in target or "speech_input" in raw:
             user_text = data.get("text", "").strip()
+            chat_title = data.get("chat_title", "").strip()
             if accent_adapter:
                 user_text = accent_adapter.adapt_speech_text(user_text)
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
@@ -715,18 +757,56 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"status": "ok", "reply": ""}')
                 return
 
-            CONVERSATION_HISTORY.append({
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                cloud_st = get_cloud_sync_state() or {}
+            except Exception:
+                cloud_st = {}
+
+            # 1. Queue pending prompt for Sadie's Desktop Antigravity Worker
+            pending = cloud_st.get("pending_antigrav_prompts", [])
+            if not isinstance(pending, list):
+                pending = []
+            target_chat = chat_title or cloud_st.get("active_chat_title", "")
+            pending.append({
+                "id": f"prompt_{int(time.time()*1000)}",
+                "text": user_text,
+                "chat_title": target_chat,
+                "created_at": int(time.time()*1000)
+            })
+            cloud_st["pending_antigrav_prompts"] = pending[-20:]
+
+            # 2. Add user message to conversation history
+            user_msg = {
                 "role": "user",
                 "text": user_text,
                 "time": time.strftime("%H:%M")
-            })
+            }
+            CONVERSATION_HISTORY.append(user_msg)
+            cloud_msgs = cloud_st.get("messages", [])
+            if not isinstance(cloud_msgs, list):
+                cloud_msgs = []
+            cloud_msgs.append(user_msg)
 
-            ai_reply = query_gemini(user_text, history=CONVERSATION_HISTORY)
-            CONVERSATION_HISTORY.append({
+            # 3. Route to sub-second dynamic Gemini model
+            ai_reply = query_gemini(user_text, history=cloud_msgs)
+            ai_msg = {
                 "role": "assistant",
                 "text": ai_reply,
                 "time": time.strftime("%H:%M")
-            })
+            }
+            CONVERSATION_HISTORY.append(ai_msg)
+            cloud_msgs.append(ai_msg)
+            cloud_st["messages"] = cloud_msgs[-100:]
+
+            # 4. Save to Cloud Blob immediately
+            try:
+                save_cloud_sync_state(cloud_st)
+            except Exception as se:
+                print(f"[SPEECH-INPUT-CLOUD-SAVE-ERR]: {se}", flush=True)
 
             audio_url = f"/api/tts?text={urllib.parse.quote(ai_reply)}&voice={urllib.parse.quote(voice)}"
             self._set_headers(200)
