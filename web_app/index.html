@@ -787,7 +787,7 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v5.4</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v5.5</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -798,7 +798,7 @@
       </div>
     </header>
     <!-- Master 4-Tab Navigation Bar -->
-    <nav class="master-tabs-nav" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 100%; margin: 8px 0 12px 0; background: #faf8fd; padding: 4px; border-radius: 14px; border: 1.5px solid #e9d5ff; box-sizing: border-box;">
+    <nav class="master-tabs-nav" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; width: 100%; margin: 8px 0 12px 0; background: #faf8fd; padding: 4px 3px; border-radius: 14px; border: 1.5px solid #e9d5ff; box-sizing: border-box;">
       <button type="button" id="tabBtn_focus" class="master-tab-btn active" onclick="switchMainTab('focus')">
         <span class="tab-icon">⚡</span>
         <span class="tab-label">Focus</span>
@@ -811,13 +811,21 @@
         <span class="tab-icon">💻</span>
         <span class="tab-label">Antigrav</span>
       </button>
-      <button type="button" id="tabBtn_sonya" class="master-tab-btn" onclick="switchMainTab('sonya')">
-        <span class="tab-icon">👩‍💼</span>
-        <span class="tab-label">Assistant</span>
+      <button type="button" id="tabBtn_lists" class="master-tab-btn" onclick="switchMainTab('lists')">
+        <span class="tab-icon">📦</span>
+        <span class="tab-label">Lists</span>
+      </button>
+      <button type="button" id="tabBtn_budgeting" class="master-tab-btn" onclick="switchMainTab('budgeting')">
+        <span class="tab-icon">💷</span>
+        <span class="tab-label">Budget</span>
       </button>
       <button type="button" id="tabBtn_my_calendar" class="master-tab-btn" onclick="switchMainTab('my_calendar')">
         <span class="tab-icon">📅</span>
         <span class="tab-label">Calendar</span>
+      </button>
+      <button type="button" id="tabBtn_sonya" class="master-tab-btn" onclick="switchMainTab('sonya')">
+        <span class="tab-icon">👩‍💼</span>
+        <span class="tab-label">Assistant</span>
       </button>
     </nav>
 
@@ -838,7 +846,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 6px;">
             <span id="dostuffStreakBadge" title="Completed focus blocks today" style="background: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px;">🔥 0 done</span>
-            <span onclick="applyHotUpdate(true)" title="Tap to refresh version" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.4</span>
+            <span onclick="applyHotUpdate(true)" title="Tap to refresh version" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.5</span>
           </div>
         </div>
 
@@ -895,7 +903,7 @@
           <span>🎙️ Real-Time Voice & Speech Stream</span>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span id="sttBadge" style="font-size: 11px; color: #64748b; font-weight: 700;">● Idle</span>
-            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.4</span>
+            <span onclick="applyHotUpdate(true)" title="Click to hard-refresh widget" style="font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; padding: 2px 7px; border-radius: 999px; cursor: pointer;">v5.5</span>
           </div>
         </div>
 
@@ -1558,7 +1566,176 @@
       </button>
     </div>
   </div>
-  <footer id="appLegalFooter" style="width: 100%; max-width: 580px; margin: 0 auto 16px auto; padding-top: 12px; border-top: 1.5px solid #f1e9fa; text-align: center; font-size: 11px; color: #64748b;">
+  
+    <!-- ========================================== -->
+    <!-- TAB: LISTS (Item-by-Item Packing with Timer) -->
+    <!-- ========================================== -->
+    <div id="tabPanel_lists" class="tab-panel" style="display: none;">
+      <div class="card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+        
+        <!-- Active Packing Item Timer Banner -->
+        <div id="activePackingTimerBox" style="background: linear-gradient(135deg, #fdf4ff 0%, #eff6ff 100%); border: 1.5px solid #d8b4fe; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(124,58,237,0.06);">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="packingStatusDot" style="width: 10px; height: 10px; border-radius: 999px; background: #94a3b8; display: inline-block;"></span>
+              <span id="packingHeaderTitle" style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #7c3aed; letter-spacing: 0.05em;">Ready to Pack</span>
+            </div>
+            <div id="packingTimerDigits" style="font-family: monospace; font-size: 20px; font-weight: 900; color: #0f172a; background: #ffffff; padding: 2px 10px; border-radius: 8px; border: 1px solid #cbd5e1;">00:00</div>
+          </div>
+          <div id="packingActiveItemTitle" style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 8px 0 4px 0; line-height: 1.3;">Tap any item below to start packing</div>
+          <div id="packingActiveItemMeta" style="font-size: 11px; color: #64748b; margin-bottom: 10px;">Find and pack one item at a time. The stopwatch tracks your pace.</div>
+          
+          <div id="packingTimerActions" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" id="btnMarkItemDone" onclick="completeActivePackingItem()" style="display: none; flex: 1; min-height: 40px; background: #10b981; color: #ffffff; border: none; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 5px rgba(16,185,129,0.25);">
+              <span>✓ Packed (Click Done)</span>
+            </button>
+            <button type="button" id="btnStartNextPacking" onclick="startNextUnpackedItem()" style="flex: 1; min-height: 40px; background: #7c3aed; color: #ffffff; border: none; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 5px rgba(124,58,237,0.25);">
+              <span>⚡ Start Next Item</span>
+            </button>
+            <button type="button" id="btnCancelPackingTimer" onclick="cancelPackingTimer()" style="display: none; padding: 0 14px; min-height: 40px; background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;">
+              <span>Pause</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Overall Progress -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 12px; font-weight: 700; color: #334155;">Packing Progress</span>
+          <span id="packingProgressText" style="font-size: 11.5px; font-weight: 800; color: #7c3aed;">0 / 0 Packed (0%)</span>
+        </div>
+        <div style="width: 100%; height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+          <div id="packingProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #7c3aed, #10b981); transition: width 0.3s ease;"></div>
+        </div>
+
+        <!-- Category Pills Filter -->
+        <div id="packingCategoryFilters" style="display: flex; gap: 4px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; -webkit-overflow-scrolling: touch;">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Search Bar -->
+        <div style="margin-bottom: 10px;">
+          <input type="text" id="packingSearchInput" placeholder="Search items..." oninput="renderPackingItemsList()" style="width: 100%; box-sizing: border-box; padding: 8px 12px; border-radius: 9px; border: 1.5px solid #cbd5e1; font-size: 12px; font-weight: 600; color: #0f172a;">
+        </div>
+
+        <!-- Items Checklist Container -->
+        <div id="packingItemsContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 520px; overflow-y: auto; padding-right: 2px;">
+          <!-- Items populated here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB: BUDGETING (Match Day Staff & Expenses) -->
+    <!-- ========================================== -->
+    <div id="tabPanel_budgeting" class="tab-panel" style="display: none;">
+      <div class="card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+        
+        <!-- Header Summary -->
+        <div style="background: linear-gradient(135deg, #ecfdf5 0%, #eff6ff 100%); border: 1.5px solid #a7f3d0; border-radius: 12px; padding: 14px; margin-bottom: 14px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em;">Match Day Event Budget</div>
+          <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 4px; flex-wrap: wrap; gap: 6px;">
+            <div style="font-size: 22px; font-weight: 900; color: #065f46;">£203 – £270</div>
+            <div style="font-size: 12px; font-weight: 700; color: #047857;">Est. Outgoings Total</div>
+          </div>
+          <div style="font-size: 11px; color: #475569; margin-top: 6px;">Break-even target: ~41 to 54 face paints at £5.00 each.</div>
+        </div>
+
+        <!-- Staffing Costs Card -->
+        <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 10px; background: #f8fafc;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 12px; font-weight: 800; color: #1e293b;">👥 Staffing Budget</span>
+            <span style="font-size: 11px; font-weight: 800; color: #7c3aed;">£150 – £205</span>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 7px; border: 1px solid #e2e8f0;">
+              <div>
+                <span style="font-weight: 700; color: #0f172a;">Ashley</span>
+                <span style="color: #64748b; font-size: 11px;"> (1:00/2:00 to 4:40 @ £15/h)</span>
+              </div>
+              <span style="font-weight: 800; color: #0f172a;">£40 – £55</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 7px; border: 1px solid #e2e8f0;">
+              <div>
+                <span style="font-weight: 700; color: #0f172a;">Steve</span>
+                <span style="color: #64748b; font-size: 11px;"> (1:00 to ~5:00 flat rate)</span>
+              </div>
+              <span style="font-weight: 800; color: #0f172a;">£50</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 7px; border: 1px solid #e2e8f0;">
+              <div>
+                <span style="font-weight: 700; color: #0f172a;">Fraser</span>
+                <span style="color: #64748b; font-size: 11px;"> (Stencils, Cutting & Stall)</span>
+              </div>
+              <span style="font-weight: 800; color: #0f172a;">£60 – £100</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Travel & Stall Logistics Card -->
+        <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 12px; background: #f8fafc;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 12px; font-weight: 800; color: #1e293b;">🚗 Travel & Expenses</span>
+            <span style="font-size: 11px; font-weight: 800; color: #0284c7;">£53 – £65</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 7px; border: 1px solid #e2e8f0;">
+              <div>
+                <span style="font-weight: 700; color: #0f172a;">Fuel</span>
+                <span style="color: #64748b; font-size: 11px;"> (£15 paid + £10 return)</span>
+              </div>
+              <span style="font-weight: 800; color: #0f172a;">£25</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 7px; border: 1px solid #e2e8f0;">
+              <div>
+                <span style="font-weight: 700; color: #0f172a;">Parking</span>
+                <span style="color: #64748b; font-size: 11px;"> (estimated)</span>
+              </div>
+              <span style="font-weight: 800; color: #0f172a;">£8 – £20</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 7px; border: 1px solid #e2e8f0;">
+              <div>
+                <span style="font-weight: 700; color: #0f172a;">Food & Snacks</span>
+                <span style="color: #64748b; font-size: 11px;"> (float)</span>
+              </div>
+              <span style="font-weight: 800; color: #0f172a;">£20</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profit Calculator -->
+        <div style="border: 1.5px solid #fed7aa; background: #fffaf5; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+          <span style="font-size: 12px; font-weight: 800; color: #c2410c; display: block; margin-bottom: 6px;">📊 Live Profit Estimator</span>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <div>
+              <label style="font-size: 10.5px; font-weight: 700; color: #7c2d12;">Face Paints Done</label>
+              <input type="number" id="calcPaintsDone" value="50" oninput="calculateMatchProfit()" style="width: 100%; box-sizing: border-box; padding: 6px; border-radius: 7px; border: 1px solid #fdba74; font-size: 13px; font-weight: 800; color: #0f172a;">
+            </div>
+            <div>
+              <label style="font-size: 10.5px; font-weight: 700; color: #7c2d12;">Price Per Paint (£)</label>
+              <input type="number" step="0.5" id="calcPaintPrice" value="5" oninput="calculateMatchProfit()" style="width: 100%; box-sizing: border-box; padding: 6px; border-radius: 7px; border: 1px solid #fdba74; font-size: 13px; font-weight: 800; color: #0f172a;">
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 1px dashed #fed7aa;">
+            <div>
+              <div style="font-size: 11px; color: #7c2d12;">Projected Revenue: <strong id="calcGrossRevenue">£250.00</strong></div>
+              <div style="font-size: 11px; color: #7c2d12;">Avg Costs: <strong>£235.00</strong></div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 10px; font-weight: 700; color: #065f46;">EST. NET PROFIT</div>
+              <div id="calcNetProfit" style="font-size: 18px; font-weight: 900; color: #10b981;">+£15.00</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+<footer id="appLegalFooter" style="width: 100%; max-width: 580px; margin: 0 auto 16px auto; padding-top: 12px; border-top: 1.5px solid #f1e9fa; text-align: center; font-size: 11px; color: #64748b;">
     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 6px; align-items: center;">
       <a href="javascript:void(0)" onclick="openLegalModal('privacy')" style="color: #64748b; text-decoration: none; font-weight: 600;">Privacy</a>
       <span style="opacity: 0.3;">•</span>
@@ -1598,7 +1775,7 @@
     window.switchMainTab = function(tabName) {
       if (tabName === 'orb_generic') tabName = 'focus';
       if (tabName === 'speech') tabName = 'voice_stream';
-      const tabs = ['focus', 'voice_stream', 'orb_antigrav', 'sonya', 'my_calendar'];
+      const tabs = ['focus', 'voice_stream', 'orb_antigrav', 'lists', 'budgeting', 'my_calendar', 'sonya'];
       tabs.forEach(t => {
         const btn = document.getElementById('tabBtn_' + t);
         const panel = document.getElementById('tabPanel_' + t);
@@ -1614,7 +1791,11 @@
         localStorage.setItem('orb_selected_tab', tabName);
       } catch (e) {}
 
-      if (tabName === 'sonya') {
+      if (tabName === 'lists') {
+        if (typeof renderPackingListsUI === 'function') renderPackingListsUI();
+      } else if (tabName === 'budgeting') {
+        if (typeof renderBudgetingUI === 'function') renderBudgetingUI();
+      } else if (tabName === 'sonya') {
         if (typeof renderCategoryPills === 'function') renderCategoryPills();
         if (typeof renderLocationFilterPills === 'function') renderLocationFilterPills();
         if (typeof renderDoStuffTaskList === 'function') renderDoStuffTaskList();
@@ -7136,6 +7317,385 @@
       }
     })();
 
+
+    // ==========================================
+    // ORB LISTS & ITEM-BY-ITEM PACKING TIMER ENGINE
+    // ==========================================
+    let packingActiveItem = null;
+    let packingTimerInterval = null;
+    let packingTimerSeconds = 0;
+    let packingSelectedCategory = 'all';
+
+    const PACKING_MASTER_ITEMS = [
+      // Station 1: Sadie (Base, Glitter, Cleaning)
+      { id: "s1_stall", title: "Standing stall (extendable legs)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_chair", title: "High chair for Sadie", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_case1", title: "Lit-up Case 1 (Sadie's main case)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_case1_cable", title: "Power cable for Case 1", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glitter_box", title: "Silver pull-out glitter box", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glitter_red", title: "Glitter: Red (priority)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glitter_white", title: "Glitter: White", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glitter_silver", title: "Glitter: Silver", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glitter_gold", title: "Glitter: Gold", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glitter_assorted", title: "All other assorted colour glitters", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_gel", title: "Cosmetic glitter gel", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_gel_tray", title: "Silicone tray for gel", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_gel_holder", title: "Brush holder container", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_gel_b1", title: "Gel brush: Small", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_gel_b2", title: "Gel brush: Medium", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_gel_b3", title: "Gel brush: Large", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glit_b1", title: "Glitter brush 1: Eye brush (around eyes)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glit_b2", title: "Glitter brush 2: Large brush (forehead & shoulders)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glit_b3", title: "Glitter brush 3: Medium brush (logo details)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glit_b4", title: "Glitter brush 4: Super-fine brush (precision highlights)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glit_cloth", title: "Dedicated glitter cloth (wipe excess glitter between colours)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_glit_swirl", title: "Container to swirl glitter brushes out", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_powder_clean", title: "Cleaning station for powder brushes (at the end)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_tissues", title: "Tissues for wiping brushes on the go", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_eyeshadow", title: "Eye shadow palette (red, white, green shades)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_base_white", title: "White base powder (powder, not paint)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_base_bronze", title: "Bronze base powder", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_face_brush", title: "Normal face brush", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_base_b_med", title: "Medium white base brush", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_base_b_lrg", title: "Large white base brush", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_fine_brushes", title: "Fine paint brushes (details & Japan logo)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_primer", title: "Primer spray", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_sanitiser", title: "Paint sanitiser spray", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_green_powder", title: "Green powdered eye shadow & green powder brushes", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_sparkle_white", title: "Sparkly white eye shadow & white powder brush", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_tray1", title: "Tray 1 (main layout)", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+      { id: "s1_wipes", title: "Baby wipes / face wipes for customers", cat: "station_1", catName: "Station 1: Sadie", packed: false },
+
+      // Station 2: Fraser (Stencils, Cutting, Cleaning)
+      { id: "s2_table", title: "Dedicated table for Fraser", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_stool", title: "Stool for Fraser to sit and cut stencils", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_case2", title: "Lit-up Case 2 (display, storage, organization & kit separation)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_case2_cable", title: "Power cable for Case 2", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_work_tray", title: "Working tray (sits on Fraser's table for active stencilling)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_cutting_kit", title: "Stencil cutting kit (for cutting Japan logo)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_stencil_clean", title: "Stencil cleaning station", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_paint_swirl", title: "Container to swirl paint brushes out (at the end)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_sponges", title: "Dragon sponges (small and medium)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_st_dragon", title: "Dragon stencils", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_st_feathers", title: "Three-feathers stencils", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_st_welsh", title: "Welsh stencils (daffodils, etc.)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_st_japan", title: "Japan stencil", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_tray2", title: "Tray 2 (Japan opposing side stencil layout)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_paint_dragon", title: "Red paint for dragons", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_p_white", title: "Japan paint: White", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_p_red", title: "Japan paint: Red", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_p_green", title: "Japan paint: Green", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_p_yellow", title: "Japan paint: Yellow", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_p_black", title: "Japan paint: Black", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_spray", title: "Water spray bottle (to wet paint)", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_wipe_box", title: "Box for wiping stencils", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_cloths", title: "Wet cloth & dry cloth for wiping stencils", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+      { id: "s2_gloves", title: "Gloves for stencilling", cat: "station_2", catName: "Station 2: Fraser", packed: false },
+
+      // Stall Structure, Transport & Power
+      { id: "st_trolley", title: "Big pull-along trolley (for transport & excess items)", cat: "stall_setup", catName: "Structure & Power", packed: false },
+      { id: "st_suitcase", title: "Big black suitcase (for bits & bobs underneath table)", cat: "stall_setup", catName: "Structure & Power", packed: false },
+      { id: "st_tablecloth", title: "Black tablecloth", cat: "stall_setup", catName: "Structure & Power", packed: false },
+      { id: "st_generator", title: "Generator (charge at house first)", cat: "stall_setup", catName: "Structure & Power", packed: false },
+      { id: "st_speakers", title: "Speakers (charge before leaving)", cat: "stall_setup", catName: "Structure & Power", packed: false },
+      { id: "st_card_reader", title: "Card reader (in satchel, shared with Fraser)", cat: "stall_setup", catName: "Structure & Power", packed: false },
+      { id: "st_cleaning", title: "Surface wipes & general cleaning cloths", cat: "stall_setup", catName: "Structure & Power", packed: false },
+      { id: "st_phone_cable", title: "Phone charger cable", cat: "stall_setup", catName: "Structure & Power", packed: false },
+
+      // Personal Bag (Satchel)
+      { id: "pb_keys", title: "House keys", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_phone", title: "Mobile phone", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_charger", title: "Phone charger", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_asthma", title: "Asthma pump", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_meds", title: "Medical kit (Canesten cream & canister)", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_water", title: "Bottle of water", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_cash", title: "Cash / money", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_bumbag", title: "Bum bag (with money)", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_painkillers", title: "Painkillers", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_voltarol", title: "Voltarol", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_makeup", title: "Personal makeup & deodorant", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_gum", title: "Chewing gum", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_gloves", title: "Gloves and scarf", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_coat", title: "Coat and extra layers", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_snack", title: "Snack", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_vouchers", title: "All available shop vouchers (including Retro)", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_face_powders", title: "Personal face powders & base brush", cat: "personal_bag", catName: "Personal Bag", packed: false },
+      { id: "pb_eyeliners", title: "Coloured eyeliners (specifically green)", cat: "personal_bag", catName: "Personal Bag", packed: false },
+
+      // Outfit & Styling
+      { id: "ow_underwear", title: "Boxers and socks", cat: "outfit", catName: "Outfit & Wear", packed: false },
+      { id: "ow_cords", title: "Cord trousers", cat: "outfit", catName: "Outfit & Wear", packed: false },
+      { id: "ow_belt", title: "Normal belt", cat: "outfit", catName: "Outfit & Wear", packed: false },
+      { id: "ow_trainers", title: "Trainers", cat: "outfit", catName: "Outfit & Wear", packed: false },
+      { id: "ow_red_jumper", title: "Red jumper", cat: "outfit", catName: "Outfit & Wear", packed: false },
+      { id: "ow_black_jumper", title: "Black furry jumper", cat: "outfit", catName: "Outfit & Wear", packed: false },
+      { id: "ow_raincoat", title: "Raincoat", cat: "outfit", catName: "Outfit & Wear", packed: false },
+      { id: "ow_hair", title: "Hair slicked back", cat: "outfit", catName: "Outfit & Wear", packed: false }
+    ];
+
+    let packingItems = [];
+
+    function initPackingItems() {
+      try {
+        const saved = localStorage.getItem('orb_packing_items_v55');
+        if (saved) {
+          packingItems = JSON.parse(saved);
+        } else {
+          packingItems = JSON.parse(JSON.stringify(PACKING_MASTER_ITEMS));
+        }
+      } catch (e) {
+        packingItems = JSON.parse(JSON.stringify(PACKING_MASTER_ITEMS));
+      }
+    }
+
+    function savePackingItems() {
+      try {
+        localStorage.setItem('orb_packing_items_v55', JSON.stringify(packingItems));
+      } catch (e) {}
+    }
+
+    window.renderPackingListsUI = function() {
+      if (!packingItems || packingItems.length === 0) initPackingItems();
+      renderPackingCategoryFilters();
+      renderPackingItemsList();
+      updatePackingProgress();
+    };
+
+    function renderPackingCategoryFilters() {
+      const el = document.getElementById('packingCategoryFilters');
+      if (!el) return;
+      const cats = [
+        { id: 'all', name: 'All Items' },
+        { id: 'station_1', name: 'Station 1: Sadie' },
+        { id: 'station_2', name: 'Station 2: Fraser' },
+        { id: 'stall_setup', name: 'Structure & Power' },
+        { id: 'personal_bag', name: 'Personal Bag' },
+        { id: 'outfit', name: 'Outfit & Wear' }
+      ];
+
+      el.innerHTML = cats.map(c => {
+        const active = packingSelectedCategory === c.id;
+        const count = (c.id === 'all') 
+          ? packingItems.length 
+          : packingItems.filter(x => x.cat === c.id).length;
+        const packedCount = (c.id === 'all')
+          ? packingItems.filter(x => x.packed).length
+          : packingItems.filter(x => x.cat === c.id && x.packed).length;
+
+        return `
+          <button type="button" onclick="selectPackingCategory('${c.id}')" style="white-space: nowrap; flex-shrink: 0; background: ${active ? '#7c3aed' : '#ffffff'}; color: ${active ? '#ffffff' : '#475569'}; border: 1px solid ${active ? '#7c3aed' : '#cbd5e1'}; border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer;">
+            ${c.name} (${packedCount}/${count})
+          </button>
+        `;
+      }).join('');
+    }
+
+    window.selectPackingCategory = function(catId) {
+      packingSelectedCategory = catId;
+      renderPackingCategoryFilters();
+      renderPackingItemsList();
+    };
+
+    window.renderPackingItemsList = function() {
+      const container = document.getElementById('packingItemsContainer');
+      if (!container) return;
+
+      const searchVal = (document.getElementById('packingSearchInput') ? document.getElementById('packingSearchInput').value : '').toLowerCase().trim();
+
+      let items = packingItems;
+      if (packingSelectedCategory !== 'all') {
+        items = items.filter(x => x.cat === packingSelectedCategory);
+      }
+      if (searchVal) {
+        items = items.filter(x => x.title.toLowerCase().includes(searchVal));
+      }
+
+      if (items.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #94a3b8; font-size: 12px; padding: 24px 0;">No items found.</div>';
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        const isCurrentActive = packingActiveItem && packingActiveItem.id === item.id;
+        const bg = isCurrentActive ? '#fdf4ff' : (item.packed ? '#f8fafc' : '#ffffff');
+        const border = isCurrentActive ? '2px solid #7c3aed' : (item.packed ? '1px solid #e2e8f0' : '1.5px solid #cbd5e1');
+
+        return `
+          <div style="background: ${bg}; border: ${border}; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; transition: all 0.15s ease;">
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; cursor: pointer;" onclick="startPackingItem('${item.id}')">
+              <input type="checkbox" ${item.packed ? 'checked' : ''} onclick="event.stopPropagation(); togglePackingItemCheck('${item.id}')" style="width: 18px; height: 18px; cursor: pointer; accent-color: #10b981; flex-shrink: 0;">
+              <div style="min-width: 0;">
+                <div style="font-size: 13px; font-weight: 700; color: ${item.packed ? '#94a3b8' : '#0f172a'}; text-decoration: ${item.packed ? 'line-through' : 'none'}; line-height: 1.3;">
+                  ${item.title}
+                </div>
+                <div style="font-size: 10.5px; color: #64748b; font-weight: 600; margin-top: 2px;">
+                  ${item.catName}
+                </div>
+              </div>
+            </div>
+            <div>
+              <button type="button" onclick="startPackingItem('${item.id}')" style="background: ${isCurrentActive ? '#7c3aed' : '#f1f5f9'}; color: ${isCurrentActive ? '#ffffff' : '#475569'}; border: none; border-radius: 7px; padding: 5px 9px; font-size: 11px; font-weight: 800; cursor: pointer;">
+                ${isCurrentActive ? '⏱ Packing' : (item.packed ? 'Re-pack' : 'Pack ⏱')}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    };
+
+    window.togglePackingItemCheck = function(itemId) {
+      const item = packingItems.find(x => x.id === itemId);
+      if (!item) return;
+      item.packed = !item.packed;
+      if (item.packed && packingActiveItem && packingActiveItem.id === itemId) {
+        cancelPackingTimer();
+      }
+      savePackingItems();
+      renderPackingCategoryFilters();
+      renderPackingItemsList();
+      updatePackingProgress();
+    };
+
+    window.startPackingItem = function(itemId) {
+      const item = packingItems.find(x => x.id === itemId);
+      if (!item) return;
+
+      packingActiveItem = item;
+      packingTimerSeconds = 0;
+      clearInterval(packingTimerInterval);
+
+      packingTimerInterval = setInterval(() => {
+        packingTimerSeconds++;
+        const mins = Math.floor(packingTimerSeconds / 60).toString().padStart(2, '0');
+        const secs = (packingTimerSeconds % 60).toString().padStart(2, '0');
+        const digitEl = document.getElementById('packingTimerDigits');
+        if (digitEl) digitEl.textContent = `${mins}:${secs}`;
+      }, 1000);
+
+      const headerTitle = document.getElementById('packingHeaderTitle');
+      const itemTitle = document.getElementById('packingActiveItemTitle');
+      const itemMeta = document.getElementById('packingActiveItemMeta');
+      const btnDone = document.getElementById('btnMarkItemDone');
+      const btnNext = document.getElementById('btnStartNextPacking');
+      const btnCancel = document.getElementById('btnCancelPackingTimer');
+      const statusDot = document.getElementById('packingStatusDot');
+
+      if (headerTitle) headerTitle.textContent = "Currently Finding & Packing";
+      if (itemTitle) itemTitle.textContent = item.title;
+      if (itemMeta) itemMeta.textContent = `Station: ${item.catName} — Timer active`;
+      if (btnDone) btnDone.style.display = "flex";
+      if (btnNext) btnNext.style.display = "none";
+      if (btnCancel) btnCancel.style.display = "flex";
+      if (statusDot) statusDot.style.background = "#10b981";
+
+      renderPackingItemsList();
+    };
+
+    window.completeActivePackingItem = function() {
+      if (!packingActiveItem) return;
+      packingActiveItem.packed = true;
+      savePackingItems();
+      clearInterval(packingTimerInterval);
+
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      } catch (e) {}
+
+      startNextUnpackedItem();
+    };
+
+    window.startNextUnpackedItem = function() {
+      const next = packingItems.find(x => !x.packed);
+      if (next) {
+        startPackingItem(next.id);
+      } else {
+        cancelPackingTimer();
+        const itemTitle = document.getElementById('packingActiveItemTitle');
+        if (itemTitle) itemTitle.textContent = "All Items Successfully Packed! 🎉";
+      }
+      renderPackingCategoryFilters();
+      renderPackingItemsList();
+      updatePackingProgress();
+    };
+
+    window.cancelPackingTimer = function() {
+      clearInterval(packingTimerInterval);
+      packingActiveItem = null;
+      packingTimerSeconds = 0;
+
+      const headerTitle = document.getElementById('packingHeaderTitle');
+      const itemTitle = document.getElementById('packingActiveItemTitle');
+      const itemMeta = document.getElementById('packingActiveItemMeta');
+      const btnDone = document.getElementById('btnMarkItemDone');
+      const btnNext = document.getElementById('btnStartNextPacking');
+      const btnCancel = document.getElementById('btnCancelPackingTimer');
+      const digitEl = document.getElementById('packingTimerDigits');
+      const statusDot = document.getElementById('packingStatusDot');
+
+      if (headerTitle) headerTitle.textContent = "Ready to Pack";
+      if (itemTitle) itemTitle.textContent = "Tap any item below to start packing";
+      if (itemMeta) itemMeta.textContent = "Find and pack one item at a time. The stopwatch tracks your pace.";
+      if (btnDone) btnDone.style.display = "none";
+      if (btnNext) btnNext.style.display = "flex";
+      if (btnCancel) btnCancel.style.display = "none";
+      if (digitEl) digitEl.textContent = "00:00";
+      if (statusDot) statusDot.style.background = "#94a3b8";
+
+      renderPackingItemsList();
+    };
+
+    function updatePackingProgress() {
+      const total = packingItems.length;
+      const packed = packingItems.filter(x => x.packed).length;
+      const pct = total > 0 ? Math.round((packed / total) * 100) : 0;
+
+      const textEl = document.getElementById('packingProgressText');
+      const barEl = document.getElementById('packingProgressBar');
+      if (textEl) textEl.textContent = `${packed} / ${total} Packed (${pct}%)`;
+      if (barEl) barEl.style.width = `${pct}%`;
+    }
+
+    // ==========================================
+    // ORB BUDGETING & LIVE PROFIT CALCULATOR
+    // ==========================================
+    window.renderBudgetingUI = function() {
+      calculateMatchProfit();
+    };
+
+    window.calculateMatchProfit = function() {
+      const countEl = document.getElementById('calcPaintsDone');
+      const priceEl = document.getElementById('calcPaintPrice');
+      const count = countEl ? (parseInt(countEl.value, 10) || 0) : 50;
+      const price = priceEl ? (parseFloat(priceEl.value) || 0) : 5.0;
+
+      const gross = count * price;
+      const avgOutgoings = 235.0;
+      const net = gross - avgOutgoings;
+
+      const grossEl = document.getElementById('calcGrossRevenue');
+      const netEl = document.getElementById('calcNetProfit');
+
+      if (grossEl) grossEl.textContent = `£${gross.toFixed(2)}`;
+      if (netEl) {
+        if (net >= 0) {
+          netEl.textContent = `+£${net.toFixed(2)}`;
+          netEl.style.color = "#10b981";
+        } else {
+          netEl.textContent = `-£${Math.abs(net).toFixed(2)}`;
+          netEl.style.color = "#ef4444";
+        }
+      }
+    };
 </script>
 </body>
 </html>

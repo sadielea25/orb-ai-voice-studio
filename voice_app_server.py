@@ -23,7 +23,7 @@ import edge_tts
 BRAIN_DIR = r"C:\Users\corem\.gemini\antigravity\brain"
 FALLBACK_LOG = r"C:\Users\corem\.gemini\antigravity\brain\de5a4648-5c35-4b63-a84f-33cf8597b3ff\.system_generated\logs\transcript.jsonl"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-WEB_DIR = os.path.join(BASE_DIR, "web_app")
+WEB_DIR = os.path.join(BASE_DIR, "public") if os.path.exists(os.path.join(BASE_DIR, "public")) else os.path.join(BASE_DIR, "web_app")
 SETTINGS_FILE = os.path.join(BASE_DIR, "voice_settings.json")
 HISTORY_FILE = os.path.join(BASE_DIR, "speech_history.json")
 STATE_FILE = os.path.join(BASE_DIR, "speech_live_state.json")
