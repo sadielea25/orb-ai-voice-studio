@@ -811,7 +811,21 @@ class handler(BaseHTTPRequestHandler):
             return
 
         elif "conversation" in target or "conversation" in raw:
-            msgs = (CLOUD_RELAY_STATE.get("messages") if CLOUD_RELAY_STATE.get("messages") else None) or CONVERSATION_HISTORY
+            msgs = CLOUD_RELAY_STATE.get("messages")
+            if not msgs:
+                try:
+                    try:
+                        from api.sync_engine import get_cloud_sync_state
+                    except ImportError:
+                        from sync_engine import get_cloud_sync_state
+                    st = get_cloud_sync_state() or {}
+                    if st.get("messages") and isinstance(st["messages"], list):
+                        msgs = st["messages"]
+                        CLOUD_RELAY_STATE["messages"] = msgs[-100:]
+                except Exception:
+                    pass
+            if not msgs:
+                msgs = CONVERSATION_HISTORY
             self._set_headers(200)
             self.wfile.write(json.dumps({"messages": msgs, "events": msgs}).encode("utf-8"))
             return
@@ -956,30 +970,32 @@ class handler(BaseHTTPRequestHandler):
             relay_msgs = CLOUD_RELAY_STATE.setdefault("messages", [])
             relay_msgs.append(user_msg)
 
-            # 3. Persist pending prompt into Cloud Sync Storage so it survives even while Desktop PC is powered off
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
-                st = get_cloud_sync_state() or {}
-                persisted_q = list(st.get("pending_antigrav_prompts", []))
-                persisted_q.append(pending[-1])
-                st["pending_antigrav_prompts"] = persisted_q[-30:]
-                save_cloud_sync_state(st)
-            except Exception:
-                pass
-
-            desktop_online = (time.time() - CLOUD_RELAY_STATE.get("last_sync", 0)) < 25
+            desktop_online = ((time.time() - CLOUD_RELAY_STATE.get("last_sync", 0)) < 25) and not bool(data.get("force_cloud_offline"))
 
             if data.get("source") == "antigrav_mirror":
                 if desktop_online:
                     CLOUD_RELAY_STATE["messages"] = relay_msgs[-100:]
+                    def _bg_persist_online_q(prompt_item, msgs_snapshot):
+                        try:
+                            try:
+                                from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                            except ImportError:
+                                from sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                            st = get_cloud_sync_state() or {}
+                            pq = list(st.get("pending_antigrav_prompts", []))
+                            pq.append(prompt_item)
+                            st["pending_antigrav_prompts"] = pq[-30:]
+                            st["messages"] = msgs_snapshot[-100:]
+                            save_cloud_sync_state(st)
+                        except Exception:
+                            pass
+                    threading.Thread(target=_bg_persist_online_q, args=(pending[-1], list(relay_msgs)), daemon=True).start()
                     self._set_headers(200)
                     self.wfile.write(json.dumps({
                         "status": "ok",
                         "desktop_online": True,
-                        "queued_for_antigravity": True
+                        "queued_for_antigravity": True,
+                        "messages": CLOUD_RELAY_STATE["messages"]
                     }).encode("utf-8"))
                     return
                 else:
@@ -1009,6 +1025,8 @@ class handler(BaseHTTPRequestHandler):
                     if resp_json and "candidates" in resp_json:
                         try:
                             raw_txt = resp_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+                            raw_txt = re.sub(r"^```(?:json)?\s*", "", raw_txt)
+                            raw_txt = re.sub(r"\s*```$", "", raw_txt)
                             parsed_obj = json.loads(raw_txt)
                             cloud_reply = (parsed_obj.get("reply") or "").strip()
                             lp = parsed_obj.get("live_patch")
@@ -1024,27 +1042,7 @@ class handler(BaseHTTPRequestHandler):
                             pass
 
                     if not cloud_reply:
-                        cloud_reply = f"Applied your request in the cloud for {target_chat or 'ORB'} and synced it for your desktop workspace."
-
-                    active_patches = []
-                    try:
-                        try:
-                            from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
-                        except ImportError:
-                            from sync_engine import get_cloud_sync_state, save_cloud_sync_state
-                        st = get_cloud_sync_state() or {}
-                        active_patches = list(st.get("live_patches", []))
-                        if live_patch:
-                            if live_patch.get("clear_all"):
-                                active_patches = []
-                            else:
-                                active_patches.append(live_patch)
-                                active_patches = active_patches[-25:]
-                            st["live_patches"] = active_patches
-                            save_cloud_sync_state(st)
-                    except Exception:
-                        if live_patch and not live_patch.get("clear_all"):
-                            active_patches = [live_patch]
+                        cloud_reply = f"Applied your update in the cloud for {target_chat or 'ORB'} and queued it for your desktop workspace."
 
                     ai_msg = {
                         "role": "assistant",
@@ -1054,6 +1052,39 @@ class handler(BaseHTTPRequestHandler):
                     CONVERSATION_HISTORY.append(ai_msg)
                     relay_msgs.append(ai_msg)
                     CLOUD_RELAY_STATE["messages"] = relay_msgs[-100:]
+
+                    active_patches = [live_patch] if (live_patch and not live_patch.get("clear_all")) else []
+                    if not data.get("skip_persist"):
+                        try:
+                            try:
+                                from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                            except ImportError:
+                                from sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                            st = get_cloud_sync_state() or {}
+                            # 1. Persist pending prompt for when PC wakes
+                            pq = list(st.get("pending_antigrav_prompts", []))
+                            pq.append(pending[-1])
+                            st["pending_antigrav_prompts"] = pq[-30:]
+                            # 2. Persist live patches
+                            cur_patches = list(st.get("live_patches", []))
+                            if live_patch:
+                                if live_patch.get("clear_all"):
+                                    cur_patches = []
+                                else:
+                                    cur_patches.append(live_patch)
+                                    cur_patches = cur_patches[-25:]
+                            active_patches = cur_patches
+                            st["live_patches"] = active_patches
+                            # 3. Persist conversation messages across serverless instances
+                            prev_msgs = list(st.get("messages", []))
+                            prev_msgs.append(user_msg)
+                            prev_msgs.append(ai_msg)
+                            st["messages"] = prev_msgs[-100:]
+                            CLOUD_RELAY_STATE["messages"] = st["messages"]
+                            save_cloud_sync_state(st)
+                        except Exception:
+                            pass
+
                     self._set_headers(200)
                     self.wfile.write(json.dumps({
                         "status": "ok",
@@ -1061,7 +1092,8 @@ class handler(BaseHTTPRequestHandler):
                         "queued_for_antigravity": True,
                         "reply": cloud_reply,
                         "live_patch": live_patch,
-                        "live_patches": active_patches
+                        "live_patches": active_patches,
+                        "messages": CLOUD_RELAY_STATE["messages"]
                     }).encode("utf-8"))
                     return
 

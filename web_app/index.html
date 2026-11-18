@@ -868,7 +868,7 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v7.0</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v7.1</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -2954,11 +2954,11 @@
       
       let endpoints;
       if (isCap) {
-        endpoints = ['https://orbai.appsolutelydone.com/api/speech_input', 'http://192.168.0.250:8766/api/speech_input'];
+        endpoints = ['https://orbai.appsolutelydone.com/api/speech_input', 'http://192.168.1.239:8766/api/speech_input'];
       } else if (isCloud) {
-        endpoints = ['https://orbai.appsolutelydone.com/api/speech_input', '/api/speech_input'];
+        endpoints = ['/api/speech_input', 'https://orbai.appsolutelydone.com/api/speech_input'];
       } else {
-        endpoints = ['http://127.0.0.1:8766/api/speech_input', '/api/speech_input'];
+        endpoints = ['http://127.0.0.1:8766/api/speech_input', '/api/speech_input', 'https://orbai.appsolutelydone.com/api/speech_input'];
       }
 
       for (const ep of endpoints) {
@@ -2976,18 +2976,23 @@
             } else if (data && data.live_patch && typeof window.applyCloudLivePatches === 'function') {
               window.applyCloudLivePatches([data.live_patch]);
             }
+            if (data && Array.isArray(data.messages) && data.messages.length > 0) {
+              lastRenderedMessages = data.messages;
+              renderChatStream(data.messages);
+            } else if (data && data.reply) {
+              const nowStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+              const updatedMsgs = Array.isArray(lastRenderedMessages) ? [...lastRenderedMessages] : [];
+              updatedMsgs.push({ role: 'user', text: text, time: nowStr });
+              updatedMsgs.push({ role: 'assistant', text: data.reply, time: nowStr });
+              lastRenderedMessages = updatedMsgs;
+              renderChatStream(updatedMsgs);
+            }
             if (data && data.reply) {
-              const streamEl = document.getElementById('antigravChatStream');
-              if (streamEl) {
-                const aiBub = document.createElement('div');
-                aiBub.style.cssText = 'align-self: flex-start; max-width: 92%; background: #ffffff; border: 1.5px solid #e2e8f0; color: #0f172a; padding: 10px 13px; border-radius: 14px 14px 14px 4px; font-size: 13px; line-height: 1.45; white-space: pre-wrap;';
-                aiBub.textContent = data.reply;
-                streamEl.appendChild(aiBub);
-              }
               if (data.audio_url) playCloudAudio(data.audio_url, data.reply);
               else speakTextInBrowser(data.reply, currentVoiceId);
+            } else if (typeof pollConversation === 'function') {
+              setTimeout(pollConversation, 500);
             }
-            if (typeof pollConversation === 'function') setTimeout(pollConversation, 400);
             return;
           }
         } catch (e) {}
