@@ -627,7 +627,7 @@ def get_conversation_history(limit=100, target_title=""):
                             "text": clean_cnt,
                             "time": t_str
                         })
-                    elif src == "MODEL" and typ == "PLANNER_RESPONSE" and not d.get("tool_calls") and "tool_calls" not in (d.get("truncated_fields") or []):
+                    elif src == "MODEL" and typ == "PLANNER_RESPONSE" and not d.get("tool_calls"):
                         t_str = d.get("created_at", "")
                         if "T" in t_str:
                             t_str = t_str.split("T")[1].split(".")[0][:5]
@@ -2097,13 +2097,14 @@ def cloud_antigrav_bridge_worker():
     while True:
         try:
             now = time.time()
-            active_title, transcript_path = get_active_chat_title_and_transcript()
-            cur_mtime = os.path.getmtime(transcript_path) if os.path.exists(transcript_path) else 0
+            active_title, _ = get_active_chat_title_and_transcript()
+            live_orb_path = os.path.join(BRAIN_DIR, CANONICAL_PROJECT_CIDS.get("orb", "a13d0459-9628-4d86-b96f-c472fa81c72b"), ".system_generated", "logs", "transcript.jsonl")
+            cur_mtime = os.path.getmtime(live_orb_path) if os.path.exists(live_orb_path) else 0
 
             # Only scan messages if mtime changed or if heartbeat interval elapsed
-            needs_push = (cur_mtime > last_mtime) or (now - last_sync_time > 15)
+            needs_push = (cur_mtime > last_mtime) or (now - last_sync_time > 10)
             
-            local_msgs = get_conversation_history(limit=50, target_title=active_title) if needs_push else None
+            local_msgs = get_conversation_history(limit=40, target_title="ORB - Voice Assistant") if needs_push else None
             
             scanned_projects = None
             if now - last_sync_time > 20:
@@ -2114,7 +2115,7 @@ def cloud_antigrav_bridge_worker():
             }
             if local_msgs is not None:
                 payload["messages"] = local_msgs
-                payload["conversations_by_project"] = {"orb": local_msgs}
+                payload["conversations_by_project"] = {"orb": local_msgs, "hmrc": local_msgs}
             if scanned_projects is not None:
                 payload["projects"] = scanned_projects
 

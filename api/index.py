@@ -972,6 +972,11 @@ class handler(BaseHTTPRequestHandler):
                 CLOUD_RELAY_STATE["projects"] = data["projects"]
             if data.get("messages") and isinstance(data["messages"], list):
                 CLOUD_RELAY_STATE["messages"] = data["messages"]
+                cbp = CLOUD_RELAY_STATE.setdefault("conversations_by_project", {})
+                cbp["orb"] = data["messages"]
+                last_pt = CLOUD_RELAY_STATE.get("last_phone_project_key")
+                if last_pt:
+                    cbp[last_pt] = data["messages"]
             if data.get("conversations_by_project") and isinstance(data["conversations_by_project"], dict):
                 CLOUD_RELAY_STATE.setdefault("conversations_by_project", {}).update(data["conversations_by_project"])
             CLOUD_RELAY_STATE["last_sync"] = time.time()
@@ -1036,6 +1041,7 @@ class handler(BaseHTTPRequestHandler):
 
             # 2. Add user message to the specific project's isolated conversation history
             pkey = resolve_project_key(target_chat)
+            CLOUD_RELAY_STATE["last_phone_project_key"] = pkey
             cbp = CLOUD_RELAY_STATE.setdefault("conversations_by_project", {})
             if not cbp.get(pkey):
                 static_cbp = load_static_project_conversations()
