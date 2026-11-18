@@ -199,6 +199,10 @@ def merge_sync_states(existing, incoming):
         merged["live_patches"] = incoming["live_patches"]
     if "notion_projects" in incoming and isinstance(incoming["notion_projects"], list):
         merged["notion_projects"] = incoming["notion_projects"]
+    if "conversations_by_project" in incoming and isinstance(incoming["conversations_by_project"], dict):
+        existing_cbp = dict(existing.get("conversations_by_project", {}))
+        existing_cbp.update(incoming["conversations_by_project"])
+        merged["conversations_by_project"] = existing_cbp
 
     merged["updated_at"] = incoming.get("updated_at") or int(time.time() * 1000)
     return merged

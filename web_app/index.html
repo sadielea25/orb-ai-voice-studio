@@ -868,7 +868,7 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v7.1</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1d4ed8; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v7.2</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -1191,7 +1191,7 @@
           <button type="button" id="antigravChatHighlight" onclick="window.openProjectPickerModal()" style="flex: 1; min-width: 170px; display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 8px 11px; border-radius: 10px; border: 1.5px solid #cbd5e1; background: #ffffff; cursor: pointer; text-align: left;">
             <div style="display: flex; align-items: center; gap: 7px; min-width: 0;">
               <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; flex-shrink: 0;"></span>
-              <span id="antigravChatTitleText" style="font-size: 12px; font-weight: 800; color: #0f172a; word-break: break-word;">COREMARKETGOODS ACCOUNTING - HMRC</span>
+              <span id="antigravChatTitleText" style="font-size: 12px; font-weight: 800; color: #0f172a; word-break: break-word;">ORB - Voice Assistant</span>
             </div>
             <span style="font-size: 10.5px; color: #2563eb; font-weight: 800; flex-shrink: 0;">Projects ▾</span>
           </button>
@@ -5220,19 +5220,17 @@
           }
         }
 
-        // Dynamically update active chat highlight banner across main tab and floating PiP window
-        if (state.active_chat_title) {
-          const docs = [document];
-          if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-            try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+        // Only set initial active chat title if user has not picked a specific project
+        const savedProj = window.activeChatTitle || localStorage.getItem('orb_active_project');
+        if (savedProj) {
+          window.activeChatTitle = savedProj;
+          const agEl = document.getElementById('antigravChatTitleText');
+          if (agEl && agEl.innerText !== savedProj) agEl.innerText = savedProj;
+        } else if (state.active_chat_title && !window.userSelectedProjectLock) {
+          const chatEl = document.getElementById('activeChatTitleText');
+          if (chatEl && chatEl.innerText !== state.active_chat_title) {
+            chatEl.innerText = state.active_chat_title;
           }
-          docs.forEach(doc => {
-            const chatEl = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-            if (chatEl && chatEl.innerText !== state.active_chat_title) {
-              chatEl.innerText = state.active_chat_title;
-              chatEl.title = 'Active Chat: ' + state.active_chat_title;
-            }
-          });
         }
 
         if (state.enabled !== undefined) {
@@ -5314,17 +5312,13 @@
       if (isPollingConversation) return;
       isPollingConversation = true;
       try {
-        let activeChatName = '';
-        const docs = [document];
-        if (window.documentPictureInPicture && window.documentPictureInPicture.window) {
-          try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
-        }
-        docs.forEach(doc => {
-          if (!activeChatName) {
-            const el = Document.prototype.getElementById.call(doc, 'activeChatTitleText');
-            if (el && el.innerText && el.innerText.trim() && el.innerText.trim() !== 'Live Chat Ready') activeChatName = el.innerText.trim();
+        let activeChatName = window.activeChatTitle || localStorage.getItem('orb_active_project') || '';
+        if (!activeChatName) {
+          const agEl = document.getElementById('antigravChatTitleText');
+          if (agEl && agEl.innerText && agEl.innerText.trim()) {
+            activeChatName = agEl.innerText.trim();
           }
-        });
+        }
         
         const isCap = (window.Capacitor !== undefined) || (window.location.protocol === 'capacitor:') || (window.location.protocol === 'file:') || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1');
         const primaryBase = isCap ? 'https://orbai.appsolutelydone.com' : '';
@@ -8653,17 +8647,21 @@
         .then(r => r.json())
         .then(data => {
           const coreProjects = [
-            { id: 'hmrc', title: 'COREMARKETGOODS ACCOUNTING - HMRC' },
             { id: 'orb', title: 'ORB - Voice Assistant' },
-            { id: 'grants', title: 'Creative Arts Grants' },
-            { id: 'clear_space', title: 'ClearSpace' },
+            { id: 'arts_grant', title: 'Arts Grant (Creative Arts Funding)' },
+            { id: 'hmrc', title: 'COREMARKETGOODS ACCOUNTING - HMRC' },
+            { id: 'spook', title: 'Spook Studio' },
+            { id: 'clear_space', title: 'ClearSpace (ADHD)' },
             { id: 'snap_pack', title: "Snap 'n Pack" },
             { id: 'snap_snack', title: 'Snap N Snack' },
             { id: 'visual_board', title: 'Visual Daily Board' },
-            { id: 'next_3_weeks', title: 'Next 3 Weeks' },
-            { id: 'dolledup_admin', title: 'DolledUp Salon Admin' },
-            { id: 'log_vault', title: 'Private Log Vault' },
-            { id: 'spook', title: 'Spook Studio' }
+            { id: 'next_3_weeks', title: 'Next 3 Weeks Calendar' },
+            { id: 'log_vault', title: 'Private Log Vault (Log App)' },
+            { id: 'business_grants', title: 'Business Grants Studio' },
+            { id: 'supplies_sell', title: 'Supplies to Sell Studio' },
+            { id: 'timber_builds', title: 'Timber Builds' },
+            { id: 'thermo_retreats', title: 'Thermo Retreats Accounts' },
+            { id: 'launch_pack', title: 'Launch Pack' }
           ];
           const apiProjs = (data && data.projects) ? data.projects : [];
           const seenTitles = new Set(coreProjects.map(p => p.title.toUpperCase()));
@@ -8689,7 +8687,7 @@
     function renderProjectsList(projects) {
       const listContainer = document.getElementById('projectPickerList');
       if (!listContainer) return;
-      const current = (window.activeChatTitle || localStorage.getItem('orb_active_project') || 'COREMARKETGOODS ACCOUNTING - HMRC').toUpperCase();
+      const current = (window.activeChatTitle || localStorage.getItem('orb_active_project') || 'ORB - Voice Assistant').toUpperCase();
       
       listContainer.innerHTML = projects.map(p => {
         const isSelected = p.title.toUpperCase() === current || (current.includes('HMRC') && p.title.includes('HMRC'));
@@ -8715,6 +8713,7 @@
 
     window.selectProject = function(id, title) {
       window.activeChatTitle = title;
+      window.userSelectedProjectLock = true;
       try { localStorage.setItem('orb_active_project', title); } catch (e) {}
       
       const badge1 = document.getElementById('activeChatTitleText');
@@ -8727,15 +8726,19 @@
         showToast(`Switched active project to ${title}`);
       }
 
-      // Re-fetch conversation for this specific project
+      const streamBox = document.getElementById('antigravChatStream');
+      if (streamBox) {
+        streamBox.innerHTML = `<div style="padding: 18px; text-align: center; color: #64748b; font-size: 12px;">Loading ${escapeHtml(title)} conversation...</div>`;
+      }
+
       const isCap = window.Capacitor !== undefined || window.location.protocol === 'capacitor:' || window.location.protocol === 'file:';
       const base = isCap ? 'https://orbai.appsolutelydone.com' : '';
       fetch(`${base}/api/conversation?limit=50&chat_title=${encodeURIComponent(title)}`)
         .then(r => r.json())
         .then(data => {
-          if (data && data.events && typeof renderAntigravFeed === 'function') {
-            renderAntigravFeed(data.events);
-          }
+          const msgs = (data && (data.messages || data.events)) || [];
+          lastRenderedMessages = msgs;
+          renderChatStream(msgs);
         })
         .catch(() => {});
     };

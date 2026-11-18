@@ -244,8 +244,120 @@ def extract_chat_title(transcript_path):
     return "Orb"
 
 
+CANONICAL_PROJECT_CIDS = {
+    "orb": "a13d0459-9628-4d86-b96f-c472fa81c72b",
+    "arts_grant": "6dea43b2-e56a-4d81-8cb2-069a08cc93d6",
+    "hmrc": "de5a4648-5c35-4b63-a84f-33cf8597b3ff",
+    "spook": "8d7e1c7a-c77d-41ce-ae91-4fc0e46a84dd",
+    "clear_space": "0e8ab622-c62c-47a4-916a-40c3fac9ce9b",
+    "snap_pack": "f0ea8b56-a534-4932-a004-5765fadb2d70",
+    "snap_snack": "ba6888ee-8fe3-41f9-8318-3fedfc57d058",
+    "visual_board": "42ee0de3-0c47-40f9-a2a1-73a58efac3ff",
+    "next_3_weeks": "29e7f942-ab00-4bd6-9dfb-596f7ca3e4e7",
+    "log_vault": "2a4e4c3a-df57-40aa-92bb-7074905dcd53",
+    "business_grants": "6dea43b2-e56a-4d81-8cb2-069a08cc93d6",
+    "supplies_sell": "a13d0459-9628-4d86-b96f-c472fa81c72b",
+    "timber_builds": "cd61f359-f947-4913-a155-26b9f08f65e5",
+    "thermo_retreats": "47140674-350a-480a-829b-89bc8cf40c51",
+    "launch_pack": "71fac2d7-ee76-4237-94a7-1e838bb3bfbc"
+}
+CANONICAL_PROJECTS_LIST = [
+    {
+        "id": "orb",
+        "title": "ORB - Voice Assistant"
+    },
+    {
+        "id": "arts_grant",
+        "title": "Arts Grant (Creative Arts Funding)"
+    },
+    {
+        "id": "hmrc",
+        "title": "COREMARKETGOODS ACCOUNTING - HMRC"
+    },
+    {
+        "id": "spook",
+        "title": "Spook Studio"
+    },
+    {
+        "id": "clear_space",
+        "title": "ClearSpace (ADHD)"
+    },
+    {
+        "id": "snap_pack",
+        "title": "Snap 'n Pack"
+    },
+    {
+        "id": "snap_snack",
+        "title": "Snap N Snack"
+    },
+    {
+        "id": "visual_board",
+        "title": "Visual Daily Board"
+    },
+    {
+        "id": "next_3_weeks",
+        "title": "Next 3 Weeks Calendar"
+    },
+    {
+        "id": "log_vault",
+        "title": "Private Log Vault (Log App)"
+    },
+    {
+        "id": "business_grants",
+        "title": "Business Grants Studio"
+    },
+    {
+        "id": "supplies_sell",
+        "title": "Supplies to Sell Studio"
+    },
+    {
+        "id": "timber_builds",
+        "title": "Timber Builds"
+    },
+    {
+        "id": "thermo_retreats",
+        "title": "Thermo Retreats Accounts"
+    },
+    {
+        "id": "launch_pack",
+        "title": "Launch Pack"
+    }
+]
+
 def find_matching_transcript(search_title, transcripts):
     if not search_title or search_title.strip() in ("Orb AI Project", "Live Chat Ready"): return None
+    st_low = search_title.lower().strip()
+    target_cid = None
+    if any(k in st_low for k in ("arts grant", "art grant", "argon", "creative arts", "acw", "arts_grant")):
+        target_cid = CANONICAL_PROJECT_CIDS.get("arts_grant")
+    elif any(k in st_low for k in ("hmrc", "coremarket", "account me", "accounting")):
+        target_cid = CANONICAL_PROJECT_CIDS.get("hmrc")
+    elif "spook" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("spook")
+    elif "clear" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("clear_space")
+    elif "pack" in st_low and "launch" not in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("snap_pack")
+    elif "snack" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("snap_snack")
+    elif "visual" in st_low or "daily" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("visual_board")
+    elif "week" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("next_3_weeks")
+    elif "vault" in st_low or "log app" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("log_vault")
+    elif "timber" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("timber_builds")
+    elif "thermo" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("thermo_retreats")
+    elif "launch" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("launch_pack")
+    elif "orb" in st_low or "voice" in st_low:
+        target_cid = CANONICAL_PROJECT_CIDS.get("orb")
+    if target_cid:
+        t_cand = os.path.join(BRAIN_DIR, target_cid, ".system_generated", "logs", "transcript.jsonl")
+        if os.path.exists(t_cand):
+            return t_cand
     clean_search = re.sub(r'[^a-zA-Z0-9 ]', '', search_title.lower()).strip()
     search_words = set(clean_search.split())
     if not search_words: return None
@@ -526,6 +638,21 @@ def get_conversation_history(limit=100, target_title=""):
                             "text": cnt.strip(),
                             "time": t_str
                         })
+        except Exception:
+            pass
+
+    if len(messages) < 6 and target_title:
+        try:
+            pc_file = os.path.join(BASE_DIR, "public", "data", "project_conversations.json")
+            if os.path.exists(pc_file):
+                with open(pc_file, "r", encoding="utf-8") as pcf:
+                    cbp = json.load(pcf).get("conversations_by_project", {})
+                st_low = target_title.lower()
+                for k, v in cbp.items():
+                    if k in st_low or any(w in st_low for w in k.split("_")):
+                        if len(v) > len(messages):
+                            messages = v
+                        break
         except Exception:
             pass
 
@@ -999,20 +1126,8 @@ class PWAHandler(BaseHTTPRequestHandler):
             return
 
         elif url_path == "/api/projects":
-            transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
-            transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
-            seen = set()
-            projects = []
-            for p in transcripts[:25]:
-                t = extract_chat_title(p)
-                if t and t not in seen and not is_garbage_title(t):
-                    seen.add(t)
-                    cid = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(p))))
-                    projects.append({"id": cid, "title": t})
-            if not any("HMRC" in p["title"] or "COREMARKET" in p["title"].upper() for p in projects):
-                projects.insert(0, {"id": "hmrc", "title": "COREMARKETGOODS ACCOUNTING - HMRC"})
             self._set_headers(200)
-            self.wfile.write(json.dumps({"status": "ok", "projects": projects}).encode("utf-8"))
+            self.wfile.write(json.dumps({"status": "ok", "projects": CANONICAL_PROJECTS_LIST}).encode("utf-8"))
             return
 
         elif url_path == "/api/conversation":
@@ -1992,22 +2107,14 @@ def cloud_antigrav_bridge_worker():
             
             scanned_projects = None
             if now - last_sync_time > 20:
-                transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
-                transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
-                seen = set()
-                scanned_projects = []
-                for p in transcripts[:25]:
-                    t = extract_chat_title(p)
-                    if t and t not in seen and not is_garbage_title(t):
-                        seen.add(t)
-                        cid = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(p))))
-                        scanned_projects.append({"id": cid, "title": t})
+                scanned_projects = CANONICAL_PROJECTS_LIST
 
             payload = {
-                "active_chat_title": active_title
+                "active_chat_title": "ORB - Voice Assistant"
             }
             if local_msgs is not None:
                 payload["messages"] = local_msgs
+                payload["conversations_by_project"] = {"orb": local_msgs}
             if scanned_projects is not None:
                 payload["projects"] = scanned_projects
 

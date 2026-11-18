@@ -100,7 +100,73 @@ CONVERSATION_HISTORY = [
     }
 ]
 
+
+CANONICAL_CLOUD_PROJECTS = [
+    {"id": "orb", "title": "ORB - Voice Assistant"},
+    {"id": "arts_grant", "title": "Arts Grant (Creative Arts Funding)"},
+    {"id": "hmrc", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
+    {"id": "spook", "title": "Spook Studio"},
+    {"id": "clear_space", "title": "ClearSpace (ADHD)"},
+    {"id": "snap_pack", "title": "Snap 'n Pack"},
+    {"id": "snap_snack", "title": "Snap N Snack"},
+    {"id": "visual_board", "title": "Visual Daily Board"},
+    {"id": "next_3_weeks", "title": "Next 3 Weeks Calendar"},
+    {"id": "log_vault", "title": "Private Log Vault (Log App)"},
+    {"id": "business_grants", "title": "Business Grants Studio"},
+    {"id": "supplies_sell", "title": "Supplies to Sell Studio"},
+    {"id": "timber_builds", "title": "Timber Builds"},
+    {"id": "thermo_retreats", "title": "Thermo Retreats Accounts"},
+    {"id": "launch_pack", "title": "Launch Pack"}
+]
+
+def resolve_project_key(raw_title):
+    t = (raw_title or "").lower().strip()
+    if not t:
+        return "orb"
+    if any(k in t for k in ("arts grant", "art grant", "argon", "creative arts", "acw", "arts_grant")):
+        return "arts_grant"
+    if any(k in t for k in ("business grant", "bizgrant", "business_grants")):
+        return "business_grants"
+    if any(k in t for k in ("hmrc", "coremarket", "account me", "accounting")):
+        return "hmrc"
+    if "spook" in t:
+        return "spook"
+    if "clear" in t:
+        return "clear_space"
+    if "pack" in t and "launch" not in t:
+        return "snap_pack"
+    if "snack" in t:
+        return "snap_snack"
+    if "visual" in t or "daily" in t:
+        return "visual_board"
+    if "week" in t or "calendar" in t:
+        return "next_3_weeks"
+    if "vault" in t or "log app" in t or "log_vault" in t:
+        return "log_vault"
+    if "sell" in t or "supplies" in t:
+        return "supplies_sell"
+    if "timber" in t:
+        return "timber_builds"
+    if "thermo" in t:
+        return "thermo_retreats"
+    if "launch" in t:
+        return "launch_pack"
+    if "orb" in t or "voice" in t:
+        return "orb"
+    return "orb"
+
+def load_static_project_conversations():
+    try:
+        p = os.path.join(os.path.dirname(os.path.dirname(__file__)), "public", "data", "project_conversations.json")
+        if os.path.exists(p):
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f).get("conversations_by_project", {})
+    except Exception:
+        pass
+    return {}
+
 CLOUD_RELAY_STATE = {
+    "conversations_by_project": {},
     "active_chat_title": "COREMARKETGOODS ACCOUNTING - HMRC",
     "projects": [
         {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
@@ -783,14 +849,8 @@ class handler(BaseHTTPRequestHandler):
             return
 
         elif "projects" in target or "projects" in raw:
-            projects = CLOUD_RELAY_STATE.get("projects") or [
-                {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
-                {"id": "orb", "title": "ORB AI Studio"},
-                {"id": "spook", "title": "Spook Studio"},
-                {"id": "arts_grant", "title": "Arts Grant"}
-            ]
             self._set_headers(200)
-            self.wfile.write(json.dumps({"status": "ok", "projects": projects}).encode("utf-8"))
+            self.wfile.write(json.dumps({"status": "ok", "projects": CANONICAL_CLOUD_PROJECTS}).encode("utf-8"))
             return
 
         elif "vocabulary" in target or "vocabulary" in raw:
@@ -811,7 +871,10 @@ class handler(BaseHTTPRequestHandler):
             return
 
         elif "conversation" in target or "conversation" in raw:
-            msgs = CLOUD_RELAY_STATE.get("messages")
+            req_title = q.get("chat_title", [""])[0] if isinstance(q, dict) else ""
+            pkey = resolve_project_key(req_title)
+            cbp = CLOUD_RELAY_STATE.setdefault("conversations_by_project", {})
+            msgs = cbp.get(pkey)
             if not msgs:
                 try:
                     try:
@@ -819,15 +882,21 @@ class handler(BaseHTTPRequestHandler):
                     except ImportError:
                         from sync_engine import get_cloud_sync_state
                     st = get_cloud_sync_state() or {}
-                    if st.get("messages") and isinstance(st["messages"], list):
-                        msgs = st["messages"]
-                        CLOUD_RELAY_STATE["messages"] = msgs[-100:]
+                    blob_cbp = st.get("conversations_by_project", {})
+                    if isinstance(blob_cbp, dict) and blob_cbp.get(pkey):
+                        msgs = blob_cbp[pkey]
+                        cbp[pkey] = msgs
                 except Exception:
                     pass
             if not msgs:
-                msgs = CONVERSATION_HISTORY
+                static_cbp = load_static_project_conversations()
+                if static_cbp.get(pkey):
+                    msgs = static_cbp[pkey]
+                    cbp[pkey] = msgs
+            if not msgs:
+                msgs = [{"role": "assistant", "text": f"Connected to {req_title or 'ORB'} workspace.", "time": "Live"}]
             self._set_headers(200)
-            self.wfile.write(json.dumps({"messages": msgs, "events": msgs}).encode("utf-8"))
+            self.wfile.write(json.dumps({"project_key": pkey, "chat_title": req_title, "messages": msgs, "events": msgs}).encode("utf-8"))
             return
 
         elif "sync" in target or "sync" in raw:
@@ -900,6 +969,8 @@ class handler(BaseHTTPRequestHandler):
                 CLOUD_RELAY_STATE["projects"] = data["projects"]
             if data.get("messages") and isinstance(data["messages"], list):
                 CLOUD_RELAY_STATE["messages"] = data["messages"]
+            if data.get("conversations_by_project") and isinstance(data["conversations_by_project"], dict):
+                CLOUD_RELAY_STATE.setdefault("conversations_by_project", {}).update(data["conversations_by_project"])
             CLOUD_RELAY_STATE["last_sync"] = time.time()
             
             pending = list(CLOUD_RELAY_STATE.get("pending_prompts", []))
@@ -960,14 +1031,18 @@ class handler(BaseHTTPRequestHandler):
                 "created_at": int(time.time()*1000)
             })
 
-            # 2. Add user message to conversation history
+            # 2. Add user message to the specific project's isolated conversation history
+            pkey = resolve_project_key(target_chat)
+            cbp = CLOUD_RELAY_STATE.setdefault("conversations_by_project", {})
+            if not cbp.get(pkey):
+                static_cbp = load_static_project_conversations()
+                cbp[pkey] = list(static_cbp.get(pkey, []))
+            relay_msgs = cbp.setdefault(pkey, [])
             user_msg = {
                 "role": "user",
                 "text": user_text,
                 "time": time.strftime("%H:%M")
             }
-            CONVERSATION_HISTORY.append(user_msg)
-            relay_msgs = CLOUD_RELAY_STATE.setdefault("messages", [])
             relay_msgs.append(user_msg)
 
             desktop_online = ((time.time() - CLOUD_RELAY_STATE.get("last_sync", 0)) < 25) and not bool(data.get("force_cloud_offline"))
@@ -1075,12 +1150,15 @@ class handler(BaseHTTPRequestHandler):
                                     cur_patches = cur_patches[-25:]
                             active_patches = cur_patches
                             st["live_patches"] = active_patches
-                            # 3. Persist conversation messages across serverless instances
-                            prev_msgs = list(st.get("messages", []))
-                            prev_msgs.append(user_msg)
-                            prev_msgs.append(ai_msg)
-                            st["messages"] = prev_msgs[-100:]
-                            CLOUD_RELAY_STATE["messages"] = st["messages"]
+                            # 3. Persist isolated project conversation messages across serverless instances
+                            blob_cbp = dict(st.get("conversations_by_project", {}))
+                            proj_list = list(blob_cbp.get(pkey) or relay_msgs[:-2])
+                            proj_list.append(user_msg)
+                            proj_list.append(ai_msg)
+                            blob_cbp[pkey] = proj_list[-50:]
+                            st["conversations_by_project"] = blob_cbp
+                            cbp[pkey] = blob_cbp[pkey]
+                            CLOUD_RELAY_STATE["messages"] = blob_cbp[pkey]
                             save_cloud_sync_state(st)
                         except Exception:
                             pass
