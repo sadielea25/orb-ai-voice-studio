@@ -157,10 +157,13 @@ def resolve_project_key(raw_title):
 
 def load_static_project_conversations():
     try:
-        p = os.path.join(os.path.dirname(os.path.dirname(__file__)), "public", "data", "project_conversations.json")
-        if os.path.exists(p):
-            with open(p, "r", encoding="utf-8") as f:
-                return json.load(f).get("conversations_by_project", {})
+        for p in [
+            os.path.join(os.path.dirname(__file__), "project_conversations.json"),
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), "public", "data", "project_conversations.json")
+        ]:
+            if os.path.exists(p):
+                with open(p, "r", encoding="utf-8") as f:
+                    return json.load(f).get("conversations_by_project", {})
     except Exception:
         pass
     return {}
