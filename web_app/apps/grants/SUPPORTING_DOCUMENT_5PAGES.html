@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sadie Lea Minifee – ACW Creative Practice Supporting Document (5-Page Dossier)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --primary: #1e293b;
+    --accent: #b45309;
+    --accent-light: #fef3c7;
+    --border: #e2e8f0;
+    --bg-page: #ffffff;
+    --text-muted: #64748b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    line-height: 1.5;
+    padding: 20px 0;
+  }
+
+  /* Control bar */
+  .toolbar {
+    position: sticky;
+    top: 10px;
+    z-index: 999;
+    max-width: 210mm;
+    margin: 0 auto 20px auto;
+    background: #0f172a;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  }
+
+  .toolbar h1 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .toolbar-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #0f172a;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toolbar-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  }
+
+  /* A4 Page container */
+  .a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 25px auto;
+    background: var(--bg-page);
+    padding: 18mm 20mm;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    position: relative;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .page-content {
+    flex: 1;
+  }
+
+  /* Header */
+  .doc-header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .doc-title h2 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+  }
+
+  .doc-title p {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .doc-meta {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .doc-meta strong { color: #0f172a; }
+
+  /* Page Footer */
+  .doc-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .page-badge {
+    background: #e2e8f0;
+    color: #334155;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 10px;
+  }
+
+  /* Typography & Layout elements */
+  h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 14px 0 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 4px;
+  }
+
+  p, li {
+    font-size: 11.5px;
+    color: #334155;
+    line-height: 1.55;
+  }
+
+  ul {
+    padding-left: 18px;
+    margin-bottom: 10px;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+    word-break: break-all;
+  }
+  a:hover { text-decoration: underline; }
+
+  .link-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-left: 4px solid #0f172a;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .link-card-title {
+    font-weight: 700;
+    font-size: 12px;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+  .link-card-desc {
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+
+  /* Image grid */
+  .image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .image-placeholder {
+    background: #f8fafc;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .image-placeholder-tag {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .image-placeholder-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2px;
+  }
+  .image-placeholder-desc {
+    font-size: 10px;
+    color: #64748b;
+  }
+
+  /* Itinerary & Syllabus boxes */
+  .syllabus-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .syllabus-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 9px 11px;
+    border-radius: 6px;
+  }
+  .syllabus-card h4 {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 3px;
+  }
+  .syllabus-card p {
+    font-size: 10.5px;
+    color: #475569;
+    line-height: 1.4;
+  }
+
+  .timeline-box {
+    background: #fefce8;
+    border: 1px solid #fde047;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+  }
+  .timeline-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #854d0e;
+    margin-bottom: 4px;
+  }
+
+  /* Letters of support */
+  .letter-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #0f172a;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .letter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px dashed #cbd5e1;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+  }
+  .letter-author {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .letter-role {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .letter-body {
+    font-size: 10.5px;
+    color: #334155;
+    line-height: 1.48;
+    font-style: italic;
+    white-space: pre-line;
+  }
+  .letter-signoff {
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #475569;
+    font-style: normal;
+  }
+
+  /* Print Styles */
+  @media print {
+    body {
+      background: white;
+      padding: 0;
+    }
+    .toolbar { display: none; }
+    .a4-page {
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      min-height: 297mm;
+      page-break-after: always;
+      page-break-inside: avoid;
+      padding: 15mm 18mm;
+    }
+    .a4-page:last-child {
+      page-break-after: auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Interactive Toolbar -->
+<div class="toolbar">
+  <div>
+    <h1>Arts Council of Wales – Creative Practice Supporting Document (5-Page Dossier)</h1>
+    <span style="font-size: 11px; opacity: 0.8;">Applicant: <strong>Sadie Lea Minifee</strong> | Ready to Print & Save as PDF</span>
+  </div>
+  <button class="toolbar-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 1: PORTFOLIO & VISUAL EVIDENCE -->
+<!-- ========================================================================= -->
+<div class="a4-page">
+  <div class="page-content">
+    <div class="doc-header">
+      <div class="doc-title">
+        <h2>Arts Council of Wales – Creative Practice</h2>
+        <p>Supporting Document Dossier | Section 1: Visual Evidence & Portfolio</p>
+      </div>
+      <div class="doc-meta">
+        Applicant: <strong>Sadie Lea Minifee</strong><br>
+        Artform: <strong>Dance & Screen Direction</strong>
+      </div>
+    </div>
+
+    <h3>🎬 Video Portfolio & Performance Showreel Links</h3>
+    
+    <div class="link-card">
+      <div class="link-card-title">1. "In These Stones" (Cinematic Screen Movement Film)</div>
+      <div class="link-card-desc"><strong>Role:</strong> Dance Performance Director, Choreographer, Casting & Movement Lead | <strong>Dir:</strong> Tim Tyson Short | <em>Wales Millennium Centre Commission / ACW Funded (2021)</em></div>
+      <div><strong>YouTube Video:</strong> <a href="https://youtu.be/NnRr21q49-s" target="_blank">https://youtu.be/NnRr21q49-s</a> | <strong>Project Page:</strong> <a href="https://www.timtysonshort.com/in-these-stones" target="_blank">https://www.timtysonshort.com/in-these-stones</a></div>
+    </div>
+
+    <div class="link-card">
+      <div class="link-card-title">2. Official Artist Performance Portfolio & Video Reels (Instagram)</div>
+      <div class="link-card-desc">Comprehensive client history including international brand residencies (Glitterbox, Defected, Paradise, Ushuaïa, Hï Ibiza, Printworks London) and artist tours (Tinie Tempah, Martin Garrix, Black Coffee).</div>
+      <div><strong>Portfolio:</strong> <a href="https://randomnesstext.wixsite.com/dancersite/more-clients" target="_blank">https://randomnesstext.wixsite.com/dancersite/more-clients</a></div>
+    </div>
+
+    <div class="link-card">
+      <div class="link-card-title">3. Erykah Badu Live Stage Showcase (Ibiza)</div>
+      <div class="link-card-desc"><strong>Role:</strong> Movement Director, Choreographer, Stylist & Performer. Directed ensemble movement and visual aesthetic for headline showcase.</div>
+      <div><strong>Video Reel Link:</strong> <a href="https://randomnesstext.wixsite.com/dancersite/more-clients" target="_blank">https://randomnesstext.wixsite.com/dancersite/more-clients</a></div>
+    </div>
+
+    <div class="link-card">
+      <div class="link-card-title">4. Broadcast Screen Credits & National Theatre Wales</div>
+      <div class="link-card-desc">Professional screen performance across <strong>Netflix, BBC, and ITV</strong>; site-specific community performance with <strong>National Theatre Wales (Grangetown)</strong>; featured by <strong>Dazed Magazine</strong>.</div>
+    </div>
+
+    <h3>📸 Selected Production & Movement Direction Stills</h3>
+    <div class="image-grid">
+      <div class="image-placeholder">
+        <div class="image-placeholder-tag">Still 1: Screen Direction</div>
+        <div class="image-placeholder-title">"In These Stones" (2021)</div>
+        <div class="image-placeholder-desc">Architectural movement direction and ensemble choreography at Wales Millennium Centre.</div>
+      </div>
+      <div class="image-placeholder">
+        <div class="image-placeholder-tag">Still 2: Creative Direction</div>
+        <div class="image-placeholder-title">Erykah Badu Showcase</div>
+        <div class="image-placeholder-desc">Movement directing, styling, and staging ensemble dancers in Ibiza.</div>
+      </div>
+      <div class="image-placeholder">
+        <div class="image-placeholder-tag">Still 3: Arena Performance</div>
+        <div class="image-placeholder-title">International Tours & Residencies</div>
+        <div class="image-placeholder-desc">Mainstage performance for Tinie Tempah, Martin Garrix, Glitterbox & Defected.</div>
+      </div>
+      <div class="image-placeholder">
+        <div class="image-placeholder-tag">Still 4: Community Practice</div>
+        <div class="image-placeholder-title">National Theatre Wales & 90s Jam</div>
+        <div class="image-placeholder-desc">Site-specific Grangetown residency and grassroots Cardiff community jams.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Project: <em>Bridging Horizons - From LA to Wales</em></span>
+    <span class="page-badge">Page 1 of 5</span>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 2: PHASE 1 – LOS ANGELES TRAINING ITINERARY -->
+<!-- ========================================================================= -->
+<div class="a4-page">
+  <div class="page-content">
+    <div class="doc-header">
+      <div class="doc-title">
+        <h2>Arts Council of Wales – Creative Practice</h2>
+        <p>Supporting Document Dossier | Section 2: Phase 1 – Los Angeles Training & Mentorship</p>
+      </div>
+      <div class="doc-meta">
+        Applicant: <strong>Sadie Lea Minifee</strong><br>
+        Artform: <strong>Dance & Choreographic Direction</strong>
+      </div>
+    </div>
+
+    <h3>📍 Key Hollywood Dance Institutions & Masterclass Syllabus</h3>
+    <div class="syllabus-grid">
+      <div class="syllabus-card">
+        <h4>Millennium Dance Complex (North Hollywood)</h4>
+        <p><strong>Masterclass Focus:</strong> Advanced choreographic composition, complex group dynamics, fast-paced phrase execution, and industry staging methods.</p>
+      </div>
+      <div class="syllabus-card">
+        <h4>Playground LA (West Hollywood – Melrose)</h4>
+        <p><strong>Masterclass Focus:</strong> High-impact musicality, street-jazz, foundational hip-hop textures, and dynamic performance textures under premier choreographers.</p>
+      </div>
+      <div class="syllabus-card">
+        <h4>TMilly Studio (North Hollywood)</h4>
+        <p><strong>Masterclass Focus:</strong> Specialized movement direction for digital camera frames, lens perspective blocking, and cinematic lighting interaction.</p>
+      </div>
+      <div class="syllabus-card">
+        <h4>mL Studio & Kinjaz Dojo (Los Angeles)</h4>
+        <p><strong>Masterclass Focus:</strong> Micro-musicality, spatial synchronization, house/locking foundations, and authentic urban movement lineage.</p>
+      </div>
+    </div>
+
+    <h3>🗓️ Two-Week Intensive Immersion Schedule (Daily Breakdown)</h3>
+    
+    <div class="timeline-box">
+      <div class="timeline-title">WEEK 1: Advanced Technical Immersion & Lineage Reconnection</div>
+      <ul>
+        <li><strong>Days 1–3:</strong> 3x daily masterclasses at Millennium & Playground LA; analyzing choreographic transitions, ensemble spacing, and musical phrasing.</li>
+        <li><strong>Day 4:</strong> TMilly Studio camera direction lab; observing camera tracking with live movement.</li>
+        <li><strong>Day 5–7:</strong> Reconnecting with foundational street dance communities; studying studio warm-up facilitation, class management, and dancer wellbeing.</li>
+      </ul>
+    </div>
+
+    <div class="timeline-box">
+      <div class="timeline-title">WEEK 2: Directorial Mentorship, Screen Choreography & Score Development</div>
+      <ul>
+        <li><strong>Days 8–10:</strong> 1-on-1 mentorship sessions with established LA choreographers focusing on rehearsal directing, notation, and pitching creative treatments.</li>
+        <li><strong>Days 11–12:</strong> Screen movement directing lab; framing live movement for multi-camera setups.</li>
+        <li><strong>Days 13–14:</strong> Synthesizing choreographic tasks, improvisation scores, and rehearsal syllabus to bring directly into the Welsh Phase 2 Studio R&D Lab.</li>
+      </ul>
+    </div>
+
+    <h3>🎯 Specific Upskilling & Sector Value for Wales</h3>
+    <p>This immersion provides access to high-calibre choreographic composition and camera movement direction that is currently unavailable within Wales. By reconnecting with the Hollywood dance ecosystem with over a decade of professional performance experience, Sadie will translate cutting-edge global methodologies into the Welsh cultural ecology.</p>
+  </div>
+
+  <div class="doc-footer">
+    <span>Project: <em>Bridging Horizons - From LA to Wales</em></span>
+    <span class="page-badge">Page 2 of 5</span>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 3: PHASE 2 – WELSH STUDIO R&D LAB -->
+<!-- ========================================================================= -->
+<div class="a4-page">
+  <div class="page-content">
+    <div class="doc-header">
+      <div class="doc-title">
+        <h2>Arts Council of Wales – Creative Practice</h2>
+        <p>Supporting Document Dossier | Section 3: Phase 2 – Welsh Studio R&D Lab Plan</p>
+      </div>
+      <div class="doc-meta">
+        Applicant: <strong>Sadie Lea Minifee</strong><br>
+        Artform: <strong>Choreography & Movement Direction</strong>
+      </div>
+    </div>
+
+    <h3>📍 Welsh Studio Partner & Facilities</h3>
+    <ul>
+      <li><strong>Location:</strong> Professional Cardiff Dance Studio Facility (e.g. Chapter Arts Centre / Rubicon Dance / Local Studio Partner).</li>
+      <li><strong>Duration:</strong> 3 Weeks (15 Studio Days / 6 hours per day intensive research block).</li>
+    </ul>
+
+    <h3>👥 The Welsh Creative Ensemble</h3>
+    <div class="syllabus-grid">
+      <div class="syllabus-card">
+        <h4>Lead Choreographer & Director</h4>
+        <p><strong>Sadie Lea Minifee</strong><br>Directing research, designing movement scores, integrating camera perspectives, and leading daily studio lab sessions.</p>
+      </div>
+      <div class="syllabus-card">
+        <h4>3 Contracted Professional Welsh Dancers</h4>
+        <p><strong>Paid Fair Industry Rates:</strong> £180/day (Aligned with Equity & Artists' Union England standards = £2,160 total). Recruited from the diverse Welsh dance community.</p>
+      </div>
+    </div>
+
+    <h3>🔬 Studio R&D Research Framework (Core Objectives)</h3>
+    <div class="link-card">
+      <div class="link-card-title">1. Movement Generation & Aesthetic Fusion</div>
+      <div class="link-card-desc">Fusing advanced California training, Ballroom/Voguing lines, and House grooves with contemporary floorwork to develop a distinct signature choreographic vocabulary for Wales.</div>
+    </div>
+
+    <div class="link-card">
+      <div class="link-card-title">2. Movement Direction for Screen & Camera Framing</div>
+      <div class="link-card-desc">Building on experience from <em>In These Stones</em> and Erykah Badu showcase to test how camera lenses, lighting angles, costume textures, and spatial framing transform dance narratives.</div>
+    </div>
+
+    <div class="link-card">
+      <div class="link-card-title">3. Documentation & Portfolio Asset Creation</div>
+      <div class="link-card-desc">High-quality filming of R&D movement studies to compile Sadie's first official Movement Direction and Choreography portfolio for commissioning bodies, screen producers, and theatres.</div>
+    </div>
+
+    <div class="link-card">
+      <div class="link-card-title">4. Informal Peer Sharing & Community Feedback</div>
+      <div class="link-card-desc">Hosting an informal work-in-progress sharing session for Cardiff dance artists, peers (including regular collaborator Leighton Rees), and community creatives to review and evaluate findings.</div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Project: <em>Bridging Horizons - From LA to Wales</em></span>
+    <span class="page-badge">Page 3 of 5</span>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 4: DIRECTORIAL & INDUSTRY LETTERS OF SUPPORT (PART 1) -->
+<!-- ========================================================================= -->
+<div class="a4-page">
+  <div class="page-content">
+    <div class="doc-header">
+      <div class="doc-title">
+        <h2>Arts Council of Wales – Creative Practice</h2>
+        <p>Supporting Document Dossier | Section 4: Letters of Support (Part 1)</p>
+      </div>
+      <div class="doc-meta">
+        Applicant: <strong>Sadie Lea Minifee</strong><br>
+        Directorial & Collaborative References
+      </div>
+    </div>
+
+    <!-- Tim Tyson Short -->
+    <div class="letter-card">
+      <div class="letter-header">
+        <span class="letter-author">1. Tim Tyson Short</span>
+        <span class="letter-role">Professional Director, Filmmaker & Musician (Wales)</span>
+      </div>
+      <div class="letter-body">"I am writing to offer my strongest endorsement for Sadie Lea Minifee’s Creative Practice grant application... A prime example of her multidisciplinary capability was our collaboration on the Arts Council-funded project, 'In These Stones' (2021), commissioned by the Wales Millennium Centre. For this project—a complex visual and auditory piece utilizing the architecture and resonance of the WMC building itself—I brought Sadie in to direct the dance performance elements.
+
+As I managed the overarching narrative and videography, Sadie took complete ownership of casting, producing, and managing the performers (incorporating both dancers and freerunning). She seamlessly integrated the choreography and costuming into my storyboards, bridging the gap between concept and execution. She possesses the rare ability to blend top-tier artistic vision with meticulous production and administrative management...
+
+I have watched Sadie self-fund and drive incredible projects throughout her career, often navigating significant personal and systemic roadblocks. Sadie has frequently had to work twice as hard to sustain her practice. She has reached a critical juncture where she cannot rely on self-funding to progress her career. This Creative Practice grant represents a vital intervention. Sadie’s proposed period of study and immersion in Los Angeles is precisely the kind of catalyst required to initiate a fundamental 'step-change' in her career... Any opportunity to help Sadie nurture her abilities and equip her with the resources to flourish in our creative industry will be a major asset to Wales."</div>
+      <div class="letter-signoff">— Tim Tyson Short, Director & Filmmaker | www.timtysonshort.com</div>
+    </div>
+
+    <!-- Aoife Cleary -->
+    <div class="letter-card">
+      <div class="letter-header">
+        <span class="letter-author">2. Aoife Cleary</span>
+        <span class="letter-role">Founder & CEO, Another Dimension Agency (UK & Ibiza)</span>
+      </div>
+      <div class="letter-body">"I’m very happy to support Sadie with her application for Creative Practice in Wales. I am the Founder and CEO of Another Dimension Agency, a creative entertainment agency working across the UK and Ibiza... Sadie has been part of Another Dimension since we launched over seven years ago and has continued to work with us regularly as a freelance creative throughout that time.
+
+Sadie is a naturally creative and highly individual person. She has a great eye for detail, a strong sense of style and a real ability to come up with ideas that feel fresh and different. She brings a lot of personality to her work, while also being extremely easy to collaborate with and a pleasure to have on a project... I genuinely believe that having the time, space and financial support to develop her ideas would be hugely beneficial to Sadie. She has a lot to offer creatively, and I would love to see her have the opportunity to explore this further."</div>
+      <div class="letter-signoff">— Aoife Cleary, Founder & CEO, Another Dimension Agency | www.anotherdimensionagency.com</div>
+    </div>
+
+    <!-- Christian Hart -->
+    <div class="letter-card" style="margin-bottom: 0;">
+      <div class="letter-header">
+        <span class="letter-author">3. Christian Hart</span>
+        <span class="letter-role">Professional Creative & Dance Collaborator</span>
+      </div>
+      <div class="letter-body">"I am writing in support of Sadie's application for a Creative Practice grant. Having worked with her previously, I can vouch for her professionalism and creativity and have no doubt whatever produced will be of the highest artistic quality. She was a pleasure to work with and I would gladly do so again."</div>
+      <div class="letter-signoff">— Christian Hart, Professional Creative & Collaborator | christianhart@hotmail.co.uk</div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Project: <em>Bridging Horizons - From LA to Wales</em></span>
+    <span class="page-badge">Page 4 of 5</span>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 5: CREATIVE INDUSTRY & COMMUNITY LETTERS OF SUPPORT (PART 2) -->
+<!-- ========================================================================= -->
+<div class="a4-page">
+  <div class="page-content">
+    <div class="doc-header">
+      <div class="doc-title">
+        <h2>Arts Council of Wales – Creative Practice</h2>
+        <p>Supporting Document Dossier | Section 5: Letters of Support (Part 2)</p>
+      </div>
+      <div class="doc-meta">
+        Applicant: <strong>Sadie Lea Minifee</strong><br>
+        Agency & Welsh Community Endorsements
+      </div>
+    </div>
+
+    <!-- Leah Timmins -->
+    <div class="letter-card">
+      <div class="letter-header">
+        <span class="letter-author">4. Leah Timmins</span>
+        <span class="letter-role">Founder & Director, Decadance Agency</span>
+      </div>
+      <div class="letter-body">"I am very happy to write in support of Sadie and her application for Creative Practice in Wales. I have had the pleasure of working with Sadie through Decadance over the past decade, and during that time I have come to know her as an incredibly talented, creative and dedicated individual.
+
+Sadie brings a real sense of authenticity to everything she does. She is not afraid to think differently, explore new ideas or challenge conventional approaches, and this comes through strongly in her creative practice. Her work is original, innovative and deeply considered, while always retaining a very genuine sense of who she is as an artist and creative. Sadie puts enormous care and energy into what she creates and consistently approaches her work with curiosity, integrity and imagination. Over the years, I have seen Sadie develop and grow creatively, and I have no doubt that she has a great deal more to offer... I wholeheartedly support Sadie’s application and believe that this funding would provide valuable encouragement and opportunity for her continued creative development."</div>
+      <div class="letter-signoff">— Leah Timmins, Decadance Agency | Leah@decadance-agency.com | +44 7840 463030 | www.decadance-agency.com</div>
+    </div>
+
+    <!-- Monique B -->
+    <div class="letter-card">
+      <div class="letter-header">
+        <span class="letter-author">5. Monique B</span>
+        <span class="letter-role">DJ, Producer & Creative (Cardiff, Wales)</span>
+      </div>
+      <div class="letter-body">"I’m really happy to support Sadie and her application for Creative Practice funding. I’ve known Sadie through Cardiff’s creative scene for a number of years and she’s always stood out as an incredibly talented dancer, choreographer and all-round creative. She’s performed internationally in Ibiza for the likes of Glitterbox and Jamie Jones, while still putting real energy into the grassroots scene here in Wales through her dance classes and collaborations with creatives such as Leighton. Sadie brings so much energy, individuality and passion to what she does, and I genuinely believe she’s someone to watch. I’d love to see her receive this support to continue developing her work and pushing her creativity further."</div>
+      <div class="letter-signoff">— Monique B, DJ, Producer & Creative | Cardiff, Wales</div>
+    </div>
+
+    <!-- Justin Drag -->
+    <div class="letter-card" style="margin-bottom: 0;">
+      <div class="letter-header">
+        <span class="letter-author">6. Justin Drag</span>
+        <span class="letter-role">Drag King & Performance Artist (Cardiff, Wales)</span>
+      </div>
+      <div class="letter-body">"To the Arts Council of Wales: I am writing to give my reference and full support for Sadie’s Creative Practice application. I have known Sadie for many years. Sadie is an absolute powerhouse, and their passion for anything they put themselves into is genuinely inspiring. They will use this grant to explore and create a diverse, authentic artistic voice for Wales which the Arts Council will be proud of supporting. Thank you for taking the time to read, and I hope my reference demonstrates the high regard and value Sadie holds within our Welsh creative and Queer performance community."</div>
+      <div class="letter-signoff">— Justin Drag, Cardiff Drag King & Performance Artist</div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Project: <em>Bridging Horizons - From LA to Wales</em></span>
+    <span class="page-badge">Page 5 of 5</span>
+  </div>
+</div>
+
+</body>
+</html>

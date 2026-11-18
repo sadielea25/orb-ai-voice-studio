@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Official ACW Project Budget Viewer - Sadie Lea Minifee</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 20px; background: #0f172a; color: #f8fafc; }
+        .container { max-width: 1100px; margin: 0 auto; background: #1e293b; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h1 { color: #f59e0b; margin-top: 0; font-size: 24px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #334155; padding-bottom: 8px; }
+        .tab-btn { background: #334155; color: #cbd5e1; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.2s; }
+        .tab-btn.active { background: #f59e0b; color: #0f172a; }
+        .tab-content { display: none; overflow-x: auto; }
+        .tab-content.active { display: block; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        th, td { border: 1px solid #334155; padding: 8px 12px; text-align: left; }
+        th { background: #0f172a; color: #f59e0b; font-weight: 600; }
+        tr:nth-child(even) { background: #182234; }
+        .highlight { background: rgba(245, 158, 11, 0.15); font-weight: bold; color: #fbbf24; }
+        .badge { display: inline-block; padding: 4px 10px; background: #10b981; color: #0f172a; border-radius: 9999px; font-weight: bold; font-size: 12px; }
+        .summary-card { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 16px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .metric-title { font-size: 11px; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.5px; }
+        .metric-val { font-size: 20px; font-weight: bold; color: #f8fafc; margin-top: 4px; }
+        .metric-val.green { color: #34d399; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Arts Council of Wales – Creative Practice Budget (£10,000)</h1>
+        <p style="color: #94a3b8; font-size: 14px;">Applicant: <strong>Sadie Lea Minifee</strong> | Project: <strong>Bridging Horizons - From LA to Wales</strong></p>
+        
+        <div class="summary-card">
+            <div>
+                <div class="metric-title">Total Expenditure</div>
+                <div class="metric-val">£10,000</div>
+            </div>
+            <div>
+                <div class="metric-title">Grant Requested (ACW)</div>
+                <div class="metric-val green">£10,000</div>
+            </div>
+            <div>
+                <div class="metric-title">Project Balance</div>
+                <div class="metric-val green">£0 <span class="badge">Balanced</span></div>
+            </div>
+            <div>
+                <div class="metric-title">Dancers & Artists Pay</div>
+                <div class="metric-val">£5,750 (57.5%)</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('summary')">1. Summary Sheet</button>
+            <button class="tab-btn" onclick="showTab('expenditure')">2. Expenditure Breakdown</button>
+            <button class="tab-btn" onclick="showTab('income')">3. Income</button>
+        </div>
+
+        <div id="tab-summary" class="tab-content active">
+            <table>
+                <tr><th>Category</th><th>Details</th><th>Application Amount</th></tr>
+                <tr><td><strong>Applicant Name</strong></td><td>Sadie Lea Minifee</td><td>-</td></tr>
+                <tr><td><strong>Project Title</strong></td><td>Bridging Horizons - From LA to Wales</td><td>-</td></tr>
+                <tr class="highlight"><td><strong>Total Expenditure</strong></td><td>Artists Fees (£5,750) + Artistic Activity Costs (£4,250)</td><td>£10,000</td></tr>
+                <tr class="highlight"><td><strong>Total Grant Income</strong></td><td>Arts Council of Wales Creative Practice Fund</td><td>£10,000</td></tr>
+                <tr style="background: #064e3b; color: #a7f3d0; font-weight: bold;"><td><strong>Balance (Must Equal £0)</strong></td><td>Total Income minus Total Expenditure</td><td>£0 (Balanced)</td></tr>
+            </table>
+        </div>
+
+        <div id="tab-expenditure" class="tab-content">
+            <table>
+                <tr><th>Line / Category</th><th>Description & Calculation Notes</th><th>Amount (£)</th></tr>
+                <tr class="highlight"><td colspan="3"><strong>1. ARTISTS FEES (£5,750 total)</strong></td></tr>
+                <tr><td>Line 11: Lead Artist Fee (Sadie)</td><td>Lead Artist Fee (your own time) – Sadie Lea Minifee: 14 days @ £250/day across California immersion & Welsh studio lab</td><td>£3,500</td></tr>
+                <tr><td>Line 12: Welsh Dancers Fees</td><td>4 to 5 Welsh professional dancers contracted across studio lab: 12.5 dancer-days @ £180/day fair industry standard rate</td><td>£2,250</td></tr>
+                <tr class="highlight"><td colspan="3"><strong>2. ARTISTIC ACTIVITY, TRAVEL & CALIFORNIA LIVING COSTS (£4,250 total)</strong></td></tr>
+                <tr><td>Line 22: Flights & UK Airport Transfer</td><td>Return flights UK to Los Angeles (including 23kg checked baggage & UK airport coach/train)</td><td>£900</td></tr>
+                <tr><td>Line 23: California Accommodation</td><td>21 nights accommodation: subsidized dancer lodging at Boogiezone Utopia (Torrance) & Hollywood lodging</td><td>£1,425</td></tr>
+                <tr><td>Line 24: California Daily Subsistence</td><td>Daily food and subsistence allowance (21 days away from home @ ~£33.33 / $43 per day)</td><td>£700</td></tr>
+                <tr><td>Line 25: California Local Transit</td><td>Metro TAP passes & transit between NoHo, WeHo, Torrance (Boogiezone Utopia) & Long Beach for studios, meetups & workshops</td><td>£250</td></tr>
+                <tr><td>Line 26: Masterclasses & Workshops</td><td>California Dance Studio Masterclasses & Workshops (Millennium, Playground LA, TMilly, mL, Boogiezone Utopia & community laboratory sessions)</td><td>£500</td></tr>
+                <tr><td>Line 27: Cardiff Studio Hire</td><td>Cardiff dance studio hire for Welsh R&D Lab (Intensive choreographic development sessions)</td><td>£400</td></tr>
+                <tr><td>Line 28: Travel Insurance, ESTA & eSIM</td><td>US Travel & Medical Insurance, ESTA Visa Waiver & 30-Day US eSIM / Mobile Data Package</td><td>£75</td></tr>
+                <tr style="background: #0f172a; font-weight: bold; color: #f59e0b;"><td><strong>TOTAL EXPENDITURE</strong></td><td>All eligible project costs combined</td><td><strong>£10,000</strong></td></tr>
+            </table>
+        </div>
+
+        <div id="tab-income" class="tab-content">
+            <table>
+                <tr><th>Source of Income</th><th>Funding Status</th><th>Amount (£)</th></tr>
+                <tr class="highlight"><td><strong>Arts Council of Wales Project Grant</strong></td><td>Applied For (100% funding rate)</td><td>£10,000</td></tr>
+                <tr><td>Other Grants / Earned Income</td><td>N/A</td><td>£0</td></tr>
+                <tr><td>Support in Kind</td><td>N/A</td><td>£0</td></tr>
+                <tr style="background: #0f172a; font-weight: bold; color: #34d399;"><td><strong>TOTAL PROJECT INCOME</strong></td><td>Total funding incoming</td><td><strong>£10,000</strong></td></tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

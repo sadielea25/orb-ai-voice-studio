@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sadie Lea Minifee – 2-Page Artistic CV</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --primary: #0f172a;
+    --accent: #b45309;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --muted: #64748b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f1f5f9;
+    color: var(--text);
+    padding: 20px 0;
+  }
+
+  .toolbar {
+    position: sticky;
+    top: 10px;
+    z-index: 999;
+    max-width: 210mm;
+    margin: 0 auto 20px auto;
+    background: #0f172a;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  }
+
+  .toolbar h1 { font-size: 15px; font-weight: 600; }
+
+  .toolbar-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #0f172a;
+    border: none;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .a4-page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 25px auto;
+    background: white;
+    padding: 18mm 20mm;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    position: relative;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .page-content { flex: 1; }
+
+  .header {
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--primary);
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+
+  .header .meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--primary);
+    border-bottom: 1.5px solid var(--primary);
+    padding-bottom: 3px;
+    margin: 14px 0 8px 0;
+  }
+
+  h3 {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 8px 0 4px 0;
+  }
+
+  p, li {
+    font-size: 11px;
+    color: #334155;
+    line-height: 1.5;
+  }
+
+  ul {
+    padding-left: 16px;
+    margin-bottom: 8px;
+  }
+
+  li { margin-bottom: 4px; }
+
+  .item {
+    margin-bottom: 8px;
+  }
+
+  .item-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .item-sub {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+
+  .doc-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: var(--muted);
+  }
+
+  .page-badge {
+    background: #e2e8f0;
+    color: #334155;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .toolbar { display: none; }
+    .a4-page {
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      min-height: 297mm;
+      page-break-after: always;
+      padding: 15mm 18mm;
+    }
+    .a4-page:last-child { page-break-after: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div>
+    <h1>Sadie Lea Minifee – 2-Page Artistic CV</h1>
+    <span style="font-size: 11px; opacity: 0.8;">Formatted for ACW Guidelines | Ready to Print / Save to PDF</span>
+  </div>
+  <button class="toolbar-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+</div>
+
+<!-- PAGE 1 OF 2 -->
+<div class="a4-page">
+  <div class="page-content">
+    <div class="header">
+      <h1>Sadie Lea Minifee</h1>
+      <div class="subtitle">Dance Artist | Choreographer & Movement Director</div>
+      <div class="meta">
+        📍 Cardiff, Wales | ✉️ sadielea25@gmail.com | 📞 07538398662 | 🌐 randomnesstext.wixsite.com/dancersite<br>
+        🎬 <strong>Showreel:</strong> randomnesstext.wixsite.com/dancersite/more-clients | <strong>In These Stones:</strong> youtu.be/NnRr21q49-s
+      </div>
+    </div>
+
+    <h2>Artistic Profile</h2>
+    <p style="text-align: justify; margin-bottom: 12px;">
+      Accomplished Mixed-Caribbean, Queer dance artist and emerging Movement Director based in Cardiff with a BA (Hons) Dance degree (Kingston University London) and certified Street Dance Teaching Qualification. Over a decade of international performance, screen, and choreographic credits spanning premier global stages, major television networks (<strong>Netflix, BBC, ITV</strong>), national arts organizations (<strong>National Theatre Wales</strong>), cinematic screen projects (<strong><em>In These Stones</em></strong> – WMC Commission / ACW Funded), and headline music artists including <strong>Erykah Badu, Tinie Tempah, Martin Garrix</strong>, and <strong>Black Coffee</strong>. Featured by <strong>Dazed Magazine</strong> celebrating the Welsh Queer dance community. Deeply rooted in authentic street dance lineage through direct training with <strong>founding pioneers within the hip-hop community</strong>. Entirely self-funded throughout a decade-long career; currently undertaking a definitive career transition into independent Choreography and Movement / Art Direction in Wales.
+    </p>
+
+    <h2>Choreography, Movement Direction & Screen Direction</h2>
+    
+    <div class="item">
+      <div class="item-head"><span>Erykah Badu Live Showcase (Ibiza)</span><span>2024</span></div>
+      <div class="item-sub">Movement Director, Choreographer, Stylist & Performer</div>
+      <p>Directed creative staging, ensemble choreography, visual styling, and dancer coordination for high-profile international showcase.</p>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><span>"In These Stones" (Cinematic Screen Movement Film)</span><span>2021</span></div>
+      <div class="item-sub">Dance Performance Director, Choreographer & Movement Coordinator | Dir: Tim Tyson Short</div>
+      <p>Directed dance performance elements, managed performer casting (dancers and freerunning athletes), and integrated choreography and costuming into film storyboards utilizing the architecture and resonance of the Wales Millennium Centre (ACW Funded / WMC Commission).</p>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><span>National Theatre Wales (NTW) – Grangetown Residency</span><span>Cardiff</span></div>
+      <div class="item-sub">Featured Dancer & Collaborative Artist</div>
+      <p>Selected for site-specific community residency exploring cultural House dance roots and experimental movement for a free public audience.</p>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><span>Dazed Magazine</span><span>Editorial</span></div>
+      <div class="item-sub">Featured Dance Artist</div>
+      <p>Featured in <em>Dazed</em> spotlighting the Queer community, underground dance culture, and cultural expression in Wales.</p>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><span>"90s Grooves & Community Jam"</span><span>2024–2025</span></div>
+      <div class="item-sub">Lead Facilitator & Curator | Cardiff, Wales</div>
+      <p>Conceived and delivered accessible community dance workshops teaching authentic 1990s Hip-Hop & House grooves with a live DJ, fostering non-competitive social dance culture and wellbeing.</p>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><span>"Dance for Haiti" National Charity Showcase</span><span>Cardiff, Wales</span></div>
+      <div class="item-sub">Founder & Lead Producer</div>
+      <p>Produced a major national gala uniting premier Welsh dance institutions and televised acts from <em>Got to Dance</em> and <em>BGT</em>.</p>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Sadie Lea Minifee – Artistic CV</span>
+    <span class="page-badge">Page 1 of 2</span>
+  </div>
+</div>
+
+<!-- PAGE 2 OF 2 -->
+<div class="a4-page">
+  <div class="page-content">
+    <div class="header" style="padding-bottom: 6px; margin-bottom: 10px;">
+      <h1 style="font-size: 16px;">Sadie Lea Minifee – Artistic CV (Page 2)</h1>
+    </div>
+
+    <h2>Selected Performance Credits (Broadcast, Tours & Residencies)</h2>
+
+    <h3>📺 Broadcast & Screen</h3>
+    <ul>
+      <li><strong>Netflix:</strong> Featured Professional Screen Dancer (Major Streaming Production).</li>
+      <li><strong>BBC:</strong> Professional Screen Dancer (Broadcast Productions & Specials).</li>
+      <li><strong>ITV:</strong> Featured Broadcast Performer (Television Broadcasts).</li>
+      <li><strong><em>In These Stones</em>:</strong> Screen Dancer & Movement Lead (Dir: Tim Tyson Short / WMC / ACW).</li>
+    </ul>
+
+    <h3>🎤 Headline Artists & Season Tours</h3>
+    <ul>
+      <li><strong>Erykah Badu:</strong> Ibiza Showcase (Movement Director, Choreographer & Performer).</li>
+      <li><strong>Tinie Tempah:</strong> Tour Dancer & Live Arena Concerts.</li>
+      <li><strong>Martin Garrix:</strong> Mainstage Festival & Arena Dancer.</li>
+      <li><strong>Black Coffee:</strong> Resident & Featured Stage Performer.</li>
+      <li><strong>Sonny Fodera:</strong> Featured Tour & Live Showcase Dancer.</li>
+      <li><strong>Basement Jaxx:</strong> Live Concert Performer.</li>
+      <li><strong>Additional Artist Credits:</strong> CamelPhat, Claptone, Gorgon City, Hannah Wants, Example, Roger Sanchez, Todd Terry, Bob Sinclar, Sam Divine, Disciples, Armin van Buuren, Jamie Jones, Cathy Guetta.</li>
+    </ul>
+
+    <h3>🏛️ Brand Residencies & Global Venues</h3>
+    <ul>
+      <li><strong>Residencies:</strong> Glitterbox, Defected in the House, Paradise (Jamie Jones), Cirque du Soleil, Abode, Hotbed, Wild Child, Pyramid, La Discotheque.</li>
+      <li><strong>Venues:</strong> Hï Ibiza, Ushuaïa Ibiza, Amnesia Ibiza, DC10 Ibiza, Printworks London, Ministry of Sound, O2 Academy London, Studio 338, Ibiza Rocks, Café Mambo.</li>
+      <li><strong>Los Angeles (2012–2013):</strong> PAC Modern, AOV, Vixens (Southern California Exhibition Circuit).</li>
+    </ul>
+
+    <h2>Professional Education, Training & Residencies</h2>
+    <ul>
+      <li><strong>BA (Hons) Dance Degree:</strong> Kingston University London (Urban dance culture, choreography, contemporary release).</li>
+      <li><strong>Certified Street Dance Teaching Qualification:</strong> Independently completed & accredited.</li>
+      <li><strong>International Study Abroad: Dance & Choreography:</strong> California State University, Long Beach (CSULB), Los Angeles.</li>
+      <li><strong>Hollywood Studio Circuit:</strong> Intensive training at Millennium Dance Complex, Playground LA, TMilly Studio, mL Studio, Debbie Reynolds Studio, EDGE Performing Arts Center. Facilitated and hosted studio warm-ups for established choreographers.</li>
+      <li><strong>Boogiezone "Wave 3" International Residency (LA):</strong> Daily masterclasses with choreographers for Janet Jackson & Michael Jackson.</li>
+      <li><strong>Foundational Roots:</strong> Direct community training with <strong>founding pioneers within the hip-hop and street dance community</strong>. Formative Cardiff training with Jukebox Collective / Liara Jukebox & Hazel School of Dance.</li>
+    </ul>
+
+    <h2>Core Artistic Skills & Attributes</h2>
+    <ul>
+      <li><strong>Disciplines:</strong> Choreography & Movement Direction, House, Hip-Hop, 90s Grooves, Voguing (Ballroom Culture), Locking, Popping, Floorwork.</li>
+      <li><strong>Creative Direction:</strong> Rehearsal management, camera-angle staging, visual styling, lighting integration, community facilitation.</li>
+      <li><strong>Attributes & Memberships:</strong> Neurodivergent artist (ADHD & Dyslexia) utilizing physical intuition and spatial creativity. Member of Equity.</li>
+    </ul>
+  </div>
+
+  <div class="doc-footer">
+    <span>Sadie Lea Minifee – Artistic CV</span>
+    <span class="page-badge">Page 2 of 2</span>
+  </div>
+</div>
+
+</body>
+</html>

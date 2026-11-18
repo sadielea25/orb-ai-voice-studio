@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supplies to Sell — Resale Research & Inventory Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Lexend', sans-serif; }
+    body { background: #faf8fd; color: #0f172a; padding: 14px; }
+    .wrap { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; }
+    .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center; }
+    .stat-val { font-size: 18px; font-weight: 800; color: #0f172a; }
+    .stat-lbl { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-top: 2px; }
+    input, select, textarea { width: 100%; padding: 9px 11px; border-radius: 9px; border: 1.5px solid #cbd5e1; font-size: 12.5px; font-weight: 600; color: #0f172a; background: #f8fafc; outline: none; }
+    .btn { background: #7c3aed; color: #ffffff; border: none; border-radius: 9px; padding: 10px 14px; font-size: 12.5px; font-weight: 800; cursor: pointer; }
+    .item-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .badge { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div>
+          <div style="font-size: 16px; font-weight: 800; color: #0f172a;">🏷️ Supplies to Sell</div>
+          <div style="font-size: 11px; color: #64748b;">Surplus Kit, Craft Supplies & Equipment Resale • Synced with Sonia</div>
+        </div>
+      </div>
+      <div class="summary-row">
+        <div class="stat-box">
+          <div class="stat-val" id="stCount">0</div>
+          <div class="stat-lbl">Items to Sell</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stEstValue" style="color: #7c3aed;">£0</div>
+          <div class="stat-lbl">Est. Resale Value</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stSoldValue" style="color: #16a34a;">£0</div>
+          <div class="stat-lbl">Sold Total</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="font-size: 12.5px; font-weight: 800;">+ Add Supply or Kit Item to Sell</div>
+      <input type="text" id="supTitle" placeholder="Item name (e.g. Unused UV Face Paint Set, Studio Ring Light, Timber Offcuts)..." />
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+        <input type="number" id="supPrice" placeholder="Est. £ Price" step="1" />
+        <select id="supPlatform">
+          <option value="eBay UK">eBay UK</option>
+          <option value="Vinted">Vinted</option>
+          <option value="FB Marketplace">FB Marketplace</option>
+          <option value="Gumtree">Gumtree</option>
+          <option value="Direct / Trade">Direct / Trade</option>
+        </select>
+        <select id="supStatus">
+          <option value="To Research">🔍 To Research</option>
+          <option value="Ready to List">📸 Ready to List</option>
+          <option value="Listed">🟢 Listed</option>
+          <option value="Sold">💷 Sold</option>
+        </select>
+      </div>
+      <input type="text" id="supNotes" placeholder="Condition / Sonia research notes (e.g. RRP £45, bundle with brushes)..." />
+      <button type="button" class="btn" onclick="addSupplyItem()">+ Add to Supplies to Sell</button>
+    </div>
+
+    <div id="suppliesList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+  </div>
+
+  <script>
+    const DEFAULT_SUPPLIES = [
+      { id: 'sup_1', title: 'Surplus Festival Glitter Pots (Bulk Bundle x12)', price: 35, platform: 'eBay UK', status: 'To Research', notes: 'Check UK cosmetic glitter bundle resale prices on eBay.' },
+      { id: 'sup_2', title: 'Spare Folding Event Table & Black Fitted Cloth', price: 28, platform: 'FB Marketplace', status: 'Ready to List', notes: 'Collection Cardiff / Barry area.' },
+      { id: 'sup_3', title: 'Unused SFX Prosthetic Gel & Spirit Gum Kit', price: 22, platform: 'Vinted', status: 'To Research', notes: 'Sonia can research current SFX kit pricing and write listing copy.' }
+    ];
+
+    let supplies = [];
+    function loadSupplies() {
+      try {
+        const s = localStorage.getItem('orb_supplies_to_sell_v1');
+        supplies = s ? JSON.parse(s) : DEFAULT_SUPPLIES;
+      } catch (e) { supplies = DEFAULT_SUPPLIES; }
+      renderSupplies();
+    }
+    function saveSupplies() {
+      try { localStorage.setItem('orb_supplies_to_sell_v1', JSON.stringify(supplies)); } catch (e) {}
+    }
+    function addSupplyItem() {
+      const t = document.getElementById('supTitle').value.trim();
+      if (!t) return;
+      const p = parseFloat(document.getElementById('supPrice').value) || 0;
+      const plat = document.getElementById('supPlatform').value;
+      const st = document.getElementById('supStatus').value;
+      const n = document.getElementById('supNotes').value.trim();
+      supplies.unshift({ id: 'sup_' + Date.now(), title: t, price: p, platform: plat, status: st, notes: n });
+      document.getElementById('supTitle').value = '';
+      document.getElementById('supPrice').value = '';
+      document.getElementById('supNotes').value = '';
+      saveSupplies();
+      renderSupplies();
+    }
+    function cycleSupplyStatus(id) {
+      const order = ['To Research', 'Ready to List', 'Listed', 'Sold'];
+      const item = supplies.find(x => x.id === id);
+      if (!item) return;
+      const idx = order.indexOf(item.status);
+      item.status = order[(idx + 1) % order.length];
+      saveSupplies();
+      renderSupplies();
+    }
+    function deleteSupplyItem(id) {
+      supplies = supplies.filter(x => x.id !== id);
+      saveSupplies();
+      renderSupplies();
+    }
+    function renderSupplies() {
+      const list = document.getElementById('suppliesList');
+      let est = 0, sold = 0, activeCount = 0;
+      supplies.forEach(x => {
+        if (x.status === 'Sold') sold += (parseFloat(x.price) || 0);
+        else { est += (parseFloat(x.price) || 0); activeCount++; }
+      });
+      document.getElementById('stCount').textContent = activeCount;
+      document.getElementById('stEstValue').textContent = '£' + est.toFixed(0);
+      document.getElementById('stSoldValue').textContent = '£' + sold.toFixed(0);
+
+      list.innerHTML = supplies.map(item => {
+        const isSold = item.status === 'Sold';
+        const statusColor = isSold ? '#16a34a' : (item.status === 'Listed' ? '#2563eb' : (item.status === 'To Research' ? '#7c3aed' : '#d97706'));
+        return `
+          <div class="item-card" style="opacity: ${isSold ? '0.65' : '1'};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+              <div>
+                <div style="font-size: 13.5px; font-weight: 800; color: #0f172a; text-decoration: ${isSold ? 'line-through' : 'none'};">${item.title}</div>
+                <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Platform: <strong>${item.platform}</strong> ${item.notes ? '• ' + item.notes : ''}</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <span style="font-size: 14px; font-weight: 800; color: #0f172a;">£${parseFloat(item.price || 0).toFixed(0)}</span>
+                <button type="button" onclick="cycleSupplyStatus('${item.id}')" class="badge" style="background: ${statusColor}18; color: ${statusColor}; border: 1px solid ${statusColor}40; cursor: pointer;">${item.status}</button>
+                <button type="button" onclick="deleteSupplyItem('${item.id}')" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; width: 24px; height: 24px; cursor: pointer; font-weight: 800;">✕</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    loadSupplies();
+  </script>
+</body>
+</html>

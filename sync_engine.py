@@ -186,5 +186,19 @@ def merge_sync_states(existing, incoming):
     if "app_version" in incoming:
         merged["app_version"] = incoming["app_version"]
 
+    # 9. Packing Lists & Match Day Budgeting
+    if "packing_items" in incoming and isinstance(incoming["packing_items"], list):
+        merged["packing_items"] = incoming["packing_items"]
+    if "packing_categories" in incoming and isinstance(incoming["packing_categories"], list) and len(incoming["packing_categories"]) > 0:
+        merged["packing_categories"] = incoming["packing_categories"]
+    if "budget_items" in incoming and isinstance(incoming["budget_items"], list):
+        merged["budget_items"] = incoming["budget_items"]
+    if "budget_calculator" in incoming and isinstance(incoming["budget_calculator"], dict):
+        merged["budget_calculator"] = incoming["budget_calculator"]
+    if "live_patches" in incoming and isinstance(incoming["live_patches"], list):
+        merged["live_patches"] = incoming["live_patches"]
+    if "notion_projects" in incoming and isinstance(incoming["notion_projects"], list):
+        merged["notion_projects"] = incoming["notion_projects"]
+
     merged["updated_at"] = incoming.get("updated_at") or int(time.time() * 1000)
     return merged

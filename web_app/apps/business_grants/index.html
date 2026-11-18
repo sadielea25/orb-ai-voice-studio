@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Grants Radar & Studio — CoreMarketGoods LTD</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: #f8fafc; color: #0f172a; padding: 12px; overflow-x: hidden; }
+    .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .header-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 8px rgba(15,23,42,0.03); }
+    .filter-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+    .filter-btn { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; padding: 7px 4px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
+    .filter-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; font-weight: 800; }
+    .grant-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 6px rgba(15,23,42,0.02); }
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 800; }
+    .form-card { background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    input, select { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #0f172a; outline: none; min-width: 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <div>
+          <div style="font-size: 16px; font-weight: 800; color: #0f172a;">💼 Business Grants & Commercial Funding Studio</div>
+          <div style="font-size: 11.5px; color: #64748b;">CoreMarketGoods LTD • DolledUp • Event Trading & Commercial R&D • Deadlines Synced to Calendar</div>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <button type="button" onclick="syncToMasterCalendar()" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 6px 11px; border-radius: 999px; font-size: 11px; font-weight: 800; cursor: pointer;">🗓️ Sync to Calendar</button>
+          <button type="button" onclick="callSoniaAboutBizGrants()" style="background: #dcfce7; border: 1px solid #86efac; color: #15803d; padding: 6px 11px; border-radius: 999px; font-size: 11px; font-weight: 800; cursor: pointer;">📞 Plan with Sonia</button>
+        </div>
+      </div>
+
+      <div class="filter-grid">
+        <button type="button" id="bgFilter_all" class="filter-btn active" onclick="setFilter('all')">All Grants</button>
+        <button type="button" id="bgFilter_wales" class="filter-btn" onclick="setFilter('wales')">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales & Cardiff</button>
+        <button type="button" id="bgFilter_uk" class="filter-btn" onclick="setFilter('uk')">🇬🇧 UK Innovation</button>
+        <button type="button" id="bgFilter_equipment" class="filter-btn" onclick="setFilter('equipment')">⛺ Pitch & Kit</button>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div style="font-size: 12px; font-weight: 800; color: #334155;">+ Track New Business Grant or Deadline</div>
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
+        <input type="text" id="newBizGrantName" placeholder="Grant programme name (e.g. Cardiff Council Retail Grant)..." />
+        <input type="text" id="newBizGrantAmount" placeholder="Amount (e.g. Up to £10,000)" />
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px;">
+        <input type="date" id="newBizGrantDate" />
+        <select id="newBizGrantCat">
+          <option value="wales">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales & Cardiff Council</option>
+          <option value="uk">🇬🇧 UK Innovation & R&D</option>
+          <option value="equipment">⛺ Stall, Gazebo & Equipment</option>
+        </select>
+        <button type="button" onclick="addBizGrant()" style="background: #0f172a; color: #ffffff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;">+ Add</button>
+      </div>
+    </div>
+
+    <div id="bizGrantsContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+  </div>
+
+  <script>
+    const DEFAULT_BIZ_GRANTS = [
+      {
+        id: 'bg_1',
+        name: 'Business Wales Growth & Capital Equipment Fund',
+        body: 'Welsh Government / Business Wales',
+        amount: '£2,500 – £25,000',
+        deadline: '2026-12-04',
+        deadlineLabel: '04 Dec 2026 (Quarterly Window)',
+        category: 'wales',
+        status: 'Drafting',
+        url: 'https://businesswales.gov.wales/',
+        focus: 'Commercial gazebo/marquee setup, mobile POS hardware, inventory expansion and regional event stall scaling across Wales.',
+        checklist: ['CoreMarketGoods LTD Companies House number ready', '12-month cashflow forecast in Budget tab', 'Equipment supplier quotes (gazebo, lighting, storage)']
+      },
+      {
+        id: 'bg_2',
+        name: 'Cardiff Council High Street, Market & Pop-Up Trader Grant',
+        body: 'Cardiff Council Economic Development',
+        amount: 'Up to £10,000 (up to 70% match)',
+        deadline: '2026-11-30',
+        deadlineLabel: '30 Nov 2026 (Current Round)',
+        category: 'equipment',
+        status: 'Ready to Apply',
+        url: 'https://www.cardiff.gov.uk/ENG/Business/Business-support-and-funding/Pages/default.aspx',
+        focus: 'Weatherproof outdoor trading structures, city-centre pop-up branding, signage, and sustainable packaging for Cardiff traders.',
+        checklist: ['Cardiff trading address & public liability insurance certificate', 'Before/after visual stall setup plan', 'Itemised quote for weighted shelter & display counters']
+      },
+      {
+        id: 'bg_3',
+        name: 'SMART Cymru Research, Development & Innovation Grant',
+        body: 'Welsh Government Innovation Team',
+        amount: 'Up to £25,000',
+        deadline: '2026-12-15',
+        deadlineLabel: '15 Dec 2026 (Rolling Assessment)',
+        category: 'wales',
+        status: 'Researching',
+        url: 'https://businesswales.gov.wales/innovation/',
+        focus: 'Biodegradable cosmetic glitter formulation, skin-safe SFX adhesives, or custom digital booking & inventory software.',
+        checklist: ['Technical feasibility summary', 'Commercialisation roadmap for CoreMarketGoods LTD']
+      },
+      {
+        id: 'bg_4',
+        name: 'Innovate UK Creative Catalyst & Smart Commercial Grant',
+        body: 'UKRI / Innovate UK',
+        amount: '£25,000 – £50,000',
+        deadline: '2027-01-20',
+        deadlineLabel: '20 Jan 2027 (11:00 GMT)',
+        category: 'uk',
+        status: 'Researching',
+        url: 'https://www.ukri.org/councils/innovate-uk/',
+        focus: 'Scalable commercial products, experiential festival retail systems, and AI-assisted creative commerce.',
+        checklist: ['UK registered LTD company (CoreMarketGoods LTD eligible)', '10-question commercial impact pitch', 'Project cost breakdown']
+      },
+      {
+        id: 'bg_5',
+        name: 'Development Bank of Wales — Green Business & Micro Funding',
+        body: 'Development Bank of Wales',
+        amount: '£1,000 – £50,000 (With Green Grant Element)',
+        deadline: '2027-02-10',
+        deadlineLabel: '10 Feb 2027 (Fast-Track Rolling)',
+        category: 'equipment',
+        status: 'Researching',
+        url: 'https://developmentbank.wales/',
+        focus: 'Low-carbon mobile battery stations for festival stalls, eco-friendly stock, and rapid working capital for peak summer season.',
+        checklist: ['Last 6 months business bank statements', 'Director ID verification']
+      },
+      {
+        id: 'bg_6',
+        name: 'UnLtd Awards for Social & Inclusive Entrepreneurs (Wales)',
+        body: 'UnLtd UK / Wales',
+        amount: 'Up to £18,000',
+        deadline: '2026-12-20',
+        deadlineLabel: '20 Dec 2026 (Winter Cohort)',
+        category: 'uk',
+        status: 'Drafting',
+        url: 'https://www.unltd.org.uk/awards',
+        focus: 'Neurodivergent-friendly creative training, community face-painting & SFX confidence workshops across South Wales.',
+        checklist: ['Social impact statement', '12-month workshop delivery plan']
+      }
+    ];
+
+    let bizGrants = [];
+    let currentFilter = 'all';
+
+    function loadBizGrants() {
+      try {
+        const raw = localStorage.getItem('orb_business_grants_v1');
+        bizGrants = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_BIZ_GRANTS));
+      } catch (e) {
+        bizGrants = JSON.parse(JSON.stringify(DEFAULT_BIZ_GRANTS));
+      }
+    }
+
+    function saveBizGrants() {
+      try {
+        localStorage.setItem('orb_business_grants_v1', JSON.stringify(bizGrants));
+      } catch (e) {}
+    }
+
+    function setFilter(f) {
+      currentFilter = f;
+      ['all', 'wales', 'uk', 'equipment'].forEach(k => {
+        const btn = document.getElementById('bgFilter_' + k);
+        if (btn) btn.className = 'filter-btn' + (k === f ? ' active' : '');
+      });
+      renderBizGrants();
+    }
+
+    function cycleStatus(id) {
+      const states = ['Researching', 'Drafting', 'Ready to Apply', 'Submitted'];
+      const g = bizGrants.find(x => x.id === id);
+      if (!g) return;
+      g.status = states[(states.indexOf(g.status) + 1) % states.length];
+      saveBizGrants();
+      renderBizGrants();
+    }
+
+    function addBizGrant() {
+      const nameEl = document.getElementById('newBizGrantName');
+      const amtEl = document.getElementById('newBizGrantAmount');
+      const dateEl = document.getElementById('newBizGrantDate');
+      const catEl = document.getElementById('newBizGrantCat');
+      if (!nameEl || !nameEl.value.trim()) return;
+      const dVal = (dateEl && dateEl.value) ? dateEl.value : '2026-12-15';
+      bizGrants.unshift({
+        id: 'bg_' + Date.now(),
+        name: nameEl.value.trim(),
+        body: 'Custom Business Grant',
+        amount: (amtEl && amtEl.value.trim()) ? amtEl.value.trim() : 'TBD',
+        deadline: dVal,
+        deadlineLabel: dVal,
+        category: catEl ? catEl.value : 'wales',
+        status: 'Researching',
+        url: 'https://businesswales.gov.wales/',
+        focus: 'Added to CoreMarketGoods LTD Business Grant tracker & synced with Master Calendar.',
+        checklist: ['Verify eligibility criteria', 'Map application draft block in Calendar']
+      });
+      nameEl.value = '';
+      if (amtEl) amtEl.value = '';
+      saveBizGrants();
+      renderBizGrants();
+    }
+
+    function syncToMasterCalendar() {
+      saveBizGrants();
+      try {
+        if (window.parent && typeof window.parent.renderGentleHorizonCalendar === 'function') {
+          window.parent.renderGentleHorizonCalendar();
+          window.parent.switchMainTab('my_calendar');
+        }
+      } catch (e) {}
+    }
+
+    function callSoniaAboutBizGrants() {
+      try {
+        if (window.parent && typeof window.parent.startAssistantCall === 'function') {
+          window.parent.startAssistantCall();
+        }
+      } catch (e) {}
+    }
+
+    function renderBizGrants() {
+      const container = document.getElementById('bizGrantsContainer');
+      if (!container) return;
+      let list = bizGrants;
+      if (currentFilter !== 'all') {
+        list = list.filter(g => g.category === currentFilter);
+      }
+
+      container.innerHTML = list.map(g => {
+        const statusColors = {
+          'Researching': 'background:#f1f5f9;color:#475569;',
+          'Drafting': 'background:#fef3c7;color:#b45309;',
+          'Ready to Apply': 'background:#dbeafe;color:#1d4ed8;',
+          'Submitted': 'background:#dcfce7;color:#15803d;'
+        }[g.status] || 'background:#f1f5f9;color:#475569;';
+
+        return `
+          <div class="grant-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+              <div>
+                <div style="font-size: 14px; font-weight: 800; color: #0f172a;">💼 ${g.name}</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">${g.body}</div>
+              </div>
+              <button type="button" onclick="cycleStatus('${g.id}')" style="${statusColors} border: none; border-radius: 999px; padding: 4px 10px; font-size: 10.5px; font-weight: 800; cursor: pointer; white-space: nowrap;">
+                ${g.status} ↻
+              </button>
+            </div>
+
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">💷 ${g.amount}</span>
+              <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">🗓️ Deadline: ${g.deadlineLabel}</span>
+              <a href="${g.url}" target="_blank" rel="noopener noreferrer" class="badge" style="background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; text-decoration: none;">🔗 Official Portal ↗</a>
+            </div>
+
+            <div style="font-size: 12px; color: #334155; line-height: 1.45; background: #f8fafc; padding: 8px 10px; border-radius: 8px; border-left: 3px solid #0284c7;">
+              ${g.focus}
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 3px; padding-top: 4px;">
+              ${(g.checklist || []).map(item => `
+                <div style="font-size: 11px; color: #475569; display: flex; align-items: center; gap: 6px;">
+                  <span style="color: #059669; font-weight: 800;">✓</span>
+                  <span>${item}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    loadBizGrants();
+    renderBizGrants();
+  </script>
+</body>
+</html>

@@ -5,6 +5,11 @@ Zero-click, zero-paste hands-free conversation with instant natural British voic
 """
 
 import os
+import socket as _socket
+_orig_getaddrinfo = _socket.getaddrinfo
+def _ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    return _orig_getaddrinfo(host, port, _socket.AF_INET, type, proto, flags)
+_socket.getaddrinfo = _ipv4_getaddrinfo
 import sys
 import json
 import time
@@ -31,6 +36,39 @@ CONVERSATION_FILE = os.path.join(BASE_DIR, "live_conversation.json")
 CHAT_VOICES_FILE = os.path.join(BASE_DIR, "chat_voices.json")
 TEMP_AUDIO = os.path.join(BASE_DIR, "speech_test.mp3")
 PORT = 8766
+
+PROJECT_DIRS_MAP = {
+    "COREMARKETGOODS ACCOUNTING - HMRC": r"C:\Users\corem\OneDrive\Desktop\COREMARKETGOODS ACCOUNTING - HMRC",
+    "ORB": r"C:\Users\corem\OneDrive\Desktop\ORB",
+    "ORB - Voice Assistant": r"C:\Users\corem\OneDrive\Desktop\ORB",
+    "Creative Arts Grants": r"C:\Users\corem\Desktop\creative arts funding",
+    "Arts Grant": r"C:\Users\corem\Desktop\creative arts funding",
+    "ClearSpace": r"D:\clear space ( adhd )",
+    "Snap 'n Pack": r"C:\Users\corem\OneDrive\Desktop\snap n pack app",
+    "Snap N Snack": r"D:\Snap N Snack",
+    "Visual Daily Board": r"D:\Visual Daily Board",
+    "Next 3 Weeks": r"D:\Next 3 Weeks",
+    "GlitterRadar Cardiff": r"D:\Gliitter Street Schedule",
+    "Spook Studio": r"C:\Users\corem\Desktop\SPOOK STUDIO",
+    "DolledUp Salon Admin": r"D:\DolledUp-Admin-Android",
+    "Form Flow": r"C:\Users\corem\OneDrive\Desktop\lead-collect",
+    "Blog Off": r"C:\Users\corem\Desktop\BLOG OFF",
+    "OnSite": r"C:\Users\corem\OneDrive\Desktop\onsite",
+    "Launch Pack": r"D:\LAUNCH PACK",
+    "Private Log Vault": r"C:\Users\corem\Desktop\LOG APP",
+    "Timber Builds": r"C:\Users\corem\OneDrive\Desktop\TIMBER BUILDS"
+}
+
+def resolve_project_root(proj_name):
+    if not proj_name:
+        return BASE_DIR
+    p_upper = proj_name.strip().upper()
+    for k, v in PROJECT_DIRS_MAP.items():
+        if k.upper() == p_upper or k.upper() in p_upper or p_upper in k.upper():
+            if os.path.exists(v):
+                return v
+    return BASE_DIR
+
 
 # Load local environment variables (.env.local and .env)
 for env_name in ['.env.local', '.env']:
@@ -735,6 +773,17 @@ class PWAHandler(BaseHTTPRequestHandler):
                     content = f.read()
                 self._set_headers(200, "application/javascript")
                 self.wfile.write(content.encode("utf-8"))
+        elif url_path == "/api/calendar/scan_now":
+            try:
+                import daily_trading_and_events_scanner
+                feed_data = daily_trading_and_events_scanner.build_master_calendar_feed()
+                self._set_headers(200)
+                self.wfile.write(json.dumps(feed_data).encode("utf-8"))
+            except Exception as ce:
+                self._set_headers(500)
+                self.wfile.write(json.dumps({"status": "error", "error": str(ce)}).encode("utf-8"))
+            return
+
         elif url_path == "/api/workspace/calendar":
             try:
                 import subprocess
@@ -807,6 +856,148 @@ class PWAHandler(BaseHTTPRequestHandler):
             mtime = os.path.getmtime(idx_path) if os.path.exists(idx_path) else 0
             self._set_headers(200)
             self.wfile.write(json.dumps({"version": int(mtime * 1000)}).encode("utf-8"))
+        elif url_path == "/api/gdrive-status":
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"connected": True, "email": "sadielea25@gmail.com"}).encode("utf-8"))
+            return
+
+        elif url_path == "/api/parse-local-notes":
+            client_ip = self.client_address[0] if self.client_address else ""
+            if client_ip not in ("127.0.0.1", "::1", "localhost") and not client_ip.startswith("192.168."):
+                self._set_headers(403)
+                self.wfile.write(b'{"found": false, "items": []}')
+                return
+            items_out = []
+            try:
+                import subprocess
+                cmd = [
+                    "node", "-e",
+                    "import('file:///C:/Users/corem/Desktop/LOG%20APP/server/parseLogs.js').then(m => { const fs = require('fs'); const p = 'C:\\\\Users\\\\corem\\\\OneDrive\\\\Microsoft Copilot Chat Files\\\\Documents\\\\logs.txt'; if (fs.existsSync(p)) { console.log(JSON.stringify(m.parseLogsText(fs.readFileSync(p,'utf8')))); } else { console.log('[]'); } })"
+                ]
+                r_out = subprocess.run(cmd, capture_output=True, text=True, timeout=4)
+                if r_out.stdout.strip().startswith("["):
+                    items_out = json.loads(r_out.stdout.strip())
+            except Exception:
+                items_out = []
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"found": len(items_out) > 0, "count": len(items_out), "items": items_out}).encode("utf-8"))
+            return
+
+        elif url_path.startswith("/data/"):
+            import mimetypes
+            rel_u = url_path.lstrip("/")
+            target_f = os.path.join(BASE_DIR, "public", rel_u.replace("/", os.sep))
+            if not os.path.isfile(target_f):
+                target_f = os.path.join(WEB_DIR, rel_u.replace("/", os.sep))
+            if os.path.isfile(target_f):
+                mime, _ = mimetypes.guess_type(target_f)
+                with open(target_f, "rb") as df:
+                    data_b = df.read()
+                self._set_headers(200, mime or "application/json; charset=utf-8")
+                self.wfile.write(data_b)
+                return
+
+        elif url_path.startswith("/apps/") and not url_path.startswith("/apps/grants"):
+            import mimetypes
+            rel_u = url_path.lstrip("/")
+            if rel_u.endswith("/"):
+                rel_u = rel_u + "index.html"
+            target_f = os.path.join(BASE_DIR, "public", rel_u.replace("/", os.sep))
+            if os.path.isdir(target_f):
+                target_f = os.path.join(target_f, "index.html")
+            if not os.path.isfile(target_f):
+                target_f = os.path.join(WEB_DIR, rel_u.replace("/", os.sep))
+                if os.path.isdir(target_f):
+                    target_f = os.path.join(target_f, "index.html")
+            if os.path.isfile(target_f):
+                mime, _ = mimetypes.guess_type(target_f)
+                with open(target_f, "rb") as af:
+                    data_b = af.read()
+                self._set_headers(200, mime or "text/html; charset=utf-8")
+                self.wfile.write(data_b)
+                return
+
+        elif url_path.startswith("/apps/grants"):
+            import mimetypes
+            rel = url_path[len("/apps/grants"):].lstrip("/") or "GRANT_DEADLINES_CALENDAR.html"
+            if rel == "index.html":
+                rel = "GRANT_DEADLINES_CALENDAR.html"
+            grants_dir = r"C:\Users\corem\Desktop\creative arts funding"
+            target_f = os.path.join(grants_dir, rel.replace("/", os.sep))
+            if not os.path.isfile(target_f):
+                target_f = os.path.join(BASE_DIR, "public", "apps", "grants", rel.replace("/", os.sep))
+            if os.path.isfile(target_f):
+                mime, _ = mimetypes.guess_type(target_f)
+                with open(target_f, "rb") as gf:
+                    data_b = gf.read()
+                self._set_headers(200, mime or "text/html; charset=utf-8")
+                self.wfile.write(data_b)
+                return
+
+        elif url_path == "/api/workspace/files":
+            parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            proj = parsed_q.get("project", ["ORB"])[0]
+            root = resolve_project_root(proj)
+            skip_dirs = {".git", "node_modules", ".next", ".vercel", "__pycache__", ".gradle", "build", "dist", ".orb_app_profile"}
+            file_list = []
+            try:
+                for dirpath, dirnames, filenames in os.walk(root):
+                    dirnames[:] = [d for d in dirnames if d not in skip_dirs and not d.startswith(".")]
+                    for fn in filenames:
+                        if fn.startswith(".") or fn.endswith((".pyc", ".apk", ".exe", ".png", ".jpg", ".jpeg", ".webp", ".ico", ".mp3", ".wav", ".woff2")):
+                            continue
+                        full_p = os.path.join(dirpath, fn)
+                        rel_p = os.path.relpath(full_p, root).replace("\\", "/")
+                        try:
+                            sz = os.path.getsize(full_p)
+                        except Exception:
+                            sz = 0
+                        file_list.append({"path": rel_p, "size": sz})
+                        if len(file_list) >= 80:
+                            break
+                    if len(file_list) >= 80:
+                        break
+            except Exception:
+                pass
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "project": proj, "root": root, "files": file_list}).encode("utf-8"))
+            return
+
+        elif url_path == "/api/workspace/read_file":
+            parsed_q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            proj = parsed_q.get("project", ["ORB"])[0]
+            rel_path = parsed_q.get("path", ["index.html"])[0]
+            root = resolve_project_root(proj)
+            target_file = os.path.abspath(os.path.join(root, rel_path.replace("/", os.sep)))
+            content = ""
+            if target_file.startswith(os.path.abspath(root)) and os.path.isfile(target_file):
+                try:
+                    with open(target_file, "r", encoding="utf-8", errors="replace") as rf:
+                        content = rf.read(64000)
+                except Exception as e:
+                    content = f"Error reading file: {e}"
+            else:
+                content = "File not found in workspace."
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "path": rel_path, "content": content}).encode("utf-8"))
+            return
+
+        elif url_path == "/api/calendar/live_feed":
+            try:
+                feed_file = os.path.join(BASE_DIR, "public", "data", "master_calendar_feed.json")
+                if not os.path.exists(feed_file):
+                    import daily_trading_and_events_scanner
+                    feed_data = daily_trading_and_events_scanner.build_master_calendar_feed()
+                else:
+                    with open(feed_file, "r", encoding="utf-8") as ff:
+                        feed_data = json.load(ff)
+                self._set_headers(200)
+                self.wfile.write(json.dumps(feed_data).encode("utf-8"))
+            except Exception as ce:
+                self._set_headers(500)
+                self.wfile.write(json.dumps({"status": "error", "error": str(ce)}).encode("utf-8"))
+            return
+
         elif url_path == "/api/projects":
             transcripts = glob.glob(os.path.join(BRAIN_DIR, "*", ".system_generated", "logs", "transcript.jsonl"))
             transcripts.sort(key=lambda p: os.path.getmtime(p), reverse=True)
@@ -951,6 +1142,17 @@ class PWAHandler(BaseHTTPRequestHandler):
             data = json.loads(body) if body else {}
         except Exception:
             data = {}
+
+        if url_path == "/api/calendar/scan_now":
+            try:
+                import daily_trading_and_events_scanner
+                feed_data = daily_trading_and_events_scanner.build_master_calendar_feed()
+                self._set_headers(200)
+                self.wfile.write(json.dumps(feed_data).encode("utf-8"))
+            except Exception as ce:
+                self._set_headers(500)
+                self.wfile.write(json.dumps({"status": "error", "error": str(ce)}).encode("utf-8"))
+            return
 
         if url_path == "/api/settings":
             settings = load_settings()
@@ -1206,9 +1408,12 @@ class PWAHandler(BaseHTTPRequestHandler):
 
         elif url_path == "/api/assistant_call":
             user_text = data.get("text", "").strip()
+            audio_b64_in = data.get("audio_base64")
+            audio_mime_in = data.get("audio_mime")
             try:
                 import accent_adapter
-                user_text = accent_adapter.adapt_speech_text(user_text)
+                if user_text:
+                    user_text = accent_adapter.adapt_speech_text(user_text)
             except Exception:
                 pass
             voice = data.get("voice") or load_settings().get("voice", "en-GB-SoniaNeural")
@@ -1219,7 +1424,7 @@ class PWAHandler(BaseHTTPRequestHandler):
             active_task = data.get("active_task_title", "")
             call_history = data.get("call_history", [])
 
-            if not user_text:
+            if not user_text and not audio_b64_in:
                 user_text = "Hello Sonia, help me organise and plan my priority tasks for today."
 
             try:
@@ -1237,22 +1442,42 @@ class PWAHandler(BaseHTTPRequestHandler):
                     planning=planning,
                     call_type=call_type,
                     emails=data.get("emails"),
-                    calendar_events=data.get("calendar_events")
+                    calendar_events=data.get("calendar_events"),
+                    audio_base64=audio_b64_in,
+                    audio_mime=audio_mime_in,
+                    packing_summary=data.get("packing_summary"),
+                    budget_summary=data.get("budget_summary"),
+                    active_app=data.get("active_app")
                 )
             except Exception as e:
                 res = {"reply": f"I am here to help Sadie. Let us look at {active_cat} and organise your top priorities.", "action": None}
 
-            reply = res.get("reply", "I am here to help you organise your tasks.")
+            if res.get("ignore") or not (res.get("reply") or "").strip():
+                self._set_headers(200)
+                self.wfile.write(json.dumps({"status": "ok", "ignore": True, "reply": "", "audio_url": ""}).encode("utf-8"))
+                return
+
+            reply = res.get("reply", "").strip()
+            if res.get("user_transcript"):
+                user_text = res.get("user_transcript")
             action = res.get("action")
             audio_url = f"/api/tts?text={urllib.parse.quote(reply)}&voice={urllib.parse.quote(voice)}"
-            if load_settings().get("enabled", True):
-                enqueue_speech_request(reply, label="Assistant Call", cid="assistant")
+            audio_b64 = ""
+            try:
+                import base64
+                from api.index import generate_audio_bytes
+                audio_bytes = generate_audio_bytes(reply, voice, max_wait=1.15)
+                if audio_bytes:
+                    audio_b64 = "data:audio/mpeg;base64," + base64.b64encode(audio_bytes).decode("ascii")
+            except Exception:
+                pass
             self._set_headers(200)
             self.wfile.write(json.dumps({
                 "status": "ok",
                 "reply": reply,
+                "user_transcript": user_text,
                 "action": action,
-                "audio_url": audio_url
+                "audio_url": audio_b64 or audio_url
             }).encode("utf-8"))
             return
 
@@ -1829,7 +2054,24 @@ class ThreadedOrbServer(ThreadingHTTPServer):
     allow_reuse_address = True
 
 
+
+def daily_regional_calendar_scanner_loop():
+    """
+    Automatically scans Wales, Cardiff, Swansea, Bristol events, global occasions,
+    Cardiff City Centre weather, HMRC deadlines, and Creative/Business Grants daily.
+    """
+    while True:
+        try:
+            import daily_trading_and_events_scanner
+            res = daily_trading_and_events_scanner.build_master_calendar_feed()
+            print(f"[DAILY-SCANNER-DAEMON] Synced {res.get('total_events', 0)} events at {res.get('last_scanned_uk', '')}", flush=True)
+        except Exception as e:
+            print(f"[DAILY-SCANNER-ERR]: {e}", flush=True)
+        time.sleep(3600 * 6)  # Refresh weather & regional event feed every 6 hours
+
+
 def run():
+    threading.Thread(target=daily_regional_calendar_scanner_loop, daemon=True).start()
     threading.Thread(target=keep_orb_pinned_loop, daemon=True).start()
     threading.Thread(target=earbud_gesture_listener_loop, daemon=True).start()
     threading.Thread(target=cloud_antigrav_bridge_worker, daemon=True).start()

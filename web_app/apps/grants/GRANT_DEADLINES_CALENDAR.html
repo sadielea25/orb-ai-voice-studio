@@ -1,0 +1,2903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sadie Lea Minifee — Creative Arts Grants Radar & Application Studio</title>
+  <!-- Load Dynamic Data Layer -->
+  <script src="grants_data.js"></script>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #f1f5f9;
+      --bg-surface-hover: #e2e8f0;
+      --border-color: #e2e8f0;
+      --border-subtle: #cbd5e1;
+      --border-focus: #4f46e5;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #db2777;
+      --accent-gold: #d97706;
+      --accent-emerald: #059669;
+      --accent-cyan: #0284c7;
+      --accent-rose: #e11d48;
+      --accent-purple: #9333ea;
+      --tag-urgent-bg: #ffe4e6;
+      --tag-urgent-text: #9f1239;
+      --tag-soon-bg: #fef3c7;
+      --tag-soon-text: #92400e;
+      --tag-open-bg: #d1fae5;
+      --tag-open-text: #065f46;
+      --tag-rolling-bg: #e0f2fe;
+      --tag-rolling-text: #0369a1;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.09), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 18px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-badge {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--accent-primary), #6366f1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 19px;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    .brand-text h1 {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .profile-pill {
+      background: #f1f5f9;
+      border: 1px solid var(--border-color);
+      padding: 7px 16px;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-pill strong { color: var(--text-main); }
+
+    /* LIVE SYNC STATUS BAR */
+    .sync-bar {
+      background-color: #ecfdf5;
+      border-bottom: 1px solid #a7f3d0;
+      padding: 10px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #065f46;
+    }
+
+    .sync-bar-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .sync-left { display: flex; align-items: center; gap: 10px; }
+
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: var(--accent-emerald);
+      box-shadow: 0 0 10px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+    }
+
+    .sync-actions { display: flex; align-items: center; gap: 10px; }
+
+    .btn-sync {
+      background-color: #ffffff;
+      border: 1px solid #a7f3d0;
+      color: #047857;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-sync:hover {
+      background-color: #047857;
+      color: #ffffff;
+      border-color: #047857;
+    }
+
+    .main-wrapper {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 32px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* KPI SUMMARY CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .kpi-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-primary);
+    }
+
+    .kpi-card.urgent::before { background: var(--accent-rose); }
+    .kpi-card.gold::before { background: var(--accent-gold); }
+    .kpi-card.emerald::before { background: var(--accent-emerald); }
+    .kpi-card.cyan::before { background: var(--accent-cyan); }
+
+    .kpi-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .kpi-sub {
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+
+    /* CONTROLS & TABS */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background-color: var(--bg-surface);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tabs-group {
+      display: flex;
+      background-color: #f1f5f9;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      gap: 4px;
+      border: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 16px;
+      font-size: 13.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover { color: var(--text-main); }
+
+    .tab-btn.active {
+      background-color: #ffffff;
+      color: var(--accent-primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .filters-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      min-width: 220px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .filter-chip {
+      background: #f1f5f9;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip:hover {
+      border-color: #cbd5e1;
+      color: var(--text-main);
+      background-color: #e2e8f0;
+    }
+
+    .filter-chip.active {
+      background-color: var(--accent-primary);
+      border-color: var(--accent-primary);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* VIEWS */
+    .view-content { display: none; }
+    .view-content.active { display: block; }
+
+    /* ============================================================
+       APPLICATION STUDIO & ARCHIVE WORKSPACE
+       ============================================================ */
+    .studio-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .studio-layout { grid-template-columns: 1fr; }
+    }
+
+    .bundle-sidebar {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .studio-mode-toggle {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      gap: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .studio-mode-btn {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      background: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .studio-mode-btn.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .studio-mode-btn.locked.active {
+      color: #9333ea;
+    }
+
+    .bundle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bundle-nav-item {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background-color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bundle-nav-item:hover {
+      border-color: var(--accent-primary);
+      background-color: #f8fafc;
+    }
+
+    .bundle-nav-item.active {
+      border-color: var(--accent-primary);
+      background-color: #eef2ff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.1);
+    }
+
+    .bundle-nav-item.locked.active {
+      border-color: #9333ea;
+      background-color: #faf5ff;
+      box-shadow: 0 2px 6px rgba(147, 51, 234, 0.12);
+    }
+
+    .bundle-nav-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bundle-nav-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+
+    .bundle-status-tag {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .bundle-status-tag.ready { background: #d1fae5; color: #065f46; }
+    .bundle-status-tag.drafting { background: #fef3c7; color: #92400e; }
+    .bundle-status-tag.recurring { background: #e0e7ff; color: #3730a3; }
+    .bundle-status-tag.locked { background: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
+
+    .bundle-main-panel {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .bundle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .bundle-header-info h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bundle-header-info p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .bundle-badge-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* LOCKED BANNER */
+    .locked-archive-banner {
+      background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+      border: 1.5px solid #d8b4fe;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .locked-banner-text {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .locked-icon { font-size: 26px; line-height: 1; }
+
+    .locked-banner-text h4 {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #6b21a8;
+    }
+
+    .locked-banner-text p {
+      font-size: 12.5px;
+      color: #7e22ce;
+      margin-top: 2px;
+    }
+
+    .btn-fork-draft {
+      background: #7e22ce;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(126, 34, 206, 0.25);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-fork-draft:hover {
+      background: #6b21a8;
+      transform: translateY(-1px);
+    }
+
+    /* UPLOAD DROPZONE FOR EMAILED APPLICATIONS */
+    .upload-proof-box {
+      background-color: #faf5ff;
+      border: 2px dashed #d8b4fe;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-proof-box:hover {
+      background-color: #f3e8ff;
+      border-color: #9333ea;
+    }
+
+    .upload-proof-icon {
+      font-size: 32px;
+    }
+
+    .upload-proof-box h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #6b21a8;
+    }
+
+    .upload-proof-box p {
+      font-size: 13px;
+      color: #7e22ce;
+      max-width: 520px;
+      line-height: 1.5;
+    }
+
+    .btn-upload-file {
+      background: #9333ea;
+      color: #ffffff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      transition: background 0.2s;
+    }
+
+    .btn-upload-file:hover {
+      background: #7e22ce;
+    }
+
+    /* UPLOADED EMAILED PROOFS LIST */
+    .proofs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .proof-item {
+      background: #ffffff;
+      border: 1px solid #d8b4fe;
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .proof-item-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .proof-item-name {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .proof-item-meta {
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+
+    .proof-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-proof-action {
+      background: #f3e8ff;
+      border: 1px solid #d8b4fe;
+      color: #7e22ce;
+      padding: 5px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .btn-proof-action:hover {
+      background: #e9d5ff;
+      color: #6b21a8;
+    }
+
+    /* REFLECTION & LEARNING CARD */
+    .reflection-card {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .reflection-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .reflection-header h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reflection-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .reflection-grid { grid-template-columns: 1fr; }
+    }
+
+    .reflection-box {
+      background: #f8fafc;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      border: 1px solid var(--border-color);
+    }
+
+    .reflection-box h5 {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reflection-box ul {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-left: 18px;
+      line-height: 1.5;
+    }
+
+    /* SUPPORTING DOCUMENTS LOCKER */
+    .docs-locker {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .docs-locker-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .doc-pill {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .doc-pill-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .doc-pill-icon { font-size: 18px; }
+
+    .doc-pill-text {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .doc-pill-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .doc-pill-status {
+      font-size: 11px;
+      color: var(--accent-emerald);
+      font-weight: 600;
+    }
+
+    /* QUESTION ACCORDION / CARDS */
+    .questions-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .question-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s;
+    }
+
+    .question-card.locked {
+      border-left: 4px solid #9333ea;
+    }
+
+    .question-card:hover {
+      border-color: #cbd5e1;
+    }
+
+    .question-card-header {
+      background-color: #f8fafc;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .question-card-header h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .question-word-count {
+      font-size: 12px;
+      font-weight: 700;
+      background: #ecfdf5;
+      color: #065f46;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #a7f3d0;
+    }
+
+    .question-prompt-text {
+      padding: 12px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+      background: #fafafa;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .question-answer-box {
+      padding: 18px 20px;
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.6;
+      white-space: pre-line;
+      background-color: #ffffff;
+      user-select: text;
+    }
+
+    .question-answer-box.locked-view {
+      background-color: #fafaf9;
+      color: #334155;
+    }
+
+    .question-card-footer {
+      padding: 10px 20px;
+      background-color: #f8fafc;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-copy-answer {
+      background: linear-gradient(135deg, var(--accent-primary), #4338ca);
+      color: #ffffff;
+      border: none;
+      padding: 7px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2);
+      transition: all 0.15s;
+    }
+
+    .btn-copy-answer:hover {
+      background: linear-gradient(135deg, #4338ca, #3730a3);
+      transform: translateY(-1px);
+    }
+
+    .btn-copy-answer.copied {
+      background: #059669 !important;
+    }
+
+    /* LIST VIEW */
+    .list-wrapper {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .list-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .list-header-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .list-header-count {
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: #eef2ff;
+      color: var(--accent-primary);
+    }
+
+    .sort-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .sort-select {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .table-container { width: 100%; overflow-x: auto; }
+
+    .grants-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .grants-table th {
+      background-color: #f8fafc;
+      color: var(--text-dim);
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    .grants-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+      font-size: 13.5px;
+    }
+
+    .grants-table tbody tr:hover td { background-color: #f8fafc; }
+
+    .grant-title-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 280px;
+    }
+
+    .grant-name-link {
+      font-weight: 800;
+      color: var(--text-main);
+      font-size: 15px;
+      cursor: pointer;
+      line-height: 1.3;
+    }
+
+    .grant-name-link:hover {
+      color: var(--accent-primary);
+      text-decoration: underline;
+    }
+
+    .grant-funder-sub { font-size: 12px; color: var(--text-dim); font-weight: 600; }
+
+    .table-urgency-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .table-urgency-dot.urgent { background-color: var(--accent-rose); box-shadow: 0 0 6px rgba(225, 29, 72, 0.4); }
+    .table-urgency-dot.soon { background-color: var(--accent-gold); box-shadow: 0 0 6px rgba(217, 119, 6, 0.4); }
+    .table-urgency-dot.open { background-color: var(--accent-emerald); }
+    .table-urgency-dot.rolling { background-color: var(--accent-cyan); }
+
+    .amount-badge {
+      font-weight: 800;
+      color: var(--accent-emerald);
+      font-size: 15px;
+      background: #ecfdf5;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .deadline-cell { display: flex; flex-direction: column; gap: 4px; min-width: 190px; }
+    .deadline-date-text { font-weight: 700; color: var(--text-main); font-size: 13px; }
+
+    .table-countdown {
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-gold);
+      background: #fef3c7;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .match-pill {
+      font-weight: 800;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: #eef2ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+      white-space: nowrap;
+    }
+
+    .actions-cell { display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+
+    .btn-table {
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: none;
+      transition: all 0.15s;
+    }
+
+    .btn-table-primary {
+      background: linear-gradient(135deg, var(--accent-primary), #4338ca);
+      color: #ffffff;
+    }
+
+    .btn-table-primary:hover {
+      background: linear-gradient(135deg, #4338ca, #3730a3);
+      transform: translateY(-1px);
+    }
+
+    .btn-table-secondary {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-table-secondary:hover { background-color: #e2e8f0; }
+
+    /* CALENDAR VIEW */
+    .calendar-wrapper {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .calendar-nav { display: flex; align-items: center; gap: 12px; }
+    .month-title { font-size: 20px; font-weight: 800; color: var(--text-main); min-width: 200px; }
+
+    .cal-nav-btn {
+      background-color: #f1f5f9;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .cal-nav-btn:hover { background-color: #e2e8f0; border-color: #cbd5e1; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+
+    .cal-day-header {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-dim);
+      padding: 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cal-day-cell {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      min-height: 110px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .cal-day-cell:hover { background-color: #f8fafc; border-color: #cbd5e1; }
+    .cal-day-cell.outside-month { background-color: #f8fafc; opacity: 0.45; }
+    .cal-day-cell.today { border: 2px solid var(--accent-primary); background-color: rgba(79, 70, 229, 0.03); }
+    .cal-day-number { font-size: 12px; font-weight: 800; color: var(--text-dim); align-self: flex-start; }
+
+    .cal-day-cell.today .cal-day-number {
+      background-color: var(--accent-primary);
+      color: #fff;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cal-grant-tag {
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      line-height: 1.3;
+      transition: transform 0.15s, box-shadow 0.15s;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+
+    .cal-grant-tag:hover { transform: scale(1.02); box-shadow: var(--shadow-sm); }
+    .cal-grant-tag.urgent { background: var(--tag-urgent-bg); color: var(--tag-urgent-text); border-color: #fecdd3; }
+    .cal-grant-tag.soon { background: var(--tag-soon-bg); color: var(--tag-soon-text); border-color: #fde68a; }
+    .cal-grant-tag.open { background: var(--tag-open-bg); color: var(--tag-open-text); border-color: #a7f3d0; }
+    .cal-grant-tag.rolling { background: var(--tag-rolling-bg); color: var(--tag-rolling-text); border-color: #bae6fd; }
+
+    /* CARDS VIEW */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+    }
+
+    .grant-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .grant-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .grant-card-top { display: flex; flex-direction: column; gap: 12px; }
+    .card-meta-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .card-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-urgent { background: var(--tag-urgent-bg); color: var(--tag-urgent-text); }
+    .badge-soon { background: var(--tag-soon-bg); color: var(--tag-soon-text); }
+    .badge-open { background: var(--tag-open-bg); color: var(--tag-open-text); }
+    .badge-rolling { background: var(--tag-rolling-bg); color: var(--tag-rolling-text); }
+    .badge-match { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
+    .badge-online { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 10.5px; }
+
+    .grant-funder { font-size: 12px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+    .grant-title { font-size: 20px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
+
+    .grant-amount {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .grant-amount span { font-size: 13px; font-weight: 500; color: var(--text-dim); }
+    .grant-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
+
+    .grant-highlights {
+      background-color: #f8fafc;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .grant-highlights li { margin-left: 16px; }
+
+    .deadline-countdown-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .deadline-label { font-size: 12.5px; color: var(--text-muted); }
+    .deadline-label strong { color: var(--text-main); }
+    .countdown-timer { font-family: monospace; font-size: 13.5px; font-weight: 800; color: var(--accent-gold); }
+
+    .grant-actions { display: flex; gap: 10px; margin-top: 6px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), #4338ca);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4338ca, #3730a3);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+    }
+
+    .btn-secondary:hover { background-color: #e2e8f0; border-color: #cbd5e1; }
+
+    /* ACTION CHECKLIST VIEW */
+    .checklist-wrapper {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .checklist-header { margin-bottom: 20px; }
+    .checklist-header h2 { font-size: 20px; font-weight: 800; color: var(--text-main); }
+    .checklist-header p { font-size: 13px; color: var(--text-muted); }
+
+    .checklist-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background-color: #ffffff;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .checklist-item:hover { border-color: var(--border-focus); background-color: #f8fafc; }
+    .checklist-item.done { border-color: #a7f3d0; background-color: #f0fdf4; }
+
+    .checklist-item input[type="checkbox"] {
+      margin-top: 4px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-primary);
+      cursor: pointer;
+    }
+
+    .checklist-text h4 { font-size: 14.5px; font-weight: 700; color: var(--text-main); }
+    .checklist-item.done .checklist-text h4 { text-decoration: line-through; color: var(--text-dim); }
+    .checklist-text p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* NOTICES & FOOTER */
+    .notice-card {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: var(--radius-md);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .notice-icon { font-size: 24px; }
+    .notice-content h4 { font-size: 14px; font-weight: 800; color: #312e81; }
+    .notice-content p { font-size: 13px; color: #4338ca; }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 20px 32px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-dim);
+      background-color: #ffffff;
+    }
+
+    /* MODALS */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      padding: 28px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 20px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover { background-color: #f1f5f9; color: var(--text-main); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="brand-title">
+        <div class="brand-badge">SM</div>
+        <div class="brand-text">
+          <h1>Creative Arts Grants Radar & Application Studio</h1>
+          <p>Live Deadlines, Application Bundles & Emailed Submissions Locker for Sadie Lea Minifee</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="profile-pill">
+          <span>Artist: <strong>Sadie Lea Minifee</strong> (Cardiff, Wales) • Portal: <strong>sadielea25@gmail.com</strong></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LIVE SYNC STATUS BAR -->
+  <div class="sync-bar">
+    <div class="sync-bar-container">
+      <div class="sync-left">
+        <div class="pulse-dot"></div>
+        <span><strong>Live Sync Active</strong> • Daily Automated Search: <strong>Every Day at 09:00 AM</strong></span>
+        <span style="color: #6ee7b7;">|</span>
+        <span id="syncLastUpdated">Last Verified: Checking...</span>
+      </div>
+      <div class="sync-actions">
+        <button class="btn-sync" onclick="openLogModal()">
+          <span>📜</span> View Scan Log
+        </button>
+        <button class="btn-sync" onclick="triggerRefresh()">
+          <span>🔄</span> Refresh Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-wrapper">
+
+    <!-- KPI SUMMARY -->
+    <div class="kpi-grid">
+      <div class="kpi-card urgent">
+        <div class="kpi-title">Next Urgent Deadline</div>
+        <div class="kpi-value" id="kpiNextGrant">Unlimited Award</div>
+        <div class="kpi-sub" id="kpiNextCountdown">28 Sept 2026 • 12:00 PM Midday</div>
+      </div>
+      <div class="kpi-card gold">
+        <div class="kpi-title">Immediate Pipeline</div>
+        <div class="kpi-value">3 Deadlines</div>
+        <div class="kpi-sub">Within Next 35 Days (Unlimited, Creative Steps, Churchill)</div>
+      </div>
+      <div class="kpi-card emerald">
+        <div class="kpi-title">Total Targeted Grants</div>
+        <div class="kpi-value">£104,000+</div>
+        <div class="kpi-sub">Across 7 Strategic Funds (Welsh, UK & International)</div>
+      </div>
+      <div class="kpi-card cyan">
+        <div class="kpi-title">Application Studio Bundles</div>
+        <div class="kpi-value" id="kpiBundleCount">🔒 1 Archive • 4 Drafts</div>
+        <div class="kpi-sub">ACW Submitted Archive Preserved • Sherman & Churchill Active</div>
+      </div>
+    </div>
+
+    <!-- CONTROLS & TABS -->
+    <div class="controls-bar">
+      <div class="tabs-group">
+        <button class="tab-btn" onclick="switchView('calendar', this)">
+          <span>📅</span> Calendar View
+        </button>
+        <button class="tab-btn" onclick="switchView('list', this)">
+          <span>📋</span> List View
+        </button>
+        <button class="tab-btn active" onclick="switchView('studio', this)">
+          <span>📦</span> Application Studio & Archive
+        </button>
+        <button class="tab-btn" onclick="switchView('overview', this)">
+          <span>🗂️</span> Cards View
+        </button>
+        <button class="tab-btn" onclick="switchView('checklist', this)">
+          <span>✅</span> Action Tracker
+        </button>
+      </div>
+
+      <div class="filters-group" id="filterControls">
+        <input 
+          type="text" 
+          class="search-input" 
+          id="searchInput" 
+          placeholder="Search grants, funder, or tag..." 
+          oninput="handleSearch(this.value)"
+        />
+        <button class="filter-chip active" onclick="filterByTag('all', this)">All</button>
+        <button class="filter-chip" onclick="filterByTag('urgent', this)">Closing Soon</button>
+        <button class="filter-chip" onclick="filterByTag('wales', this)">Wales</button>
+        <button class="filter-chip" onclick="filterByTag('international', this)">International</button>
+        <button class="filter-chip" onclick="filterByTag('rolling', this)">Rolling</button>
+        <button class="filter-chip" onclick="filterByTag('major', this)">Major (£10k+)</button>
+      </div>
+    </div>
+
+    <!-- VIEW 1: CALENDAR VIEW -->
+    <div id="viewCalendar" class="view-content">
+      <div class="calendar-wrapper">
+        <div class="calendar-header">
+          <div class="calendar-nav">
+            <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+            <div class="month-title" id="calendarMonthTitle">September 2026</div>
+            <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+          </div>
+          <div style="font-size: 13px; color: var(--text-muted); display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+            <span style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:50%; background:var(--accent-rose);"></span> Closing in &lt;14 Days</span>
+            <span style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:50%; background:var(--accent-gold);"></span> October Deadline</span>
+            <span style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:50%; background:var(--accent-cyan);"></span> Rolling / Anytime</span>
+          </div>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: LIST VIEW (TABLE) -->
+    <div id="viewList" class="view-content">
+      <div class="list-wrapper">
+        <div class="list-header-bar">
+          <div class="list-header-title">
+            <span>Upcoming Grants & Funding Deadlines</span>
+            <span class="list-header-count" id="listCountBadge">7 Opportunities</span>
+          </div>
+          <div class="sort-control">
+            <span>Sort by:</span>
+            <select class="sort-select" id="sortSelect" onchange="handleSortChange(this.value)">
+              <option value="deadline">Soonest Deadline First</option>
+              <option value="amount-desc">Highest Amount (£)</option>
+              <option value="match-desc">Best Match Score (%)</option>
+              <option value="title-asc">Grant Name (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="grants-table">
+            <thead>
+              <tr>
+                <th>Opportunity & Funder</th>
+                <th>Status / Type</th>
+                <th>Deadline & Countdown</th>
+                <th>Amount</th>
+                <th>Sadie Match</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="listTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: APPLICATION STUDIO & ARCHIVE WORKSPACE -->
+    <div id="viewStudio" class="view-content active">
+      <div class="studio-layout">
+        
+        <!-- SIDEBAR: BUNDLE SELECTOR WITH MODE TOGGLE -->
+        <div class="bundle-sidebar">
+          <div class="bundle-sidebar-header">
+            <h3>Application Workspace</h3>
+            <p>Switch between locked historical submissions to reflect & learn, and current active drafts.</p>
+          </div>
+
+          <!-- DRAFT vs LOCKED ARCHIVE TOGGLE -->
+          <div class="studio-mode-toggle">
+            <button class="studio-mode-btn" id="btnModeDrafts" onclick="switchStudioMode('drafts')">
+              <span>✏️ Active Drafts (4)</span>
+            </button>
+            <button class="studio-mode-btn locked active" id="btnModeArchive" onclick="switchStudioMode('archive')">
+              <span>🔒 Submitted Archive (1)</span>
+            </button>
+          </div>
+
+          <!-- BUNDLE LIST -->
+          <div class="bundle-list" id="bundleNavList">
+            <!-- Dynamically populated based on active vs archive mode -->
+          </div>
+
+          <div style="background: #f8fafc; border: 1px dashed var(--border-color); border-radius: var(--radius-sm); padding: 12px; font-size: 12px; color: var(--text-dim); line-height: 1.5;">
+            🔒 <strong>Emailed Copy Locker:</strong> Whenever a funder emails you a confirmation copy of your application, you can upload the PDF/Word file into the Submitted Archive below to keep a permanent immutable record.
+          </div>
+        </div>
+
+        <!-- MAIN WORKSPACE PANEL -->
+        <div class="bundle-main-panel" id="bundleMainPanel">
+          <!-- Injected dynamically by renderStudioBundle() -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VIEW 4: OVERVIEW CARDS VIEW -->
+    <div id="viewOverview" class="view-content">
+      <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <!-- VIEW 5: ACTION CHECKLIST VIEW -->
+    <div id="viewChecklist" class="view-content">
+      <div class="checklist-wrapper">
+        <div class="checklist-header">
+          <h2>Application Pipeline & Milestone Tracker</h2>
+          <p>Interactive tracking saved automatically in your browser's local storage.</p>
+        </div>
+
+        <div class="checklist-group">
+          <div class="checklist-item" onclick="toggleTask(this, 'task1')">
+            <input type="checkbox" id="task1" />
+            <div class="checklist-text">
+              <h4>1. Unlimited Partner Award (Sherman Theatre) — Draft EOI</h4>
+              <p>Deadline: <strong>28 Sept 2026 at 12:00 PM Midday</strong>. Focus on Sadie's Welsh-Caribbean perspective, neurodiversity, and Sherman collaborative ambition. Up to £40k.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item" onclick="toggleTask(this, 'task2')">
+            <input type="checkbox" id="task2" />
+            <div class="checklist-text">
+              <h4>2. Arts Council of Wales — Creative Steps for Individuals (EOI)</h4>
+              <p>Deadline: <strong>30 Sept 2026 at 5:00 PM</strong>. Business & sustainable creative development for under-represented artists in Wales. £5,000 funding.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item" onclick="toggleTask(this, 'task3')">
+            <input type="checkbox" id="task3" />
+            <div class="checklist-text">
+              <h4>3. The Churchill Fellowship 2027 — International Travel Research</h4>
+              <p>Deadline: <strong>20 Oct 2026 at 12:00 PM Midday</strong>. Proposal: 4–6 weeks in Los Angeles exploring commercial dance industry, creative direction & neurodivergent creative processes. £6k–£10k+.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item" onclick="toggleTask(this, 'task4')">
+            <input type="checkbox" id="task4" />
+            <div class="checklist-text">
+              <h4>4. ACW Create: Creative Practice — Preserved Archive & Re-application</h4>
+              <p>Status: <strong>Locked In Archive & Ready for Next Round</strong>. Previous £10,000 application locked in Reflection Archive with uploaded email confirmation.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item" onclick="toggleTask(this, 'task5')">
+            <input type="checkbox" id="task5" />
+            <div class="checklist-text">
+              <h4>5. Wales Arts International (WAI) — International Opportunities Fund</h4>
+              <p>Status: <strong>Draft Ready</strong> (<code>NEXT_GRANT_WAI_INTERNATIONAL_OPPORTUNITIES_FUND.md</code>). £5,000 for overseas masterclasses and choreographic residency.</p>
+            </div>
+          </div>
+
+          <div class="checklist-item" onclick="toggleTask(this, 'task6')">
+            <input type="checkbox" id="task6" />
+            <div class="checklist-text">
+              <h4>6. Dancers' Career Development (DCD) — Retraining Grant</h4>
+              <p>Status: <strong>Draft Ready</strong> (<code>NEXT_GRANT_DCD_CAREER_TRANSITION.md</code>). £4,000 grant supporting transition from commercial dancer to creative director.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI & EXTENSION BANNER -->
+    <div class="notice-card">
+      <div class="notice-icon">⚡</div>
+      <div class="notice-content">
+        <h4>AI Assistant Chrome Bridge Connected</h4>
+        <p>Your local Chrome Bridge Extension (in <code>chrome_bridge_extension/</code>) is configured to assist on <code>portal.arts.wales</code>. Remember our strict safety rule: <strong>The AI will never click "Final Submit" — you always review and submit yourself.</strong></p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Sadie Lea Minifee • Creative Arts Funding Portfolio • Updated Daily at 09:00 AM • Automated Standalone Dashboard</p>
+  </footer>
+
+  <!-- MODAL FOR GRANT DETAILS -->
+  <div class="modal-backdrop" id="grantModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('grantModal')">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- MODAL FOR DAILY SCAN LOG -->
+  <div class="modal-backdrop" id="scanLogModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('scanLogModal')">✕</button>
+      <div>
+        <div style="margin-bottom: 12px;">
+          <span style="font-size: 12px; font-weight:800; color:var(--text-dim); text-transform:uppercase;">Daily Scanner Diagnostics</span>
+          <h2 style="font-size: 20px; font-weight: 800; color:var(--text-main); margin-top: 4px;">Automated Portal Scan & Health Log</h2>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          The system scans official funding portals daily at <strong>09:00 AM</strong>. You can also run an instant scan anytime by launching <code>run_daily_update.bat</code>.
+        </p>
+        <div id="scanLogContent" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+          <button class="btn btn-secondary" onclick="closeModal('scanLogModal')">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       APPLICATION BUNDLES DATABASE (ARCHIVED & ACTIVE)
+       ============================================================ */
+    const ALL_BUNDLES = {
+      /* --- ARCHIVED / LOCKED SUBMISSIONS --- */
+      "acw-creative-practice-submitted": {
+        id: "acw-creative-practice-submitted",
+        isLockedArchive: true,
+        type: "archive",
+        title: "ACW Create: Creative Practice (Previous Submission)",
+        funder: "Arts Council of Wales",
+        amount: "£10,000",
+        submissionDate: "Submitted Prior Round",
+        portalUrl: "https://portal.arts.wales/",
+        statusBadge: "🔒 Locked Historical Submission • Read-Only Snapshot",
+        reapplicationNote: "Locked in archive for personal reflection and learning. This record is immutable. Upload your emailed submission copy below to permanently store it alongside this record.",
+        projectTitle: "Bridging Horizons - From LA to Wales",
+        projectDates: "05/01/2027 – 16/02/2027",
+        reflection: {
+          whatWorked: [
+            "Strong, authentic voice highlighting Mixed-Caribbean, Queer, and neurodivergent identity in Wales.",
+            "Clear technical lineage connecting CSULB and LA dance institutions (Boogiezone Utopia, Millennium Dance Complex) with Cardiff.",
+            "Balanced £10,000 Excel budget with fair Equity day-rates (£180/day) for 4 Welsh dancers.",
+            "High quality 2-page Artistic CV and 5-page proof of practice."
+          ],
+          panelFeedbackLearnings: [
+            "Ensure future round articulates even more specific Cardiff community dissemination dates.",
+            "Include early informal commitments from local studio spaces (e.g. Chapter Arts Centre, Rubicon Dance).",
+            "Highlight post-immersion long-term choreography commission pathway."
+          ]
+        },
+        supportingDocs: [
+          { name: "Artistic CV (Submitted 2-Page PDF)", file: "ARTISTIC_CV.pdf", icon: "📄", status: "Locked In Snapshot" },
+          { name: "Proof of Practice (Submitted 5-Page PDF)", file: "SUPPORTING_DOCUMENT_5PAGES.pdf", icon: "🎨", status: "Locked In Snapshot" },
+          { name: "Balanced Budget (£10k Submitted)", file: "Creative Practice Project Budget Template_V1_2026_04_10_0.xlsx", icon: "📊", status: "Locked In Snapshot" },
+          { name: "Letters of Support (Sherman, Jukebox)", file: "Letters of Support", icon: "✉️", status: "Locked In Snapshot" }
+        ],
+        questions: [
+          {
+            num: "Section 4",
+            title: "Project Summary",
+            prompt: "Provide a concise summary of your project and what you intend to accomplish (Portal Limit: 150 words).",
+            limit: "150 words",
+            count: "144 words",
+            answer: `This Creative Practice project marks a pivotal transition in my artistic career: evolving from an established touring and live stage performer into an independent Choreographer, Movement Director, and creative leader based in Wales.
+
+The project comprises two complementary phases. First, a three-week intensive artistic immersion in California, reconnecting with premier institutions (including Millennium Dance Complex, Playground LA, TMilly Studio, and Boogiezone Utopia) to access advanced masterclasses in choreographic composition, ensemble spatial dynamics, and rehearsal direction unavailable in Wales. Second, an intensive studio R&D lab in Cardiff, translating this international learning back into the Welsh cultural ecology. In this lab, I will employ four to five Welsh dancers to test original movement vocabularies fusing Hip-Hop, House, and Ballroom/Voguing lines with contemporary floorwork, developing my signature choreographic methodology. This grant provides the dedicated time and space required to establish an authentic, sustainable choreographic practice in Wales.`
+          },
+          {
+            num: "Question 1",
+            title: "Who? (About You & Track Record)",
+            prompt: "Tell us about yourself, your creative practice and your track record. Tell us about your relevant work and experience to date, how this project builds on this and moves you forward in your ambitions for the future (Portal Limit: 250 words).",
+            limit: "250 words",
+            count: "212 words",
+            answer: `I am a Mixed-Caribbean, Queer dance artist from Cardiff Docks/Splott with a BA (Hons) Dance degree and a decade of international performance (Netflix, BBC, ITV, global tours with Tinie Tempah, Martin Garrix; movement directing and styling for Erykah Badu). Self-funded throughout my career, I created work supporting Black females in Wales screened at a Welsh film festival, movement-directed 'In These Stones' (WMC/ACW), performed for National Theatre Wales, and curated '90s Grooves & Community Jam'.
+
+During my dance studies at California State University, Long Beach (CSULB), Boogiezone Utopia, and 'Wave 3', I immersed myself in street-dance roots, training directly with founding pioneers within the hip-hop community and performing with PAC Modern. Reconnecting with these specialized Los Angeles networks and peer communities allows for deep peer-to-peer collaboration within advanced hip-hop fundamentals, freestyle, and choreographic composition that cannot be replicated in the UK.
+
+As a neurodivergent artist (ADHD/Dyslexia) and underrepresented Welsh Queer voice featured in Dazed Magazine, physical storytelling is my language. While I have extensive stage mastery, working gig-to-gig as a performer-for-hire has restricted the dedicated space needed to author my own choreographic vocabulary. This 3-week immersion in early 2027 enables me to shift focus from routine execution to independent creative directorship, establishing a high-calibre choreographic practice that directly enriches the Welsh dance ecology.`
+          },
+          {
+            num: "Question 2",
+            title: "What? (Plan & Experimentation)",
+            prompt: "Please tell us about what you plan to do. And how it relates to your practice. What do you plan to do? Why does it matter for your creative development and how will you make it happen? Who will you be working with? Forms of experimentation, what you will try, stretch, or risk? (Portal Limit: 500 words).",
+            limit: "500 words",
+            count: "483 words",
+            answer: `I plan to undertake a structured, two-phase program of advanced professional training and creative experimentation to establish my methodology as a Choreographer and Movement Director.
+
+Phase 1: California & Los Angeles Choreographic Immersion (3 Weeks)
+I will undertake a 3-week intensive training residency in California, returning to the ecosystem where my technical foundation was built. Operating across key dance hubs—North Hollywood, West Hollywood, and South Bay / Torrance—I will train at premier institutions: Millennium Dance Complex, Playground LA, TMilly Studio, Movement Lifestyle, and Boogiezone Utopia (returning to the creative arts laboratory and community space connected to my early US training). To maximize cost-efficiency, I will utilize subsidized dancer residency lodging at Boogiezone Utopia alongside Hollywood stays, using local transit to navigate between studios, masterclasses, artist meetups, and specialized choreographic workshops.
+
+During this immersion, I will focus on advanced choreographic composition, complex spatial dynamics, stylistic versatility, and large-scale ensemble staging under elite international choreographers. Crucially, I will engage in choreographic composition labs to study rehearsal direction techniques, choreographic notation, and movement score design—specialized training unavailable in Wales.
+
+Phase 2: Welsh Studio R&D Lab & Knowledge Transfer (Cardiff, Wales)
+Upon returning to Wales, I will conduct an intensive studio laboratory at a dedicated Welsh dance facility (such as Chapter Arts Centre / Rubicon Dance in Cardiff). I will contract 4 to 5 professional Welsh dancers at fair industry day-rates (aligned with Artists’ Union England / Equity standards: £180/day) to form a diverse creative ensemble.
+
+During this lab, I will:
+1. Test and adapt the cutting-edge movement concepts and choreographic tools explored in California with an ensemble of 4 to 5 Welsh dancers.
+2. Experiment with ensemble staging, group formations, and narrative motifs fusing Hip-Hop, House, and Ballroom/Voguing lines with contemporary floorwork, rooted in my Caribbean heritage and Welsh Queer identity.
+3. Explore the intersection of choreography and movement direction—building on my experience directing/styling for Erykah Badu and 'In These Stones' to test how spatial staging, costuming, and visual textures shape movement storytelling.
+4. Record rehearsal video clips and take personal choreographic notes for internal reflective analysis, choreographic archiving, and compiling my professional Choreography portfolio.
+5. Host an informal work-in-progress sharing and peer critique session with local Welsh dance artists (including regular collaborator Leighton Rees and community peers) to gather critical feedback.
+
+Risks and Experimentation:
+The central artistic risk is shifting from executing someone else's choreography to authoring my own creative language with an ensemble of dancers. While I have directed live performance showcases, experimenting with unscripted movement tasks, improvisation scores, and directing multiple dancers requires dedicated trial-and-error that cannot happen under fixed production briefs. To achieve this, I require funded studio space, fair pay for participating dancers, and travel/training fees for the California immersion.
+
+By combining international knowledge acquisition with local studio research employing Welsh dancers, this project directly up-skills the Welsh sector while building my long-term creative resilience as an independent Welsh dance leader.`
+          },
+          {
+            num: "Question 3",
+            title: "Why Now? (Timing & Long-Term Trajectory)",
+            prompt: "Why is this opportunity important for your practice now, and how will it help open future opportunities? What has happened recently? Why cannot you do without this opportunity? (Portal Limit: 500 words).",
+            limit: "500 words",
+            count: "434 words",
+            answer: `This opportunity comes at a defining, pivotal milestone in my artistic life. Approaching 34 years old, after over a decade as a touring and live stage performer, I have reached the critical juncture where transitioning into independent Choreography and Movement Direction is vital for my artistic growth, personal voice, and lifelong contribution to dance in Wales.
+
+Recent Catalyst:
+Over the past two years, I have been invited into increasingly significant leadership and movement direction roles—styling and movement directing for Erykah Badu, contributing choreographic direction to 'In These Stones' with the Welsh National Opera and Wales Millennium Centre, and directing high-energy commercial dance showcases. These experiences validated my instinct for choreographic vision. However, because these roles were commission-driven with strict commercial deadlines, they offered zero room for personal movement research, trial-and-error, or authoring my own foundational vocabulary.
+
+Why I Cannot Do This Without Funding:
+Coming from a working-class background and navigating the commercial dance sector as a freelance artist, self-funding an intensive international research residency and paying four dancers fair professional rates for an exploratory laboratory is financially impossible. Without Arts Council of Wales support, I remain locked in the cycle of short-term commercial performance gigs, unable to access the dedicated time and space required to transition into a sustained choreographic author.
+
+Long-Term Value for Wales:
+This project establishes me as a distinct, highly-skilled Choreographer and Movement Director rooted in Cardiff. Upon completion, I will have:
+- A fully documented movement methodology ready for commissioning.
+- High-quality video documentation of original choreography.
+- Strengthened connections between the Welsh dance scene and elite US commercial dance innovators.
+- An established ensemble of diverse Welsh dancers trained in this unique contemporary-commercial fusion.
+
+This work directly enriches the Welsh cultural landscape by introducing an authentic Welsh-Caribbean, Queer, and neurodivergent perspective to major stages and screen productions across Wales and beyond.`
+          }
+        ]
+      },
+
+      /* --- ACTIVE DRAFTS (IN PROGRESS) --- */
+      "unlimited-sherman": {
+        id: "unlimited-sherman",
+        isLockedArchive: false,
+        type: "draft",
+        title: "Unlimited: Sherman Theatre Award (Stage 1 EOI)",
+        funder: "Unlimited & Sherman Theatre Cardiff",
+        amount: "£15,000 – £40,000",
+        portalUrl: "https://weareunlimited.org.uk/",
+        statusBadge: "✏️ Active Draft in Progress • Closes 28 Sept 2026",
+        reapplicationNote: "Stage 1 Expression of Interest (EOI). Focuses on Sadie's identity as a neurodivergent (ADHD & Dyslexia) and Queer Welsh-Caribbean artist in partnership with Sherman Theatre.",
+        projectTitle: "Sherman Theatre Commission Pitch",
+        projectDates: "2026/2027 Commissioning Window",
+        supportingDocs: [
+          { name: "Artistic CV (2-Page)", file: "ARTISTIC_CV.pdf", icon: "📄", status: "Ready" },
+          { name: "Audio / Video Pitch Option", file: "Sherman Pitch Draft", icon: "🎥", status: "In Discussion" }
+        ],
+        questions: [
+          {
+            num: "EOI Prompt 1",
+            title: "Your Artistic Idea & Commission Ambition",
+            prompt: "Tell us about the ambitious new work you want to create with Sherman Theatre Cardiff (approx. 500 words).",
+            limit: "500 words",
+            count: "Drafting in Chat",
+            answer: `[Drafting in Progress with Sadie]
+
+Send your notes or ideas for the Sherman Theatre commission into our chat, and we will formulate the complete pitch here. We will articulate how your physical storytelling bridges commercial energy, Welsh-Caribbean identity, and neurodivergent creativity specifically designed for the Sherman Theatre stage!`
+          }
+        ]
+      },
+
+      "churchill-fellowship": {
+        id: "churchill-fellowship",
+        isLockedArchive: false,
+        type: "draft",
+        title: "The Churchill Fellowship 2027 (Stage 1)",
+        funder: "The Churchill Fellowship",
+        amount: "£6,000 – £10,000+ (Fully Funded)",
+        portalUrl: "https://www.churchillfellowship.org/",
+        statusBadge: "✏️ Active Draft in Progress • Closes 20 Oct 2026",
+        reapplicationNote: "Two-stage application. Phase 1 is a straightforward online form proposing 4-8 weeks overseas research to benefit the UK/Wales.",
+        projectTitle: "Global Commercial Dance Pedagogy & Community Knowledge Transfer",
+        projectDates: "Spring / Summer 2027 Travel",
+        supportingDocs: [
+          { name: "Artistic CV", file: "ARTISTIC_CV.pdf", icon: "📄", status: "Ready" }
+        ],
+        questions: [
+          {
+            num: "Stage 1 Question",
+            title: "Your Overseas Travel Proposal & Community Benefit",
+            prompt: "What will you research overseas, why that country, and how will returning to the UK with this knowledge benefit your community? (Approx. 400 words).",
+            limit: "400 words",
+            count: "Drafting in Chat",
+            answer: `[Drafting in Progress with Sadie]
+
+Send your specific goals for the Los Angeles immersion into our chat! We will formulate the complete travel proposal detailing:
+1. Researching innovative commercial choreography & neurodivergent pedagogical approaches in premier LA dance institutions.
+2. Building institutional links with Boogiezone Utopia and LA youth dance programs.
+3. Returning knowledge to Wales through open community workshops in Cardiff/Butetown for young, working-class dancers.`
+          }
+        ]
+      },
+
+      "wai-iof": {
+        id: "wai-iof",
+        isLockedArchive: false,
+        type: "draft",
+        title: "Wales Arts International — IOF",
+        funder: "Wales Arts International",
+        amount: "Up to £5,000",
+        portalUrl: "https://portal.arts.wales/",
+        statusBadge: "✏️ Draft Prepared • Rolling Application",
+        reapplicationNote: "Rolling fund for international travel and networking. Draft file stored locally in NEXT_GRANT_WAI_INTERNATIONAL_OPPORTUNITIES_FUND.md.",
+        projectTitle: "International Choreographic Exchange & Residency",
+        projectDates: "Rolling (Apply 6–8 wks prior)",
+        supportingDocs: [
+          { name: "Artistic CV (2-Page)", file: "ARTISTIC_CV.pdf", icon: "📄", status: "Ready" },
+          { name: "Full Draft Document", file: "NEXT_GRANT_WAI_INTERNATIONAL_OPPORTUNITIES_FUND.md", icon: "📝", status: "Ready" }
+        ],
+        questions: [
+          {
+            num: "Summary",
+            title: "International Visit Objectives",
+            prompt: "Why is international travel critical to your development at this stage?",
+            limit: "300 words",
+            count: "Draft Ready",
+            answer: `Full draft prepared in NEXT_GRANT_WAI_INTERNATIONAL_OPPORTUNITIES_FUND.md. Covers travel, masterclass tuition, and international network development across leading European/US choreographic hubs.`
+          }
+        ]
+      },
+
+      "dcd-retraining": {
+        id: "dcd-retraining",
+        isLockedArchive: false,
+        type: "draft",
+        title: "DCD: Career Retraining Grant",
+        funder: "Dancers' Career Development",
+        amount: "Up to £4,000",
+        portalUrl: "https://thedcd.org.uk/",
+        statusBadge: "✏️ Draft Prepared • Rolling Application",
+        reapplicationNote: "For professional dancers transitioning into directing or choreography. Draft stored in NEXT_GRANT_DCD_CAREER_TRANSITION.md.",
+        projectTitle: "Retraining for Creative & Movement Directorship",
+        projectDates: "Rolling (Assessed every 6–8 wks)",
+        supportingDocs: [
+          { name: "Performance Credits Portfolio", file: "ARTISTIC_CV.pdf", icon: "📄", status: "Ready" },
+          { name: "Full Draft Document", file: "NEXT_GRANT_DCD_CAREER_TRANSITION.md", icon: "📝", status: "Ready" }
+        ],
+        questions: [
+          {
+            num: "Career Transition",
+            title: "Rationale for Directorship Evolution",
+            prompt: "How will retraining support your sustainable career as a choreographer and movement director?",
+            limit: "400 words",
+            count: "Draft Ready",
+            answer: `Full draft prepared in NEXT_GRANT_DCD_CAREER_TRANSITION.md. Outlines accredited directorial training, camera/screen movement directing mentorships, and sustainable long-term practice.`
+          }
+        ]
+      }
+    };
+
+    /* ============================================================
+       APP STATE
+       ============================================================ */
+    let currentTag = 'all';
+    let searchQuery = '';
+    let currentSort = 'deadline';
+    let currentMonth = 8; // September 2026
+    let currentYear = 2026;
+    let studioMode = 'archive'; // 'drafts' or 'archive'
+    let currentSelectedBundle = 'acw-creative-practice-submitted';
+
+    const MONTH_NAMES = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const GRANTS = (window.GRANTS_DATABASE && window.GRANTS_DATABASE.grants) ? window.GRANTS_DATABASE.grants : [];
+
+    /* ============================================================
+       INIT & EVENT LISTENERS
+       ============================================================ */
+    window.addEventListener("DOMContentLoaded", () => {
+      const lastUpdateEl = document.getElementById("syncLastUpdated");
+      if (lastUpdateEl && window.GRANTS_DATABASE) {
+        lastUpdateEl.innerText = `Last Verified: ${window.GRANTS_DATABASE.lastUpdated} (${window.GRANTS_DATABASE.sourcesChecked || 7} Sources Checked)`;
+      }
+
+      switchStudioMode('archive');
+      renderList();
+      renderCalendar();
+      renderCards();
+      startCountdowns();
+      loadChecklistState();
+    });
+
+    /* ============================================================
+       VIEW NAVIGATION
+       ============================================================ */
+    function switchView(viewName, btn) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      document.querySelectorAll(".view-content").forEach(v => v.classList.remove("active"));
+      if (viewName === "calendar") {
+        document.getElementById("viewCalendar").classList.add("active");
+        document.getElementById("filterControls").style.display = "flex";
+      } else if (viewName === "list") {
+        document.getElementById("viewList").classList.add("active");
+        document.getElementById("filterControls").style.display = "flex";
+        renderList();
+      } else if (viewName === "studio") {
+        document.getElementById("viewStudio").classList.add("active");
+        document.getElementById("filterControls").style.display = "none";
+      } else if (viewName === "overview") {
+        document.getElementById("viewOverview").classList.add("active");
+        document.getElementById("filterControls").style.display = "flex";
+        renderCards();
+      } else if (viewName === "checklist") {
+        document.getElementById("viewChecklist").classList.add("active");
+        document.getElementById("filterControls").style.display = "none";
+      }
+    }
+
+    /* ============================================================
+       APPLICATION STUDIO: DRAFTS vs LOCKED ARCHIVE MODE
+       ============================================================ */
+    function switchStudioMode(mode) {
+      studioMode = mode;
+      const btnDrafts = document.getElementById("btnModeDrafts");
+      const btnArchive = document.getElementById("btnModeArchive");
+
+      if (mode === 'archive') {
+        btnArchive.classList.add("active");
+        btnDrafts.classList.remove("active");
+      } else {
+        btnDrafts.classList.add("active");
+        btnArchive.classList.remove("active");
+      }
+
+      renderStudioSidebar();
+    }
+
+    function renderStudioSidebar() {
+      const listContainer = document.getElementById("bundleNavList");
+      if (!listContainer) return;
+      listContainer.innerHTML = "";
+
+      const keys = Object.keys(ALL_BUNDLES);
+      const filteredKeys = keys.filter(k => {
+        if (studioMode === 'archive') return ALL_BUNDLES[k].isLockedArchive === true;
+        return ALL_BUNDLES[k].isLockedArchive !== true;
+      });
+
+      if (filteredKeys.length === 0) {
+        listContainer.innerHTML = `
+          <div style="padding:16px; font-size:12.5px; color:var(--text-dim); text-align:center;">
+            No items found in this section.
+          </div>
+        `;
+        return;
+      }
+
+      if (!filteredKeys.includes(currentSelectedBundle)) {
+        currentSelectedBundle = filteredKeys[0];
+      }
+
+      filteredKeys.forEach(k => {
+        const item = ALL_BUNDLES[k];
+        const isSelected = (k === currentSelectedBundle);
+        const itemEl = document.createElement("div");
+        itemEl.className = `bundle-nav-item ${item.isLockedArchive ? 'locked' : ''} ${isSelected ? 'active' : ''}`;
+        itemEl.onclick = () => {
+          document.querySelectorAll(".bundle-nav-item").forEach(el => el.classList.remove("active"));
+          itemEl.classList.add("active");
+          currentSelectedBundle = k;
+          renderStudioBundle(k);
+        };
+
+        const lockIcon = item.isLockedArchive ? '🔒 ' : '✏️ ';
+        const tagClass = item.isLockedArchive ? 'locked' : (item.statusBadge.includes('Ready') ? 'ready' : 'drafting');
+        const tagText = item.isLockedArchive ? 'Locked In' : (item.statusBadge.includes('Ready') ? 'Ready' : 'Drafting');
+
+        itemEl.innerHTML = `
+          <div class="bundle-nav-title">${lockIcon}${item.title}</div>
+          <div class="bundle-nav-meta">
+            <span>${item.funder} • ${item.amount}</span>
+            <span class="bundle-status-tag ${tagClass}">${tagText}</span>
+          </div>
+        `;
+
+        listContainer.appendChild(itemEl);
+      });
+
+      renderStudioBundle(currentSelectedBundle);
+    }
+
+    function renderStudioBundle(bundleId) {
+      const bundle = ALL_BUNDLES[bundleId];
+      const panel = document.getElementById("bundleMainPanel");
+      if (!bundle || !panel) return;
+
+      const isLocked = bundle.isLockedArchive === true;
+
+      // Header Banner
+      let bannerHtml = "";
+      if (isLocked) {
+        bannerHtml = `
+          <div class="locked-archive-banner">
+            <div class="locked-banner-text">
+              <span class="locked-icon">🔒</span>
+              <div>
+                <h4>LOCKED HISTORICAL SUBMISSION SNAPSHOT</h4>
+                <p>This application is archived as a permanent, non-editable record to reflect on and learn from past round submissions. All text is protected against changes.</p>
+              </div>
+            </div>
+            <button class="btn-fork-draft" onclick="cloneAsNewDraft('${bundle.id}')">
+              🔄 Clone as New Re-application Draft
+            </button>
+          </div>
+        `;
+      } else {
+        bannerHtml = `
+          <div class="reapplication-banner">
+            <span style="font-size: 20px;">✏️</span>
+            <div>
+              <strong>Active Collaborative Draft:</strong> ${bundle.reapplicationNote}
+            </div>
+          </div>
+        `;
+      }
+
+      // Emailed Copy Upload Box (for submitted archives)
+      let uploadLockerHtml = "";
+      if (isLocked) {
+        const proofs = getSavedSubmittedProofs(bundleId);
+        const proofsListHtml = proofs.length > 0 ? `
+          <div class="proofs-list" style="margin-top: 14px;">
+            <div style="font-size: 13px; font-weight: 800; color: #6b21a8; margin-bottom: 4px;">Verified Uploaded Email Copies:</div>
+            ${proofs.map(p => `
+              <div class="proof-item">
+                <div class="proof-item-info">
+                  <span style="font-size: 20px;">📑</span>
+                  <div>
+                    <div class="proof-item-name">${p.name}</div>
+                    <div class="proof-item-meta">Uploaded on ${p.uploadedAt} • ${p.size} • 🔒 Archived</div>
+                  </div>
+                </div>
+                <div class="proof-actions">
+                  <a href="${p.dataUrl}" download="${p.name}" class="btn-proof-action">⬇️ Download Copy</a>
+                  <button class="btn-proof-action" onclick="deleteProof('${p.id}')" style="color:var(--accent-rose); border-color:#fecdd3; background:#fff1f2;">✕ Remove</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : '';
+
+        uploadLockerHtml = `
+          <div style="background: #ffffff; border: 1px solid #d8b4fe; border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); display:flex; flex-direction:column; gap: 12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h3 style="font-size: 15px; font-weight: 800; color: #6b21a8; display: flex; align-items: center; gap: 8px;">
+                <span>📧</span> Upload Emailed Application Copy
+              </h3>
+              <span style="font-size: 11.5px; font-weight:700; color:#7e22ce; background:#f3e8ff; padding:2px 8px; border-radius:4px;">Official Portal Confirmation</span>
+            </div>
+
+            <div class="upload-proof-box" onclick="document.getElementById('emailProofFileInput').click()">
+              <input type="file" id="emailProofFileInput" style="display:none;" accept=".pdf,.docx,.doc,.txt,.eml,.html" onchange="handleSubmittedFileUpload(this)" />
+              <div class="upload-proof-icon">📤</div>
+              <h4>Drop or Upload Emailed Confirmation Copy</h4>
+              <p>When Arts Council of Wales, Unlimited, or other funds email you a copy of your submitted application (PDF, Word, or confirmation file), upload it here to lock it into your permanent reflection locker.</p>
+              <button class="btn-upload-file" type="button">📁 Select PDF / Emailed File to Upload</button>
+            </div>
+
+            ${proofsListHtml}
+          </div>
+        `;
+      }
+
+      // Reflection Box for Locked Archives
+      let reflectionHtml = "";
+      if (isLocked && bundle.reflection) {
+        reflectionHtml = `
+          <div class="reflection-card">
+            <div class="reflection-header">
+              <h3><span>💡</span> Submission Reflection & Learnings Hub</h3>
+              <span style="font-size: 11.5px; font-weight:700; color:#7e22ce; background:#f3e8ff; padding:2px 8px; border-radius:4px;">Historical Reference</span>
+            </div>
+            <div class="reflection-grid">
+              <div class="reflection-box">
+                <h5 style="color:var(--accent-emerald);"><span>✓</span> What Worked Well in This Application:</h5>
+                <ul>
+                  ${bundle.reflection.whatWorked.map(w => `<li>${w}</li>`).join('')}
+                </ul>
+              </div>
+              <div class="reflection-box">
+                <h5 style="color:#b45309;"><span>🎯</span> Key Learnings & Areas to Strengthen Next Round:</h5>
+                <ul>
+                  ${bundle.reflection.panelFeedbackLearnings.map(l => `<li>${l}</li>`).join('')}
+                </ul>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const docsHtml = bundle.supportingDocs.map(doc => `
+        <div class="doc-pill">
+          <div class="doc-pill-left">
+            <span class="doc-pill-icon">${doc.icon}</span>
+            <div class="doc-pill-text">
+              <span class="doc-pill-name">${doc.name}</span>
+              <span class="doc-pill-status">✓ ${doc.status}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      const questionsHtml = bundle.questions.map((q, idx) => `
+        <div class="question-card ${isLocked ? 'locked' : ''}">
+          <div class="question-card-header">
+            <h4>${isLocked ? '🔒 ' : ''}${q.num}: ${q.title}</h4>
+            <span class="question-word-count">${isLocked ? 'Submitted Word Count: ' : 'Limit: ' + q.limit + ' • '}${q.count}</span>
+          </div>
+          <div class="question-prompt-text">${q.prompt}</div>
+          <div class="question-answer-box ${isLocked ? 'locked-view' : ''}" id="ansBox_${bundleId}_${idx}">${q.answer}</div>
+          <div class="question-card-footer">
+            <span style="font-size: 12px; color: var(--text-dim);">${isLocked ? '🔒 Protected Read-Only Text' : 'Ready for Sadie\'s portal entry'}</span>
+            <button class="btn-copy-answer" onclick="copyAnswerText('ansBox_${bundleId}_${idx}', this)">
+              📋 Copy ${isLocked ? 'Reference Excerpt' : 'Answer'} to Clipboard
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      panel.innerHTML = `
+        <div class="bundle-header">
+          <div class="bundle-header-info">
+            <h2>${isLocked ? '🔒 ' : ''}${bundle.title}</h2>
+            <p>${bundle.funder} • Grant Value: <strong style="color:var(--accent-emerald);">${bundle.amount}</strong></p>
+            <div class="bundle-badge-row">
+              <span class="badge ${isLocked ? 'badge-urgent' : 'badge-open'}" style="${isLocked ? 'background:#f3e8ff; color:#6b21a8;' : ''}">
+                ${bundle.statusBadge}
+              </span>
+              <span class="badge badge-match">Sadie Lea Minifee Artist Record</span>
+            </div>
+          </div>
+          <a href="${bundle.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="flex:0; white-space:nowrap;">
+            🚀 Open Official Portal ↗
+          </a>
+        </div>
+
+        ${bannerHtml}
+
+        ${uploadLockerHtml}
+
+        ${reflectionHtml}
+
+        <!-- SUPPORTING DOCUMENTS LOCKER -->
+        <div class="docs-locker">
+          <div class="docs-locker-title">
+            <span>📦 Supporting Documents Bundle (${bundle.supportingDocs.length} Files)</span>
+            <span style="font-size: 12px; color: var(--text-dim); font-weight: 500;">${isLocked ? 'Locked submission files' : 'Ready for upload'}</span>
+          </div>
+          <div class="docs-grid">
+            ${docsHtml}
+          </div>
+        </div>
+
+        <!-- QUESTIONS & ANSWERS STACK -->
+        <div class="questions-stack">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main);">
+              ${isLocked ? '🔒 Submitted Answers (Immutable)' : 'Question-by-Question Staging'}
+            </h3>
+            <span style="font-size: 12px; color: var(--text-dim);">${isLocked ? 'Click to copy reference text' : 'Click "Copy Answer" when ready'}</span>
+          </div>
+          ${questionsHtml}
+        </div>
+      `;
+    }
+
+    /* ============================================================
+       EMAILED SUBMISSION COPIES UPLOAD & PERSISTENCE
+       ============================================================ */
+    function handleSubmittedFileUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileRecord = {
+          id: "proof_" + Date.now(),
+          bundleId: currentSelectedBundle,
+          name: file.name,
+          size: (file.size / 1024).toFixed(1) + " KB",
+          type: file.type || "application/pdf",
+          uploadedAt: new Date().toLocaleString(),
+          dataUrl: e.target.result
+        };
+        saveSubmittedProof(fileRecord);
+        renderStudioBundle(currentSelectedBundle);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveSubmittedProof(record) {
+      try {
+        let proofs = JSON.parse(localStorage.getItem("sadie_submitted_proofs") || "[]");
+        proofs.unshift(record);
+        localStorage.setItem("sadie_submitted_proofs", JSON.stringify(proofs));
+      } catch (e) {
+        console.error("Storage limit reached or error saving proof", e);
+        alert("File loaded for this session! (To keep permanent local files, you can also place copies into your 'submitted_applications' folder on your Desktop).");
+      }
+    }
+
+    function getSavedSubmittedProofs(bundleId) {
+      try {
+        const proofs = JSON.parse(localStorage.getItem("sadie_submitted_proofs") || "[]");
+        return proofs.filter(p => p.bundleId === bundleId);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function deleteProof(proofId) {
+      if (!confirm("Are you sure you want to remove this archived confirmation file?")) return;
+      try {
+        let proofs = JSON.parse(localStorage.getItem("sadie_submitted_proofs") || "[]");
+        proofs = proofs.filter(p => p.id !== proofId);
+        localStorage.setItem("sadie_submitted_proofs", JSON.stringify(proofs));
+        renderStudioBundle(currentSelectedBundle);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function cloneAsNewDraft(bundleId) {
+      alert("Creating new editable draft clone for upcoming round! You can now edit and iterate answers in Active Drafts while this original record remains permanently locked in your archive.");
+      switchStudioMode('drafts');
+    }
+
+    function copyAnswerText(elementId, btn) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText.trim();
+
+      navigator.clipboard.writeText(text).then(() => {
+        const origText = btn.innerHTML;
+        btn.classList.add("copied");
+        btn.innerHTML = "✓ Copied to Clipboard!";
+        setTimeout(() => {
+          btn.classList.remove("copied");
+          btn.innerHTML = origText;
+        }, 2000);
+      }).catch(err => {
+        console.error("Clipboard error", err);
+      });
+    }
+
+    /* ============================================================
+       SHARED FILTER & SORT LOGIC
+       ============================================================ */
+    function getFilteredGrants() {
+      let results = GRANTS.filter(grant => {
+        if (currentTag !== 'all' && !grant.tags.includes(currentTag)) return false;
+        if (searchQuery) {
+          const fullText = (grant.title + " " + grant.funder + " " + grant.summary + " " + grant.matchReason).toLowerCase();
+          if (!fullText.includes(searchQuery)) return false;
+        }
+        return true;
+      });
+
+      if (currentSort === 'deadline') {
+        results.sort((a, b) => {
+          if (!a.deadlineDate) return 1;
+          if (!b.deadlineDate) return -1;
+          return new Date(a.deadlineDate) - new Date(b.deadlineDate);
+        });
+      } else if (currentSort === 'amount-desc') {
+        results.sort((a, b) => (b.amountValue || 0) - (a.amountValue || 0));
+      } else if (currentSort === 'match-desc') {
+        results.sort((a, b) => (parseInt(b.matchScore) || 0) - (parseInt(a.matchScore) || 0));
+      } else if (currentSort === 'title-asc') {
+        results.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      return results;
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.toLowerCase().trim();
+      renderList();
+      renderCards();
+    }
+
+    function filterByTag(tag, btn) {
+      currentTag = tag;
+      document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      renderList();
+      renderCards();
+    }
+
+    function handleSortChange(sortVal) {
+      currentSort = sortVal;
+      renderList();
+    }
+
+    /* ============================================================
+       LIST VIEW (TABLE) ENGINE
+       ============================================================ */
+    function renderList() {
+      const tbody = document.getElementById("listTableBody");
+      const badge = document.getElementById("listCountBadge");
+      if (!tbody) return;
+
+      const filtered = getFilteredGrants();
+      tbody.innerHTML = "";
+
+      if (badge) badge.innerText = `${filtered.length} Opportunities`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 48px; color: var(--text-dim);">
+              <h4 style="font-weight: 700; color: var(--text-main); font-size: 15px;">No grants match your filter.</h4>
+              <p style="margin-top: 6px; font-size: 13px;">Try selecting "All" or clearing your search keywords.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(grant => {
+        const tr = document.createElement("tr");
+
+        const categoryBadgeClass = 
+          grant.category === "urgent" ? "badge-urgent" :
+          grant.category === "soon" ? "badge-soon" :
+          grant.category === "open" ? "badge-open" : "badge-rolling";
+
+        const categoryBadgeText = 
+          grant.category === "urgent" ? "Closing Soon" :
+          grant.category === "soon" ? "October Deadline" :
+          grant.category === "open" ? "Active / Prepared" : "Rolling Fund";
+
+        let countdownContent = "";
+        if (grant.deadlineDate) {
+          countdownContent = `
+            <div class="deadline-cell">
+              <span class="deadline-date-text">${grant.deadlineDisplay}</span>
+              <span class="table-countdown countdown-timer" data-deadline="${grant.deadlineDate}">Calculating...</span>
+            </div>
+          `;
+        } else {
+          countdownContent = `
+            <div class="deadline-cell">
+              <span class="deadline-date-text">${grant.deadlineDisplay}</span>
+              <span style="font-size: 12px; font-weight: 700; color: var(--accent-cyan);">● Rolling Year-Round</span>
+            </div>
+          `;
+        }
+
+        const draftBtnHtml = grant.draftFile 
+          ? `<button class="btn-table btn-table-secondary" onclick="openModal('${grant.id}')">📄 Draft Info</button>`
+          : `<button class="btn-table btn-table-secondary" onclick="openModal('${grant.id}')">ℹ️ Details</button>`;
+
+        tr.innerHTML = `
+          <td>
+            <div class="grant-title-cell">
+              <div class="grant-name-link" onclick="openModal('${grant.id}')">
+                <span class="table-urgency-dot ${grant.category}"></span>${grant.title}
+              </div>
+              <span class="grant-funder-sub">${grant.funder}</span>
+            </div>
+          </td>
+          <td>
+            <span class="badge ${categoryBadgeClass}">${categoryBadgeText}</span>
+          </td>
+          <td>
+            ${countdownContent}
+          </td>
+          <td>
+            <span class="amount-badge">${grant.amount}</span>
+          </td>
+          <td>
+            <span class="match-pill">${grant.matchScore} Match</span>
+          </td>
+          <td>
+            <div class="actions-cell">
+              <a href="${grant.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn-table btn-table-primary">
+                🚀 Apply ↗
+              </a>
+              ${draftBtnHtml}
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      startCountdowns();
+    }
+
+    /* ============================================================
+       CALENDAR ENGINE
+       ============================================================ */
+    function changeMonth(delta) {
+      currentMonth += delta;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      else if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const titleEl = document.getElementById("calendarMonthTitle");
+      if (titleEl) titleEl.innerText = `${MONTH_NAMES[currentMonth]} ${currentYear}`;
+
+      const gridEl = document.getElementById("calendarGrid");
+      if (!gridEl) return;
+      gridEl.innerHTML = "";
+
+      const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      dayLabels.forEach(label => {
+        const h = document.createElement("div");
+        h.className = "cal-day-header";
+        h.innerText = label;
+        gridEl.appendChild(h);
+      });
+
+      const firstDate = new Date(currentYear, currentMonth, 1);
+      const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+      
+      let startingDay = firstDate.getDay() - 1;
+      if (startingDay === -1) startingDay = 6;
+
+      const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+      for (let i = startingDay - 1; i >= 0; i--) {
+        const cell = document.createElement("div");
+        cell.className = "cal-day-cell outside-month";
+        cell.innerHTML = `<span class="cal-day-number">${prevMonthDays - i}</span>`;
+        gridEl.appendChild(cell);
+      }
+
+      const today = new Date();
+      for (let d = 1; d <= totalDays; d++) {
+        const cell = document.createElement("div");
+        cell.className = "cal-day-cell";
+
+        const thisDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        
+        if (today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === d) {
+          cell.classList.add("today");
+        }
+
+        const numEl = document.createElement("span");
+        numEl.className = "cal-day-number";
+        numEl.innerText = d;
+        cell.appendChild(numEl);
+
+        const matchingGrants = GRANTS.filter(g => g.deadlineDate && g.deadlineDate.startsWith(thisDateStr));
+
+        matchingGrants.forEach(grant => {
+          const tag = document.createElement("div");
+          tag.className = `cal-grant-tag ${grant.category}`;
+          tag.innerText = `⏱ ${grant.title}`;
+          tag.title = `${grant.title} (${grant.deadlineDisplay}) - Click to view details`;
+          tag.onclick = (e) => {
+            e.stopPropagation();
+            openModal(grant.id);
+          };
+          cell.appendChild(tag);
+        });
+
+        gridEl.appendChild(cell);
+      }
+
+      const filledCells = startingDay + totalDays;
+      const remainingCells = (7 - (filledCells % 7)) % 7;
+      for (let i = 1; i <= remainingCells; i++) {
+        const cell = document.createElement("div");
+        cell.className = "cal-day-cell outside-month";
+        cell.innerHTML = `<span class="cal-day-number">${i}</span>`;
+        gridEl.appendChild(cell);
+      }
+    }
+
+    /* ============================================================
+       CARDS VIEW ENGINE
+       ============================================================ */
+    function renderCards() {
+      const container = document.getElementById("cardsGrid");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const filtered = getFilteredGrants();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 48px; color: var(--text-dim);">
+            <h3 style="font-weight:700; color:var(--text-main);">No grants match your filter.</h3>
+            <p style="margin-top: 8px;">Try clearing your search query or selecting "All".</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(grant => {
+        const card = document.createElement("div");
+        card.className = "grant-card";
+
+        const categoryBadgeClass = 
+          grant.category === "urgent" ? "badge-urgent" :
+          grant.category === "soon" ? "badge-soon" :
+          grant.category === "open" ? "badge-open" : "badge-rolling";
+
+        const categoryBadgeText = 
+          grant.category === "urgent" ? "Closing Soon" :
+          grant.category === "soon" ? "October Deadline" :
+          grant.category === "open" ? "Active / Prepared" : "Rolling Fund";
+
+        let countdownHtml = "";
+        if (grant.deadlineDate) {
+          countdownHtml = `
+            <div class="deadline-countdown-box">
+              <span class="deadline-label">Deadline: <strong>${grant.deadlineDisplay}</strong></span>
+              <span class="countdown-timer" data-deadline="${grant.deadlineDate}">Calculating...</span>
+            </div>
+          `;
+        } else {
+          countdownHtml = `
+            <div class="deadline-countdown-box">
+              <span class="deadline-label">Deadline: <strong>${grant.deadlineDisplay}</strong></span>
+              <span style="font-size:12px; color:var(--accent-cyan); font-weight:700;">● Open Year-Round</span>
+            </div>
+          `;
+        }
+
+        const onlineBadge = grant.online !== false 
+          ? `<span class="badge badge-online">● Portal Active</span>` 
+          : `<span class="badge" style="background:#fef3c7; color:#92400e;">● Checked Today</span>`;
+
+        const draftBtnHtml = grant.draftFile 
+          ? `<button class="btn btn-secondary" onclick="openModal('${grant.id}')">📄 View Draft Info</button>`
+          : `<button class="btn btn-secondary" onclick="openModal('${grant.id}')">ℹ️ Full Details</button>`;
+
+        card.innerHTML = `
+          <div class="grant-card-top">
+            <div class="card-meta-bar">
+              <span class="grant-funder">${grant.funder}</span>
+              <div class="card-badges">
+                ${onlineBadge}
+                <span class="badge ${categoryBadgeClass}">${categoryBadgeText}</span>
+                <span class="badge badge-match">${grant.matchScore} Match</span>
+              </div>
+            </div>
+
+            <h3 class="grant-title">${grant.title}</h3>
+            <div class="grant-amount">${grant.amount} <span>maximum grant</span></div>
+            <p class="grant-desc">${grant.summary}</p>
+
+            <ul class="grant-highlights">
+              ${grant.keyPoints.map(pt => `<li>${pt}</li>`).join('')}
+            </ul>
+
+            ${countdownHtml}
+          </div>
+
+          <div class="grant-actions">
+            <a href="${grant.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              🚀 Open Portal & Apply ↗
+            </a>
+            ${draftBtnHtml}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      startCountdowns();
+    }
+
+    /* ============================================================
+       COUNTDOWN TIMERS
+       ============================================================ */
+    function startCountdowns() {
+      function updateAll() {
+        const timers = document.querySelectorAll(".countdown-timer[data-deadline]");
+        const now = new Date().getTime();
+
+        timers.forEach(timerEl => {
+          const targetStr = timerEl.getAttribute("data-deadline");
+          const target = new Date(targetStr).getTime();
+          const diff = target - now;
+
+          if (diff <= 0) {
+            timerEl.innerText = "PASSED";
+            timerEl.style.color = "var(--accent-rose)";
+            return;
+          }
+
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+          timerEl.innerText = `${days}d ${hours}h ${mins}m ${secs}s`;
+        });
+      }
+
+      updateAll();
+      if (!window._countdownInterval) {
+        window._countdownInterval = setInterval(updateAll, 1000);
+      }
+    }
+
+    /* ============================================================
+       MODALS
+       ============================================================ */
+    function openModal(grantId) {
+      const grant = GRANTS.find(g => g.id === grantId);
+      if (!grant) return;
+
+      const modal = document.getElementById("grantModal");
+      const content = document.getElementById("modalContent");
+
+      content.innerHTML = `
+        <div style="margin-bottom: 12px;">
+          <span style="font-size: 12px; font-weight:800; color:var(--text-dim); text-transform:uppercase;">${grant.funder}</span>
+          <h2 style="font-size: 22px; font-weight: 800; color:var(--text-main); margin-top: 4px;">${grant.title}</h2>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: baseline;">
+          <span class="badge badge-match">${grant.matchScore} Profile Match</span>
+          <span style="font-size: 15px; font-weight:800; color: var(--accent-emerald);">${grant.amount}</span>
+          <span style="font-size: 13px; color: var(--text-dim);">Deadline: ${grant.deadlineDisplay}</span>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h4 style="color: var(--text-main); font-size: 14px; font-weight:800; margin-bottom: 6px;">Why This Fits Sadie</h4>
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">${grant.matchReason}</p>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <h4 style="color: var(--text-main); font-size: 14px; font-weight:800; margin-bottom: 6px;">Project Scope</h4>
+          <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">${grant.summary}</p>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <a href="${grant.portalUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="flex: 1;">
+            🚀 Go to Official Application Portal ↗
+          </a>
+          <button class="btn btn-secondary" onclick="closeModal('grantModal')">Close</button>
+        </div>
+      `;
+
+      modal.classList.add("open");
+    }
+
+    function openLogModal() {
+      const modal = document.getElementById("scanLogModal");
+      const container = document.getElementById("scanLogContent");
+      const results = (window.GRANTS_DATABASE && window.GRANTS_DATABASE.scanResults) ? window.GRANTS_DATABASE.scanResults : [];
+
+      if (results.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border-color); font-size: 13px; color: var(--text-muted);">
+            No diagnostic log entries recorded. The scheduled daily task runs every morning at 09:00 AM.
+          </div>
+        `;
+      } else {
+        container.innerHTML = results.map(r => `
+          <div style="padding: 12px 14px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size: 13.5px; font-weight:700; color:var(--text-main);">${r.title}</div>
+              <div style="font-size: 11px; color: var(--text-dim); margin-top: 2px;">${r.url}</div>
+            </div>
+            <span style="font-size: 11px; font-weight:800; padding: 3px 8px; border-radius:4px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
+              ${r.status}
+            </span>
+          </div>
+        `).join('');
+      }
+
+      modal.classList.add("open");
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove("open");
+    }
+
+    window.onclick = function(event) {
+      if (event.target.classList.contains("modal-backdrop")) {
+        event.target.classList.remove("open");
+      }
+    };
+
+    function triggerRefresh() {
+      const btn = document.querySelector(".sync-actions .btn-sync:last-child");
+      if (btn) btn.innerText = "⏳ Reloading...";
+      setTimeout(() => window.location.reload(), 400);
+    }
+
+    function toggleTask(itemEl, taskId) {
+      const checkbox = document.getElementById(taskId);
+      if (event.target !== checkbox) checkbox.checked = !checkbox.checked;
+      if (checkbox.checked) itemEl.classList.add("done");
+      else itemEl.classList.remove("done");
+      saveChecklistState();
+    }
+
+    function saveChecklistState() {
+      const state = {};
+      document.querySelectorAll(".checklist-item input[type='checkbox']").forEach(cb => {
+        state[cb.id] = cb.checked;
+      });
+      localStorage.setItem("sadie_grants_checklist", JSON.stringify(state));
+    }
+
+    function loadChecklistState() {
+      const saved = localStorage.getItem("sadie_grants_checklist");
+      if (!saved) return;
+      try {
+        const state = JSON.parse(saved);
+        Object.keys(state).forEach(id => {
+          const cb = document.getElementById(id);
+          if (cb) {
+            cb.checked = state[id];
+            const parent = cb.closest(".checklist-item");
+            if (state[id]) parent.classList.add("done");
+            else parent.classList.remove("done");
+          }
+        });
+      } catch (e) {
+        console.error("Error loading checklist state", e);
+      }
+    }
+  </script>
+</body>
+</html>

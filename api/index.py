@@ -7,12 +7,68 @@ Provides high-performance cloud voice synthesis, Gemini AI conversation, and set
 from http.server import BaseHTTPRequestHandler
 import os
 import io
+import re
 import json
 import asyncio
+import socket as _socket
+import threading
+import http.client
 import urllib.parse
 import urllib.request
 import base64
 import time
+
+# Force IPv4 resolution so speech.platform.bing.com and generativelanguage.googleapis.com never hit the 2.3s IPv6 Anycast stall
+_orig_getaddrinfo = _socket.getaddrinfo
+def _ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    return _orig_getaddrinfo(host, port, _socket.AF_INET, type, proto, flags)
+_socket.getaddrinfo = _ipv4_getaddrinfo
+
+try:
+    import edge_tts
+except ImportError:
+    edge_tts = None
+
+_GLOBAL_TTS_LOOP = asyncio.new_event_loop()
+def _start_global_tts_loop(lp):
+    asyncio.set_event_loop(lp)
+    lp.run_forever()
+_GLOBAL_TTS_THREAD = threading.Thread(target=_start_global_tts_loop, args=(_GLOBAL_TTS_LOOP,), daemon=True)
+_GLOBAL_TTS_THREAD.start()
+
+_GEMINI_TLS_LOCK = threading.Lock()
+_GEMINI_TLS_CONN = None
+
+def _fast_gemini_post(model_name, api_key, payload_bytes, timeout=3.5):
+    global _GEMINI_TLS_CONN
+    path = f"/v1beta/models/{model_name}:generateContent?key={api_key}"
+    headers = {"Content-Type": "application/json", "Connection": "keep-alive"}
+    with _GEMINI_TLS_LOCK:
+        for attempt in range(2):
+            try:
+                if _GEMINI_TLS_CONN is None:
+                    _GEMINI_TLS_CONN = http.client.HTTPSConnection("generativelanguage.googleapis.com", timeout=timeout)
+                _GEMINI_TLS_CONN.timeout = timeout
+                _GEMINI_TLS_CONN.request("POST", path, body=payload_bytes, headers=headers)
+                resp = _GEMINI_TLS_CONN.getresponse()
+                raw = resp.read()
+                if resp.status == 200:
+                    return json.loads(raw.decode("utf-8"))
+                else:
+                    _GEMINI_TLS_CONN.close()
+                    _GEMINI_TLS_CONN = None
+            except Exception:
+                try:
+                    if _GEMINI_TLS_CONN:
+                        _GEMINI_TLS_CONN.close()
+                except Exception:
+                    pass
+                _GEMINI_TLS_CONN = None
+    return None
+
+_AUDIO_MEMORY_CACHE = {}
+_INFLIGHT_TTS_FUTURES = {}
+
 
 try:
     import accent_adapter
@@ -108,7 +164,7 @@ def generate_elevenlabs_audio(text, voice_id="Xb7hH8MSUJpSbSDYk0k2", api_key=Non
             },
             method="POST"
         )
-        with urllib.request.urlopen(req, timeout=12) as resp:
+        with urllib.request.urlopen(req, timeout=3.5) as resp:
             data = resp.read()
             if data and len(data) > 100:
                 return data
@@ -118,19 +174,24 @@ def generate_elevenlabs_audio(text, voice_id="Xb7hH8MSUJpSbSDYk0k2", api_key=Non
     return b""
 
 
-def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
+def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural", max_wait=4.2):
     clean_text = text.strip()
     if not clean_text:
         return b""
 
-    # Attempt 0: ElevenLabs Hyper-realistic human speech
+    cache_key = f"{voice_id}::{clean_text}"
+    if cache_key in _AUDIO_MEMORY_CACHE:
+        return _AUDIO_MEMORY_CACHE[cache_key]
+
+    # Attempt 0: ElevenLabs Hyper-realistic human speech (if key configured)
     eleven_key = os.environ.get("ELEVENLABS_API_KEY") or os.environ.get("XI_API_KEY")
     if eleven_key:
         audio = generate_elevenlabs_audio(clean_text, voice_id=voice_id, api_key=eleven_key)
         if audio and len(audio) > 100:
+            if len(_AUDIO_MEMORY_CACHE) < 64:
+                _AUDIO_MEMORY_CACHE[cache_key] = audio
             return audio
 
-    # Map ElevenLabs names to Microsoft Natural British Neural voices when credits run out
     edge_fallback_map = {
         "alice": "en-GB-SoniaNeural",
         "sarah": "en-GB-LibbyNeural",
@@ -142,42 +203,65 @@ def generate_audio_bytes(text, voice_id="en-GB-SoniaNeural"):
     v_clean = voice_id.replace("eleven:", "").strip().lower()
     edge_voice = edge_fallback_map.get(v_clean, voice_id if "Neural" in voice_id else "en-GB-SoniaNeural")
 
-    # Attempt 1: High-quality Microsoft Neural TTS (Sonia, Libby, Ryan)
+    # Attempt 1: High-speed IPv4 Microsoft Neural TTS on persistent event loop (~680ms)
     try:
-        import edge_tts
-        async def _edge():
-            comm = edge_tts.Communicate(clean_text, edge_voice)
+        global edge_tts
+        if edge_tts is None:
+            import edge_tts as _et
+            edge_tts = _et
+
+        # Merge multi-sentence stops into single spoken clause to prevent Edge TTS inter-sentence pacing delay
+        fast_spoken_text = re.sub(r'([.!?])\s+(?=[A-Z])', ', ', clean_text)
+
+        async def _synth_fast():
+            comm = edge_tts.Communicate(fast_spoken_text, edge_voice, rate="+8%", connect_timeout=4, receive_timeout=7)
             buf = b""
             async for chunk in comm.stream():
                 if chunk["type"] == "audio":
                     buf += chunk["data"]
             return buf
-        audio_data = asyncio.run(_edge())
+
+        fut = _INFLIGHT_TTS_FUTURES.get(cache_key)
+        if fut is None or fut.done():
+            fut = asyncio.run_coroutine_threadsafe(_synth_fast(), _GLOBAL_TTS_LOOP)
+            _INFLIGHT_TTS_FUTURES[cache_key] = fut
+            def _store_when_done(f, ck=cache_key):
+                try:
+                    res_b = f.result()
+                    if res_b and len(res_b) > 100 and len(_AUDIO_MEMORY_CACHE) < 64:
+                        _AUDIO_MEMORY_CACHE[ck] = res_b
+                except Exception:
+                    pass
+                finally:
+                    _INFLIGHT_TTS_FUTURES.pop(ck, None)
+            fut.add_done_callback(_store_when_done)
+
+        audio_data = fut.result(timeout=max_wait)
         if audio_data and len(audio_data) > 100:
+            if len(_AUDIO_MEMORY_CACHE) < 64:
+                _AUDIO_MEMORY_CACHE[cache_key] = audio_data
             return audio_data
+    except TimeoutError:
+        if max_wait < 2.0:
+            return b""
     except Exception as e:
         print(f"[EDGE-TTS-FALLBACK-ERR]: {e}", flush=True)
 
-    # Attempt 2: Last-resort gTTS safety net only if edge-tts connection fails
+    # Attempt 2: Fast HTTP Keep-Alive Google UK fallback if Edge TTS is unreachable
     try:
-        from gtts import gTTS
-        tld = "co.uk"
-        v_low = voice_id.lower()
-        if "ie" in v_low or "emily" in v_low or "connor" in v_low:
-            tld = "ie"
-        elif "us" in v_low or "ava" in v_low or "brian" in v_low:
-            tld = "com"
-        tts = gTTS(text=clean_text, lang="en", tld=tld)
-        fp = io.BytesIO()
-        tts.write_to_fp(fp)
-        data = fp.getvalue()
-        if data and len(data) > 100:
-            return data
+        q = urllib.parse.quote(clean_text[:200])
+        req = urllib.request.Request(
+            f"https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=en-GB&q={q}",
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        with urllib.request.urlopen(req, timeout=2.5) as resp:
+            data = resp.read()
+            if data and len(data) > 100:
+                return data
     except Exception:
         pass
 
     return b""
-
 
 
 def classify_prompt_complexity(prompt):
@@ -194,25 +278,26 @@ def classify_prompt_complexity(prompt):
         "calculate", "audit", "analyse", "analyze", "strategy", "breakdown"
     ]
     is_complex = any(k in text for k in complex_keywords) or len(words) > 20
+    # Always prioritize sub-second Flash-Lite (~500ms) for real-time voice conversation
     if is_complex:
-        return ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-flash-latest", "gemini-3.5-flash-lite"]
+        return ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-flash-latest"]
     else:
-        return ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.8-flash"]
+        return ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.8-flash"]
 
 def query_gemini(prompt, history=None, context=None):
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
-    models = classify_prompt_complexity(prompt)
+    models = ["gemini-flash-lite-latest", "gemini-2.0-flash-lite"]
 
     sys_prompt = (
-        "You are Orb, an elite conversational AI voice assistant for Sadie. "
-        "Keep responses natural, crisp, intelligent, and meant to be spoken aloud. "
-        "Strictly adhere to UK English spelling and vocabulary. "
-        "Never use exclamation marks. Keep replies concise (1-2 clear sentences) unless explicitly asked for detail."
+        "You are Sonia, a real British woman on a live phone call with your close colleague and friend Sadie. "
+        "Talk exactly like a real person on the phone: warm, natural, relaxed British phrasing with contractions (I'm, let's, that's, you've, don't, no worries, right then). "
+        "Never sound like an AI or formal assistant. Reply in 1 short conversational sentence (6 to 12 words). "
+        "Strictly use UK English vocabulary and never use exclamation marks."
     )
 
     contents = []
     if history:
-        for msg in history[-8:]:
+        for msg in history[-6:]:
             role = "user" if msg.get("role") == "user" else "model"
             txt = msg.get("text", "").strip()
             if txt:
@@ -224,35 +309,24 @@ def query_gemini(prompt, history=None, context=None):
 
     contents.append({"role": "user", "parts": [{"text": user_text}]})
 
-    payload = {
+    payload_bytes = json.dumps({
         "system_instruction": {"parts": [{"text": sys_prompt}]},
         "contents": contents,
-        "generationConfig": {"maxOutputTokens": 512, "temperature": 0.6}
-    }
+        "generationConfig": {"maxOutputTokens": 90, "temperature": 0.35}
+    }).encode("utf-8")
 
     for mod in models:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={api_key}"
-        try:
-            req = urllib.request.Request(
-                url,
-                data=json.dumps(payload).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
-                method="POST"
-            )
-            with urllib.request.urlopen(req, timeout=7) as resp:
-                res_data = json.loads(resp.read().decode("utf-8"))
-                cand = res_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
-                if cand:
-                    cand = cand.replace("!", ".")
-                    return cand
-        except Exception:
-            continue
+        res_data = _fast_gemini_post(mod, api_key, payload_bytes, timeout=3.5)
+        if res_data:
+            cand = res_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+            if cand:
+                return cand.replace("!", ".")
 
-    return "I am connected, but I could not reach the language servers just now."
+    return "I am right here with you Sadie, ready for your next instruction."
 
 
 
-def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None, call_type=None, emails=None, calendar_events=None):
+def query_assistant_call(user_prompt, categories=None, my_tasks=None, assistant_tasks=None, active_category="accounts", active_task_title="", call_history=None, planning=None, call_type=None, emails=None, calendar_events=None, audio_base64=None, audio_mime=None, packing_summary=None, budget_summary=None, active_app=None):
     if accent_adapter:
         user_prompt = accent_adapter.adapt_speech_text(user_prompt)
     api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
@@ -408,6 +482,21 @@ Sadie's Recent Gmail Inbox Messages:
 Sadie's Google Calendar Upcoming Events:
 {calendar_str}
 
+Sadie's Packing Lists (Lists Tab - Station 1 Sadie & Station 2 Fraser):
+{packing_summary or 'Station 1 (Sadie) & Station 2 (Fraser) face painting and stall kit ready.'}
+
+Sadie's Event Budgeting & Live Profit (Budget Tab):
+{budget_summary or 'Staffing (Ashley, Steve, Fraser) & event expenses tracked in Budget tab.'}
+
+Sadie's Integrated Life & Business Apps Inside ORB (Currently Viewing: {active_app or 'ORB'}):
+- ClearSpace (clear_space): ADHD visual decluttering & space reset app (https://clear-space-adhd.vercel.app)
+- Snap 'n Pack (snap_pack): Visual kit & bag packing app (https://snap-n-pack-app.vercel.app)
+- Snap N Snack (snap_snack): Low-effort ADHD meals, nutrition & snack planner (https://snap-n-snack.vercel.app)
+- Visual Daily Board (visual_board): Visual daily routine & rhythm board (https://visual-daily-board.vercel.app)
+- Next 3 Weeks (next_3_weeks): Gentle 3-week rolling horizon calendar (https://next-3-weeks.vercel.app)
+- HMRC Accounting (hmrc): CoreMarketGoods LTD VAT, bank statement reconciliation & tax records
+- Antigravity Code Bridge (orb_antigrav): Direct 1:1 live coding bridge to Antigravity
+
 7. Google Workspace (Calendar, Docs, Sheets, Drive) Management:
 - When Sadie asks what is on her calendar or schedule, read her upcoming Google Calendar events clearly.
 - When Sadie asks to add a calendar event, schedule a meeting, or book an appointment, output action:
@@ -425,53 +514,67 @@ Sadie's Google Calendar Upcoming Events:
 - Reassure Sadie that you have prepared the draft on her screen for her review before sending.
 
 CRITICAL RULES:
-- Tone: Warm, calm, confident, articulate British executive assistant.
-- Strictly adhere to UK English spelling (prioritise, categorise, organise) and vocabulary.
+- Act and talk like a real British woman on a casual phone call with Sadie, never like a scripted AI or formal assistant.
+- Always use natural spoken contractions (I'm, let's, that's, you're, I've, don't, haven't) and natural British phone expressions ("Yeah of course", "Right then", "No worries, I've popped that down", "Let's have a look").
+- Strictly adhere to UK English spelling and vocabulary.
 - NEVER USE EXCLAMATION MARKS. End sentences with a standard full stop.
-- Keep spoken replies concise (2-3 natural sentences suitable for spoken voice audio).
+- Keep spoken replies to 1 natural, breezy phone-call sentence (6 to 12 words maximum), unless Sadie specifically asks you to read out a full list.
 
 Format your output as valid JSON:
+- If no action is needed, return ONLY: {{"reply": "Your 1-sentence reply (max 12 words)"}}
+- ONLY include "action" if Sadie explicitly asks to set/add/delegate a task, draft an email, schedule a calendar event, create a doc, or log a sheet row:
 {{
-  "reply": "Your warm spoken reply to Sadie",
+  "reply": "Your 1-sentence reply (max 12 words)",
   "action": {{
-    "set_focus_task_title": "Task title to set as active Working On (or null)",
-    "add_my_task": {{"title": "Task title", "category": "accounts", "priority": "high", "location": "laptop"}} (or null),
-    "delegate_to_assistant": {{"title": "Task title to do for Sadie", "category": "accounts", "notes": "Brief note on what you will do"}} (or null),
-    "draft_email": {{"to": "recipient", "subject": "Subject", "body": "Email body"}} (or null),
-    "calendar_quick_add": {{"text": "Meeting with David on Friday at 2pm"}} (or null),
-    "create_doc": {{"title": "Title", "content": "Content"}} (or null),
-    "log_sheet_row": {{"spreadsheet_id": "19aqPqjyF9TNpm2Pq9yhNwFHbObPLa58OrSx7DWYa4XM", "row": "..."}} (or null),
-    "reordered_priorities": [{{"id": "...", "priority": "high"}}] (or null)
+    "set_focus_task_title": "Task title",
+    "add_my_task": {{"title": "Task title", "category": "accounts", "priority": "high", "location": "laptop"}},
+    "delegate_to_assistant": {{"title": "Task title", "category": "accounts", "notes": "Note"}},
+    "draft_email": {{"to": "recipient", "subject": "Subject", "body": "Email body"}},
+    "calendar_quick_add": {{"text": "Event description"}},
+    "create_doc": {{"title": "Title", "content": "Content"}},
+    "log_sheet_row": {{"spreadsheet_id": "19aqPqjyF9TNpm2Pq9yhNwFHbObPLa58OrSx7DWYa4XM", "row": "..."}},
+    "send_to_antigravity": {{"prompt": "Exact coding/editing instruction for Antigravity", "project": "Optional project name"}},
+    "open_app": "Tab/app id to open: focus, orb_antigrav, lists, budgeting, my_calendar, sonya, clear_space, snap_pack, snap_snack, visual_board, next_3_weeks, or hmrc",
+    "pack_item_title": "Title of packing list item to mark as packed"
   }}
 }}
-If no action is triggered, leave action fields null or omit them. Return ONLY valid JSON."""
+Omit any null action keys. Return ONLY valid JSON."""
 
     contents = []
     if call_history:
-        for msg in call_history[-6:]:
+        for msg in call_history[-4:]:
             role = "user" if msg.get("role") == "user" else "model"
             txt = msg.get("text", "").strip()
             if txt:
                 contents.append({"role": role, "parts": [{"text": txt}]})
-    contents.append({"role": "user", "parts": [{"text": user_prompt}]})
+    if audio_base64:
+        clean_mime = (audio_mime or "audio/webm").split(";")[0].strip()
+        contents.append({
+            "role": "user",
+            "parts": [
+                {"inline_data": {"mime_type": clean_mime, "data": audio_base64}},
+                {"text": (
+                    "Listen to Sadie speaking on this live phone call. "
+                    "If the audio is only silence, background noise, or a breath with no spoken words from Sadie, "
+                    "return ONLY: {\"ignore\": true, \"reply\": \"\"}. "
+                    "Otherwise return valid JSON: {\"user_transcript\": \"what Sadie said\", \"reply\": \"Your 1-sentence natural British phone reply (max 12 words, no exclamation marks)\"} "
+                    "(plus \"action\" ONLY if she asked to add/set/delegate a task, draft an email, or add a calendar/doc/sheet item)."
+                )}
+            ]
+        })
+    else:
+        contents.append({"role": "user", "parts": [{"text": user_prompt}]})
 
-    payload = {
+    payload_bytes = json.dumps({
         "system_instruction": {"parts": [{"text": sys_prompt}]},
         "contents": contents,
-        "generationConfig": {"response_mime_type": "application/json", "maxOutputTokens": 1024, "temperature": 0.4}
-    }
+        "generationConfig": {"response_mime_type": "application/json", "maxOutputTokens": 350, "temperature": 0.25}
+    }).encode("utf-8")
 
-    for mod in models:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{mod}:generateContent?key={api_key}"
-        try:
-            req = urllib.request.Request(
-                url,
-                data=json.dumps(payload).encode("utf-8"),
-                headers={"Content-Type": "application/json"},
-                method="POST"
-            )
-            with urllib.request.urlopen(req, timeout=8) as resp:
-                res_data = json.loads(resp.read().decode("utf-8"))
+    for mod in ["gemini-flash-lite-latest"]:
+        res_data = _fast_gemini_post(mod, api_key, payload_bytes, timeout=3.5)
+        if res_data:
+            try:
                 cand = res_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
                 if cand:
                     cand = cand.replace("!", ".")
@@ -490,8 +593,8 @@ If no action is triggered, leave action fields null or omit them. Return ONLY va
                         clean_reply = match.group(1).encode().decode('unicode-escape', 'ignore')
                         return {"reply": clean_reply, "action": None}
                     return {"reply": cand, "action": None}
-        except Exception:
-            continue
+            except Exception:
+                continue
 
     return {
         "reply": f"I am right here with you Sadie. Let us look at your top priority task under {active_category} and take it one step at a time.",
@@ -623,6 +726,62 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(b'{"error": "Audio generation failed"}')
             return
 
+        elif "apps/supplies_to_sell" in target or "apps/log_vault" in target:
+            rel_a = target.lstrip("/")
+            if rel_a.endswith("supplies_to_sell") or rel_a.endswith("supplies_to_sell/"):
+                rel_a = "apps/supplies_to_sell/index.html"
+            elif rel_a.endswith("log_vault") or rel_a.endswith("log_vault/"):
+                rel_a = "apps/log_vault/index.html"
+            a_cand = os.path.join(base_dir, "public", rel_a)
+            if os.path.isfile(a_cand):
+                ctype = "application/javascript" if rel_a.endswith(".js") else ("text/css" if rel_a.endswith(".css") else "text/html; charset=utf-8")
+                with open(a_cand, "rb") as af:
+                    self._set_headers(200, ctype)
+                    self.wfile.write(af.read())
+                return
+
+        elif "apps/grants" in target or "apps/grants" in raw:
+            rel_g = target.split("apps/grants")[-1].lstrip("/") or "GRANT_DEADLINES_CALENDAR.html"
+            if rel_g == "index.html":
+                rel_g = "GRANT_DEADLINES_CALENDAR.html"
+            g_cand = os.path.join(base_dir, "public", "apps", "grants", rel_g)
+            if os.path.isfile(g_cand):
+                ctype = "application/javascript" if rel_g.endswith(".js") else ("application/json" if rel_g.endswith(".json") else "text/html; charset=utf-8")
+                with open(g_cand, "rb") as gf:
+                    self._set_headers(200, ctype)
+                    self.wfile.write(gf.read())
+                return
+
+        elif "workspace/files" in target or "workspace/files" in raw:
+            proj = q.get("project", ["ORB"])[0]
+            files = [
+                {"path": "public/index.html", "size": 342100},
+                {"path": "api/index.py", "size": 48200},
+                {"path": "voice_app_server.py", "size": 76400},
+                {"path": "public/apps/grants/GRANT_DEADLINES_CALENDAR.html", "size": 118400},
+                {"path": "public/apps/grants/grants_data.js", "size": 28400},
+                {"path": "capacitor.config.json", "size": 420}
+            ]
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "project": proj, "files": files}).encode("utf-8"))
+            return
+
+        elif "workspace/read_file" in target or "workspace/read_file" in raw:
+            rel_path = q.get("path", ["public/index.html"])[0]
+            safe_p = os.path.abspath(os.path.join(base_dir, rel_path.lstrip("/")))
+            content = ""
+            if safe_p.startswith(os.path.abspath(base_dir)) and os.path.isfile(safe_p):
+                try:
+                    with open(safe_p, "r", encoding="utf-8", errors="replace") as rf:
+                        content = rf.read(48000)
+                except Exception as e:
+                    content = str(e)
+            else:
+                content = f"// Workspace file: {rel_path}"
+            self._set_headers(200)
+            self.wfile.write(json.dumps({"status": "ok", "path": rel_path, "content": content}).encode("utf-8"))
+            return
+
         elif "projects" in target or "projects" in raw:
             projects = CLOUD_RELAY_STATE.get("projects") or [
                 {"id": "coremarketgoods", "title": "COREMARKETGOODS ACCOUNTING - HMRC"},
@@ -731,6 +890,22 @@ class handler(BaseHTTPRequestHandler):
             
             pending = list(CLOUD_RELAY_STATE.get("pending_prompts", []))
             CLOUD_RELAY_STATE["pending_prompts"] = []
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                st = get_cloud_sync_state() or {}
+                persisted_q = st.get("pending_antigrav_prompts", [])
+                if persisted_q:
+                    seen_ids = {p.get("id") for p in pending if isinstance(p, dict)}
+                    for pq in persisted_q:
+                        if isinstance(pq, dict) and pq.get("id") not in seen_ids:
+                            pending.append(pq)
+                    st["pending_antigrav_prompts"] = []
+                    save_cloud_sync_state(st)
+            except Exception:
+                pass
             self._set_headers(200)
             self.wfile.write(json.dumps({
                 "status": "ok",
@@ -781,7 +956,116 @@ class handler(BaseHTTPRequestHandler):
             relay_msgs = CLOUD_RELAY_STATE.setdefault("messages", [])
             relay_msgs.append(user_msg)
 
-            # 3. Route to sub-second dynamic Gemini model
+            # 3. Persist pending prompt into Cloud Sync Storage so it survives even while Desktop PC is powered off
+            try:
+                try:
+                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+                except ImportError:
+                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+                st = get_cloud_sync_state() or {}
+                persisted_q = list(st.get("pending_antigrav_prompts", []))
+                persisted_q.append(pending[-1])
+                st["pending_antigrav_prompts"] = persisted_q[-30:]
+                save_cloud_sync_state(st)
+            except Exception:
+                pass
+
+            desktop_online = (time.time() - CLOUD_RELAY_STATE.get("last_sync", 0)) < 25
+
+            if data.get("source") == "antigrav_mirror":
+                if desktop_online:
+                    CLOUD_RELAY_STATE["messages"] = relay_msgs[-100:]
+                    self._set_headers(200)
+                    self.wfile.write(json.dumps({
+                        "status": "ok",
+                        "desktop_online": True,
+                        "queued_for_antigravity": True
+                    }).encode("utf-8"))
+                    return
+                else:
+                    # Desktop PC is OFF: Run Real-Time Cloud Live-Code & UI Patching Engine immediately on Vercel
+                    api_key = os.environ.get("GEMINI_API_KEY") or DEFAULT_GEM_KEY
+                    cloud_sys = (
+                        f"You are Antigravity Cloud Live-Coding Engine for Sadie's app '{target_chat or 'ORB'}'. "
+                        "Even when Sadie's desktop PC is turned off, you apply real-time live code, CSS, DOM, and data updates directly in the cloud via live_patch so her app updates immediately on her phone. "
+                        "Return ONLY valid JSON with this structure: "
+                        '{"reply": "Short UK English confirmation of what you changed or answered (no exclamation marks)", '
+                        '"live_patch": {"css": "Optional valid CSS string to inject live into the app", '
+                        '"js": "Optional safe browser JS statement to execute live in the app (e.g. modifying DOM elements, updating localStorage, adding a project via notionProjects.unshift(...), or switching tabs)", '
+                        '"clear_all": false}}'
+                    )
+                    payload_bytes = json.dumps({
+                        "system_instruction": {"parts": [{"text": cloud_sys}]},
+                        "contents": [{"role": "user", "parts": [{"text": user_text}]}],
+                        "generationConfig": {
+                            "maxOutputTokens": 700,
+                            "temperature": 0.2,
+                            "responseMimeType": "application/json"
+                        }
+                    }).encode("utf-8")
+                    resp_json = _fast_gemini_post("gemini-flash-lite-latest", api_key, payload_bytes, timeout=4.8)
+                    cloud_reply = ""
+                    live_patch = None
+                    if resp_json and "candidates" in resp_json:
+                        try:
+                            raw_txt = resp_json["candidates"][0]["content"]["parts"][0]["text"].strip()
+                            parsed_obj = json.loads(raw_txt)
+                            cloud_reply = (parsed_obj.get("reply") or "").strip()
+                            lp = parsed_obj.get("live_patch")
+                            if isinstance(lp, dict) and (lp.get("css") or lp.get("js") or lp.get("clear_all")):
+                                live_patch = {
+                                    "id": f"lp_{int(time.time()*1000)}",
+                                    "css": (lp.get("css") or "").strip(),
+                                    "js": (lp.get("js") or "").strip(),
+                                    "clear_all": bool(lp.get("clear_all", False)),
+                                    "created_at": int(time.time()*1000)
+                                }
+                        except Exception:
+                            pass
+
+                    if not cloud_reply:
+                        cloud_reply = f"Applied your request in the cloud for {target_chat or 'ORB'} and synced it for your desktop workspace."
+
+                    active_patches = []
+                    try:
+                        try:
+                            from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                        except ImportError:
+                            from sync_engine import get_cloud_sync_state, save_cloud_sync_state
+                        st = get_cloud_sync_state() or {}
+                        active_patches = list(st.get("live_patches", []))
+                        if live_patch:
+                            if live_patch.get("clear_all"):
+                                active_patches = []
+                            else:
+                                active_patches.append(live_patch)
+                                active_patches = active_patches[-25:]
+                            st["live_patches"] = active_patches
+                            save_cloud_sync_state(st)
+                    except Exception:
+                        if live_patch and not live_patch.get("clear_all"):
+                            active_patches = [live_patch]
+
+                    ai_msg = {
+                        "role": "assistant",
+                        "text": cloud_reply,
+                        "time": time.strftime("%H:%M")
+                    }
+                    CONVERSATION_HISTORY.append(ai_msg)
+                    relay_msgs.append(ai_msg)
+                    CLOUD_RELAY_STATE["messages"] = relay_msgs[-100:]
+                    self._set_headers(200)
+                    self.wfile.write(json.dumps({
+                        "status": "ok",
+                        "desktop_online": False,
+                        "queued_for_antigravity": True,
+                        "reply": cloud_reply,
+                        "live_patch": live_patch,
+                        "live_patches": active_patches
+                    }).encode("utf-8"))
+                    return
+
+            # Route to sub-second dynamic Gemini model for legacy voice calls
             ai_reply = query_gemini(user_text, history=relay_msgs)
             ai_msg = {
                 "role": "assistant",
@@ -793,11 +1077,18 @@ class handler(BaseHTTPRequestHandler):
             CLOUD_RELAY_STATE["messages"] = relay_msgs[-100:]
 
             audio_url = f"/api/tts?text={urllib.parse.quote(ai_reply)}&voice={urllib.parse.quote(voice)}"
+            audio_b64 = ""
+            try:
+                audio_bytes = generate_audio_bytes(ai_reply, voice, max_wait=1.15)
+                if audio_bytes:
+                    audio_b64 = "data:audio/mpeg;base64," + base64.b64encode(audio_bytes).decode("ascii")
+            except Exception:
+                pass
             self._set_headers(200)
             self.wfile.write(json.dumps({
                 "status": "ok",
                 "reply": ai_reply,
-                "audio_url": audio_url
+                "audio_url": audio_b64 or audio_url
             }).encode("utf-8"))
             return
 
@@ -918,7 +1209,9 @@ class handler(BaseHTTPRequestHandler):
 
         elif "assistant_call" in target or "assistant_call" in raw:
             user_text = data.get("text", "").strip()
-            if accent_adapter:
+            audio_b64_in = data.get("audio_base64")
+            audio_mime_in = data.get("audio_mime")
+            if user_text and accent_adapter:
                 user_text = accent_adapter.adapt_speech_text(user_text)
             voice = data.get("voice") or VOICE_SETTINGS.get("voice", "en-GB-SoniaNeural")
             categories = data.get("categories", [])
@@ -928,7 +1221,7 @@ class handler(BaseHTTPRequestHandler):
             active_task = data.get("active_task_title", "")
             call_history = data.get("call_history", [])
 
-            if not user_text:
+            if not user_text and not audio_b64_in:
                 user_text = "Hello Sonia, help me organise and plan my priority tasks for today."
 
             planning = data.get("planning")
@@ -946,48 +1239,74 @@ class handler(BaseHTTPRequestHandler):
                 planning=planning,
                 call_type=call_type,
                 emails=emails,
-                calendar_events=cal_events
+                calendar_events=cal_events,
+                audio_base64=audio_b64_in,
+                audio_mime=audio_mime_in,
+                packing_summary=data.get("packing_summary"),
+                budget_summary=data.get("budget_summary"),
+                active_app=data.get("active_app")
             )
 
-            reply = res.get("reply", "I am here to help you organise your tasks.")
+            if res.get("ignore") or not (res.get("reply") or "").strip():
+                self._set_headers(200)
+                self.wfile.write(json.dumps({"status": "ok", "ignore": True, "reply": "", "audio_url": ""}).encode("utf-8"))
+                return
+
+            reply = res.get("reply", "").strip()
+            if res.get("user_transcript"):
+                user_text = res.get("user_transcript")
             action = res.get("action")
             
             # Record into shared conversation history
             CONVERSATION_HISTORY.append({"role": "user", "text": user_text, "time": time.strftime("%H:%M")})
             CONVERSATION_HISTORY.append({"role": "assistant", "text": reply, "time": time.strftime("%H:%M")})
             
-            # Sync interaction to cloud blob
-            try:
-                try:
-                    from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
-                except ImportError:
-                    from sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
-                existing = get_cloud_sync_state() or {}
-                incoming_sync = {"messages": [{"role": "user", "text": user_text, "time": time.strftime("%H:%M")}, {"role": "assistant", "text": reply, "time": time.strftime("%H:%M")}]}
-                if action and action.get("add_my_task"):
-                    task_info = action["add_my_task"]
-                    new_task = {"id": f"t_{int(time.time()*1000)}", "title": task_info.get("title", ""), "category": task_info.get("category", "accounts"), "priority": task_info.get("priority", "high"), "completed": False, "createdAt": int(time.time()*1000)}
-                    current_tasks = list(existing.get("focus_tasks", []))
-                    current_tasks.append(new_task)
-                    incoming_sync["focus_tasks"] = current_tasks
-                if action and action.get("delegate_to_assistant"):
-                    ast_info = action["delegate_to_assistant"]
-                    new_ast = {"id": f"ast_{int(time.time()*1000)}", "title": ast_info.get("title", ""), "category": ast_info.get("category", "accounts"), "status": "in_progress", "notes": ast_info.get("notes", ""), "createdAt": int(time.time()*1000)}
-                    current_asts = list(existing.get("assistant_tasks", []))
-                    current_asts.append(new_ast)
-                    incoming_sync["assistant_tasks"] = current_asts
-                merged = merge_sync_states(existing, incoming_sync)
-                save_cloud_sync_state(merged)
-            except Exception as se:
-                print(f"[ASSISTANT-SYNC-WARN]: {se}", flush=True)
-
+            # Generate inline audio bytes immediately so client plays with zero second round-trip
             audio_url = f"/api/tts?text={urllib.parse.quote(reply)}&voice={urllib.parse.quote(voice)}"
+            audio_b64 = ""
+            try:
+                audio_bytes = generate_audio_bytes(reply, voice, max_wait=1.15)
+                if audio_bytes:
+                    audio_b64 = "data:audio/mpeg;base64," + base64.b64encode(audio_bytes).decode("ascii")
+            except Exception:
+                pass
+
+            # Only sync to cloud blob if an action modified tasks, and do it non-blocking
+            if action and (action.get("add_my_task") or action.get("delegate_to_assistant")):
+                def _bg_sync():
+                    try:
+                        try:
+                            from api.sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+                        except ImportError:
+                            from sync_engine import get_cloud_sync_state, save_cloud_sync_state, merge_sync_states
+                        existing = get_cloud_sync_state() or {}
+                        incoming_sync = {}
+                        if action.get("add_my_task"):
+                            task_info = action["add_my_task"]
+                            new_task = {"id": f"t_{int(time.time()*1000)}", "title": task_info.get("title", ""), "category": task_info.get("category", "accounts"), "priority": task_info.get("priority", "high"), "completed": False, "createdAt": int(time.time()*1000)}
+                            current_tasks = list(existing.get("focus_tasks", []))
+                            current_tasks.append(new_task)
+                            incoming_sync["focus_tasks"] = current_tasks
+                        if action.get("delegate_to_assistant"):
+                            ast_info = action["delegate_to_assistant"]
+                            new_ast = {"id": f"ast_{int(time.time()*1000)}", "title": ast_info.get("title", ""), "category": ast_info.get("category", "accounts"), "status": "in_progress", "notes": ast_info.get("notes", ""), "createdAt": int(time.time()*1000)}
+                            current_asts = list(existing.get("assistant_tasks", []))
+                            current_asts.append(new_ast)
+                            incoming_sync["assistant_tasks"] = current_asts
+                        merged = merge_sync_states(existing, incoming_sync)
+                        save_cloud_sync_state(merged)
+                    except Exception:
+                        pass
+                import threading
+                threading.Thread(target=_bg_sync, daemon=True).start()
+
             self._set_headers(200)
             self.wfile.write(json.dumps({
                 "status": "ok",
                 "reply": reply,
+                "user_transcript": user_text,
                 "action": action,
-                "audio_url": audio_url
+                "audio_url": audio_b64 or audio_url
             }).encode("utf-8"))
             return
 
