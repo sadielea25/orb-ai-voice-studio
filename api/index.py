@@ -898,8 +898,17 @@ class handler(BaseHTTPRequestHandler):
                     cbp[pkey] = msgs
             if not msgs:
                 msgs = [{"role": "assistant", "text": f"Connected to {req_title or 'ORB'} workspace.", "time": "Live"}]
+            seq_ts = CLOUD_RELAY_STATE.get("last_sync", 0)
+            desktop_online = (time.time() - seq_ts) < 25
             self._set_headers(200)
-            self.wfile.write(json.dumps({"project_key": pkey, "chat_title": req_title, "messages": msgs, "events": msgs}).encode("utf-8"))
+            self.wfile.write(json.dumps({
+                "project_key": pkey,
+                "chat_title": req_title,
+                "seq_ts": seq_ts,
+                "desktop_online": desktop_online,
+                "messages": msgs,
+                "events": msgs
+            }).encode("utf-8"))
             return
 
         elif "sync" in target or "sync" in raw:
@@ -1053,6 +1062,7 @@ class handler(BaseHTTPRequestHandler):
                 "time": time.strftime("%H:%M")
             }
             relay_msgs.append(user_msg)
+            CLOUD_RELAY_STATE["last_sync"] = max(CLOUD_RELAY_STATE.get("last_sync", 0), time.time())
 
             desktop_online = ((time.time() - CLOUD_RELAY_STATE.get("last_sync", 0)) < 25) and not bool(data.get("force_cloud_offline"))
 

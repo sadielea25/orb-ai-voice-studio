@@ -868,7 +868,7 @@
     <header style="padding: 10px 4px 6px 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <h1 style="font-size: 16px; font-weight: 700; margin: 0; color: #0f172a; letter-spacing: -0.01em;">Orb</h1>
-        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #dcfce7; border: 1.5px solid #86efac; color: #15803d; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v7.3</span>
+        <span id="appVersionBadge" onclick="applyHotUpdate(true)" title="Tap to refresh version" style="background: #dcfce7; border: 1.5px solid #86efac; color: #15803d; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; user-select: none;">v7.4</span>
         <button type="button" id="manualCloudSyncBtn" onclick="syncWithCloud(true)" title="Cloud Sync" style="background: #fdf4ff; border: 1.5px solid #f0abfc; color: #7c3aed; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
           <span id="syncPulseDot" style="width: 6px; height: 6px; border-radius: 999px; background: #059669; display: inline-block;"></span>
           <span id="syncStatusLabel">Synced</span>
@@ -2925,28 +2925,35 @@
       styleEl.textContent = combinedCss;
     };
 
+    window.__pendingUserPrompts = window.__pendingUserPrompts || [];
+    window.__highestSeqTsByProject = window.__highestSeqTsByProject || {};
+    window.__showAllChatHistory = false;
+    window.__lastRenderedSignature = '';
+
     window.sendAntigravPrompt = async function(customPrompt) {
       const input = document.getElementById('antigravPromptInput');
       const text = (customPrompt || (input ? input.value : '')).trim();
       if (!text) return;
       if (input) input.value = '';
-      showToast('Sending prompt to Antigravity...');
 
-      let activeChatName = '';
+      let activeChatName = window.activeChatTitle || localStorage.getItem('orb_active_project') || '';
       const agChatEl = document.getElementById('antigravChatTitleText');
-      const voiceChatEl = document.getElementById('activeChatTitleText');
-      if (agChatEl && agChatEl.innerText && agChatEl.innerText.trim()) {
+      if (!activeChatName && agChatEl && agChatEl.innerText && agChatEl.innerText.trim()) {
         activeChatName = agChatEl.innerText.trim();
-      } else if (voiceChatEl && voiceChatEl.innerText && voiceChatEl.innerText.trim() !== 'Live Chat Ready') {
-        activeChatName = voiceChatEl.innerText.trim();
       }
-      const streamEl = document.getElementById('antigravChatStream');
-      if (streamEl) {
-        const bubble = document.createElement('div');
-        bubble.style.cssText = 'align-self: flex-end; max-width: 88%; background: #eff6ff; border: 1.5px solid #bfdbfe; color: #0f172a; padding: 10px 13px; border-radius: 14px 14px 4px 14px; font-size: 13px; font-weight: 600; line-height: 1.45;';
-        bubble.textContent = text;
-        streamEl.appendChild(bubble);
-      }
+      if (!activeChatName) activeChatName = 'ORB - Voice Assistant';
+
+      const nowStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      window.__pendingUserPrompts.push({
+        text: text,
+        time: nowStr,
+        project: activeChatName,
+        sentAt: Date.now(),
+        waitingForDesktop: true
+      });
+
+      // Immediately render with the optimistic message and "Antigravity is working..." indicator
+      renderChatStream(lastRenderedMessages || [], true);
 
       const payload = JSON.stringify({ text: text, auto_send: true, source: 'antigrav_mirror', chat_title: activeChatName });
       const isCap = (window.Capacitor !== undefined) || (window.location.protocol === 'capacitor:') || (window.location.protocol === 'file:');
@@ -2969,29 +2976,23 @@
             body: payload
           });
           if (res && res.ok) {
-            showToast('Prompt sent to Antigravity');
             const data = await res.json().catch(() => ({}));
             if (data && data.live_patches && typeof window.applyCloudLivePatches === 'function') {
               window.applyCloudLivePatches(data.live_patches);
             } else if (data && data.live_patch && typeof window.applyCloudLivePatches === 'function') {
               window.applyCloudLivePatches([data.live_patch]);
             }
-            if (data && Array.isArray(data.messages) && data.messages.length > 0) {
-              lastRenderedMessages = data.messages;
-              renderChatStream(data.messages);
-            } else if (data && data.reply) {
-              const nowStr = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-              const updatedMsgs = Array.isArray(lastRenderedMessages) ? [...lastRenderedMessages] : [];
-              updatedMsgs.push({ role: 'user', text: text, time: nowStr });
-              updatedMsgs.push({ role: 'assistant', text: data.reply, time: nowStr });
-              lastRenderedMessages = updatedMsgs;
-              renderChatStream(updatedMsgs);
-            }
             if (data && data.reply) {
+              // Offline Cloud Antigravity replied immediately -> clear pending waiting state
+              window.__pendingUserPrompts = window.__pendingUserPrompts.filter(p => p.text !== text);
+              const baseMsgs = (Array.isArray(data.messages) && data.messages.length > 0) ? data.messages : [...(lastRenderedMessages || []), { role: 'user', text: text, time: nowStr }, { role: 'assistant', text: data.reply, time: nowStr }];
+              lastRenderedMessages = baseMsgs;
+              renderChatStream(baseMsgs, true);
               if (data.audio_url) playCloudAudio(data.audio_url, data.reply);
               else speakTextInBrowser(data.reply, currentVoiceId);
-            } else if (typeof pollConversation === 'function') {
-              setTimeout(pollConversation, 500);
+            } else {
+              // Queued for live Desktop Antigravity -> keep optimistic bubble & working indicator until transcript updates
+              renderChatStream(lastRenderedMessages || [], true);
             }
             return;
           }
@@ -3066,8 +3067,39 @@
       window.speakChatMessage(cleanChatText(m.text));
     };
 
-    function renderChatStream(messages) {
-      const sliceMsgs = (messages || []).slice(-50);
+    function renderChatStream(messages, forceScrollBottom = false) {
+      const rawMsgs = Array.isArray(messages) ? [...messages] : [];
+
+      // Filter out any pending optimistic user prompts that have now arrived in rawMsgs
+      const nowMs = Date.now();
+      const recentServerTexts = new Set(rawMsgs.slice(-12).map(m => cleanChatText(m.text || '').toLowerCase().trim()));
+      window.__pendingUserPrompts = (window.__pendingUserPrompts || []).filter(p => {
+        if ((nowMs - p.sentAt) > 95000) return false; // expire after 95s
+        const cleanP = cleanChatText(p.text || '').toLowerCase().trim();
+        // If server transcript now has this user message AND an assistant reply after it, remove from pending
+        if (recentServerTexts.has(cleanP)) {
+          const lastServerMsg = rawMsgs[rawMsgs.length - 1];
+          if (lastServerMsg && lastServerMsg.role === 'assistant' && cleanChatText(lastServerMsg.text || '') !== cleanP) {
+            return false;
+          }
+        }
+        return true;
+      });
+
+      // Merge any still-unacknowledged optimistic user prompts onto the end so they never flicker out
+      const mergedMsgs = [...rawMsgs];
+      let hasActivePending = false;
+      (window.__pendingUserPrompts || []).forEach(p => {
+        const cleanP = cleanChatText(p.text || '').toLowerCase().trim();
+        if (!recentServerTexts.has(cleanP)) {
+          mergedMsgs.push({ role: 'user', text: p.text, time: p.time || 'Just now' });
+        }
+        hasActivePending = true;
+      });
+
+      const totalCount = mergedMsgs.length;
+      const visibleLimit = window.__showAllChatHistory ? 50 : 14;
+      const sliceMsgs = mergedMsgs.slice(-visibleLimit);
       window.__renderedChatMessages = sliceMsgs;
 
       knownAITexts = sliceMsgs
@@ -3075,53 +3107,73 @@
         .slice(-15)
         .map(m => m.text);
 
-      const docs = [document];
-      if (window.documentPictureInPicture && window.documentPictureInPicture.window && !window.documentPictureInPicture.window.closed) {
-        try { docs.push(window.documentPictureInPicture.window.document); } catch (e) {}
+      // Build deterministic signature so we NEVER touch DOM if messages haven't actually changed
+      const sig = JSON.stringify(sliceMsgs.map(m => [m.role, cleanChatText(m.text || '')])) + '::' + String(hasActivePending) + '::' + String(window.__showAllChatHistory);
+      if (sig === window.__lastRenderedSignature && !forceScrollBottom) {
+        return;
+      }
+      const isNewMessageArrival = (sig !== window.__lastRenderedSignature);
+      window.__lastRenderedSignature = sig;
+
+      const streamBox = document.getElementById('antigravChatStream');
+      if (!streamBox) return;
+      if (!sliceMsgs || sliceMsgs.length === 0) {
+        streamBox.innerHTML = '<div style="color: #64748b; font-size: 11.5px; text-align: center; padding: 20px 0;">No messages yet. Send a prompt below to interact with Antigravity.</div>';
+        return;
       }
 
-      docs.forEach(doc => {
-        const streamBox = Document.prototype.getElementById.call(doc, 'antigravChatStream');
-        if (!streamBox) return;
-        if (!sliceMsgs || sliceMsgs.length === 0) {
-          streamBox.innerHTML = '<div style="color: #64748b; font-size: 11.5px; text-align: center; padding: 20px 0;">No messages yet. Send a prompt above to interact with Antigravity.</div>';
-          return;
-        }
+      const hiddenCount = Math.max(0, totalCount - sliceMsgs.length);
+      const showOlderBtnHtml = hiddenCount > 0
+        ? `<button type="button" onclick="window.__showAllChatHistory = true; renderChatStream(lastRenderedMessages, false);" style="align-self: center; background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px; cursor: pointer; margin-bottom: 4px;">↑ Show ${hiddenCount} earlier messages</button>`
+        : (window.__showAllChatHistory && totalCount > 14
+          ? `<button type="button" onclick="window.__showAllChatHistory = false; renderChatStream(lastRenderedMessages, false);" style="align-self: center; background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px; cursor: pointer; margin-bottom: 4px;">↓ Show recent 14 only</button>`
+          : '');
 
-        const isNearBottom = (streamBox.scrollHeight - streamBox.scrollTop - streamBox.clientHeight) < 140;
+      const bubblesHtml = sliceMsgs.map((m, idx) => {
+        const isUser = m.role === 'user';
+        const bg = isUser ? '#eff6ff' : '#ffffff';
+        const border = isUser ? '#93c5fd' : '#e2e8f0';
+        const textColor = isUser ? '#1e3a8a' : '#0f172a';
+        const align = isUser ? 'flex-end' : 'flex-start';
+        const roleLabel = isUser ? 'You' : 'Antigravity';
+        const timeStr = m.time || '';
+        const cleaned = cleanChatText(m.text || '');
+        const formattedText = formatChatContent(cleaned);
 
-        const html = sliceMsgs.map((m, idx) => {
-          const isUser = m.role === 'user';
-          const bg = isUser ? '#eff6ff' : '#f8fafc';
-          const border = isUser ? '#bfdbfe' : '#e2e8f0';
-          const textColor = isUser ? '#1e40af' : '#0f172a';
-          const align = isUser ? 'flex-end' : 'flex-start';
-          const roleLabel = isUser ? 'Sadie' : 'Antigravity';
-          const timeStr = m.time || '';
-          const cleaned = cleanChatText(m.text || '');
-          const formattedText = formatChatContent(cleaned);
+        const speakBtn = !isUser ? `<button type="button" onclick="window.speakMessageAtIndex(${idx})" style="background: none; border: none; padding: 2px 4px; color: #2563eb; font-size: 13px; cursor: pointer; border-radius: 4px;" title="Read message aloud">&#128266;</button>` : '';
 
-          const speakBtn = !isUser ? `<button type="button" onclick="window.speakMessageAtIndex(${idx})" style="background: none; border: none; padding: 2px 4px; color: #2563eb; font-size: 13px; cursor: pointer; border-radius: 4px;" title="Read message aloud">&#128266;</button>` : '';
-
-          return `
-            <div style="align-self: ${align}; max-width: 90%; background: ${bg}; border: 1px solid ${border}; border-radius: 12px; padding: 9px 12px; margin-bottom: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-              <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 10.5px; font-weight: 700; color: #64748b; margin-bottom: 4px;">
-                <span style="color: ${isUser ? '#2563eb' : '#0f172a'};">${roleLabel}</span>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  ${speakBtn}
-                  ${timeStr ? `<span>${timeStr}</span>` : ''}
-                </div>
+        return `
+          <div class="ag-chat-bubble" style="align-self: ${align}; max-width: 92%; background: ${bg}; border: 1.5px solid ${border}; border-radius: ${isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px'}; padding: 10px 13px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 10.5px; font-weight: 800; color: #64748b; margin-bottom: 4px;">
+              <span style="color: ${isUser ? '#2563eb' : '#059669'};">${roleLabel}</span>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                ${speakBtn}
+                ${timeStr ? `<span>${timeStr}</span>` : ''}
               </div>
-              <div style="font-size: 12.5px; color: ${textColor}; line-height: 1.5; word-break: break-word;">${formattedText}</div>
             </div>
-          `;
-        }).join('');
+            <div style="font-size: 13px; color: ${textColor}; line-height: 1.5; word-break: break-word;">${formattedText}</div>
+          </div>
+        `;
+      }).join('');
 
-        streamBox.innerHTML = html;
-        if (isNearBottom) {
-          streamBox.scrollTop = streamBox.scrollHeight;
-        }
-      });
+      const workingIndicatorHtml = hasActivePending
+        ? `<div style="align-self: flex-start; background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; border-radius: 12px; padding: 8px 12px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+             <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+             <span>Antigravity received your message and is working...</span>
+           </div>`
+        : '';
+
+      streamBox.innerHTML = showOlderBtnHtml + bubblesHtml + workingIndicatorHtml;
+
+      if (forceScrollBottom || isNewMessageArrival) {
+        setTimeout(() => {
+          try {
+            streamBox.scrollTop = streamBox.scrollHeight;
+            const lastChild = streamBox.lastElementChild;
+            if (lastChild) lastChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } catch (e) {}
+        }, 40);
+      }
     }
 
     // Restore selected tab on load
@@ -5329,10 +5381,26 @@
         const res = await fetch(url);
         const data = await res.json();
         const messages = data.messages || data.events || [];
+        const pKey = data.project_key || activeChatName || 'orb';
+        const incomingSeq = parseFloat(data.seq_ts || 0);
+        const highestSeq = window.__highestSeqTsByProject[pKey] || 0;
 
-        if (JSON.stringify(messages) !== JSON.stringify(lastRenderedMessages)) {
+        // Ignore stale responses from secondary cold serverless containers
+        if (incomingSeq > 0 && highestSeq > 0 && incomingSeq < (highestSeq - 2)) {
+          return;
+        }
+        if (incomingSeq > highestSeq) {
+          window.__highestSeqTsByProject[pKey] = incomingSeq;
+        }
+        // Also never downgrade from a 30+ live message stream back to a 25 static message fallback on the same project
+        if (window.__lastPolledProject === pKey && Array.isArray(lastRenderedMessages) && lastRenderedMessages.length > 26 && messages.length <= 25) {
+          return;
+        }
+        window.__lastPolledProject = pKey;
+
+        if (JSON.stringify(messages) !== JSON.stringify(lastRenderedMessages) || (window.__pendingUserPrompts && window.__pendingUserPrompts.length > 0)) {
           lastRenderedMessages = messages;
-          renderChatStream(messages);
+          renderChatStream(messages, false);
         }
       } catch (e) {
       } finally {
@@ -8713,6 +8781,8 @@
 
     window.selectProject = function(id, title) {
       window.activeChatTitle = title;
+      window.__lastRenderedSignature = '';
+      window.__lastPolledProject = '';
       window.userSelectedProjectLock = true;
       try { localStorage.setItem('orb_active_project', title); } catch (e) {}
       
